@@ -57,13 +57,29 @@ export default function Feed({ user, refreshUser, locked, setLocked, api, setTab
     new Date(Date.now() + 5 * 60000).toISOString().slice(0, 16)
   );
 
+  function getPassedKey() {
+    return `lockin_passed_${user.id}`;
+  }
+
   function markDismissed(missionId: string | number) {
-    const key = `lockin_passed_${user.id}`;
+    const key = getPassedKey();
     const passed = JSON.parse(localStorage.getItem(key) || "[]");
     localStorage.setItem(
       key,
       JSON.stringify([...new Set([...passed, String(missionId)])])
     );
+  }
+
+  function clearDismissals(keepIds: Array<string | number> = []) {
+    const kept = [...new Set(keepIds.map(String))];
+    localStorage.setItem(getPassedKey(), JSON.stringify(kept));
+  }
+
+  /** When every card is swiped away, reshuffle the same feed so the stack never stays empty. */
+  function recycleFeedItems(feedItems: Mission[], keepDismissed: Array<string | number> = []) {
+    clearDismissals(keepDismissed);
+    const keep = new Set(keepDismissed.map(String));
+    return feedItems.filter((item) => !keep.has(String(item.id)));
   }
 
   const addTask = () => {
@@ -124,10 +140,15 @@ export default function Feed({ user, refreshUser, locked, setLocked, api, setTab
       // Ignore stale responses (Strict Mode double-fetch / category race)
       if (gen !== loadGenRef.current) return;
       setLocked(lock.locked);
-      const passed = JSON.parse(localStorage.getItem(`lockin_passed_${user.id}`) || "[]");
-      const next = (Array.isArray(feed) ? feed : []).filter(
+      const feedItems: Mission[] = Array.isArray(feed) ? feed : [];
+      const passed = JSON.parse(localStorage.getItem(getPassedKey()) || "[]");
+      let next = feedItems.filter(
         (item: Mission) => !passed.includes(String(item.id))
       );
+      // All cards dismissed — bring the full stack back
+      if (next.length === 0 && feedItems.length > 0) {
+        next = recycleFeedItems(feedItems);
+      }
       setMissions((prev) => {
         // Keep the current front card if it still exists — avoids flash/swap
         const currentId = prev[0] ? String(prev[0].id) : null;
@@ -172,13 +193,20 @@ export default function Feed({ user, refreshUser, locked, setLocked, api, setTab
     setError("");
 
     const mission = currentMission;
-    // Remove card immediately so the same swipe/event can't fire again
-    setMissions((prev) => prev.filter((m) => String(m.id) !== String(mission.id)));
+    const remaining = missions.filter((m) => String(m.id) !== String(mission.id));
     x.set(0);
 
-    // Pass is permanent — can't swipe back to this event
-    if (action === "pass") {
-      markDismissed(mission.id);
+    if (remaining.length > 0) {
+      // Pass stays dismissed until the whole stack is cleared
+      if (action === "pass") {
+        markDismissed(mission.id);
+      }
+      setMissions(remaining);
+    } else {
+      // Last card — clear dismissals and refill so the stack never stays empty.
+      // Keep the accepted mission dismissed so it doesn't immediately reappear.
+      clearDismissals(action === "accept" ? [mission.id] : []);
+      await load(activeCategory, { silent: true });
     }
 
     try {
