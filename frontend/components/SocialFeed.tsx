@@ -14,8 +14,6 @@ interface SocialFeedProps {
   api: (path: string, options?: RequestInit) => Promise<any>;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
-
 export default function SocialFeed({ user, api }: SocialFeedProps) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [filter, setFilter] = useState<"everyone" | "following" | "college">("everyone");
@@ -126,23 +124,14 @@ export default function SocialFeed({ user, api }: SocialFeedProps) {
     );
 
     try {
-      const response = await fetch(`${API_URL}/posts/${postId}/react`, {
+      const data = await api(`/posts/${postId}/react`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           userId: user.id,
           emoji,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error();
-      }
-
-      const data = await response.json();
-      
       // Update with exact counts from database
       setPosts((currentPosts) =>
         currentPosts.map((p) => {

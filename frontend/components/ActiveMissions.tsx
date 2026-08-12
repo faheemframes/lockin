@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CalendarClock, MapPin, Check, X, MessageSquare, ShieldAlert, AlertCircle, Sparkles, Trophy, Plus, Trash2, CheckSquare, Square, FileText, Flame, Play, Pause, Users, Calendar, Download } from "lucide-react";
 import { User, Mission } from "../app/types";
@@ -10,6 +10,17 @@ import PublicProfile from "./PublicProfile";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
+import {
+  TimerAnchor,
+  FocusTimerDisplay,
+  anchorFromPersisted,
+  createCountdownAnchor,
+  createStopwatchAnchor,
+  getElapsedSeconds,
+  persistTimer,
+  readPersistedTimer,
+  toggleTimerRunning,
+} from "./FocusTimer";
 
 interface ActiveMissionsProps {
   user: User;
@@ -47,111 +58,69 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
   const [screenshotBase64, setScreenshotBase64] = useState<string | null>(null);
   const [attachLink, setAttachLink] = useState<string>("");
 
-  // Timer V2 states
+  // Timer: parent only stores an anchor (no per-second setState)
   const [activeFocusMission, setActiveFocusMission] = useState<Mission | null>(null);
-  const [activeTimerDuration, setActiveTimerDuration] = useState<number>(1500); // default 25 min
-  const [timeLeftSeconds, setTimeLeftSeconds] = useState<number>(1500);
-  const [timerRunning, setTimerRunning] = useState<boolean>(false);
+  const [timerAnchor, setTimerAnchor] = useState<TimerAnchor | null>(null);
+  const [focusOverlayOpen, setFocusOverlayOpen] = useState(false);
   const [showTimerSelector, setShowTimerSelector] = useState<number | null>(null);
+  const timerRestoredRef = useRef(false);
+  const pendingDurationRef = useRef<number | null>(null);
 
-  // Timer Tick Effect
-  useEffect(() => {
-    let interval: any = null;
-    if (timerRunning && activeFocusMission) {
-      interval = setInterval(() => {
-        setTimeLeftSeconds((prev) => {
-          if (activeTimerDuration > 0) {
-            // Countdown
-            if (prev <= 1) {
-              setTimerRunning(false);
-              clearInterval(interval);
-              // Simple audio beep
-              if (typeof window !== "undefined") {
-                try {
-                  const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-                  const osc = ctx.createOscillator();
-                  osc.type = "sine";
-                  osc.frequency.setValueAtTime(800, ctx.currentTime);
-                  osc.connect(ctx.destination);
-                  osc.start();
-                  osc.stop(ctx.currentTime + 0.2);
-                } catch (e) {
-                  console.warn("AudioContext block", e);
-                }
-              }
-              return 0;
-            }
-            return prev - 1;
-          } else {
-            // Stopwatch
-            return prev + 1;
-          }
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [timerRunning, activeFocusMission, activeTimerDuration]);
-
-  // Sync to/from localStorage
   useEffect(() => {
     if (!user) return;
-    const key = `lockin_timer_${user.id}`;
-    if (activeFocusMission) {
-      localStorage.setItem(key, JSON.stringify({
-        missionId: activeFocusMission.id,
-        duration: activeTimerDuration,
-        timeLeft: timeLeftSeconds,
-        running: timerRunning,
-        lastSaved: Date.now()
-      }));
-    } else {
-      localStorage.removeItem(key);
-    }
-  }, [activeFocusMission, activeTimerDuration, timeLeftSeconds, timerRunning, user]);
+    persistTimer(user.id, timerAnchor);
+  }, [timerAnchor, user?.id]);
 
-  // Restore timer state on load
+  // Restore timer once after missions first load — never on every 15s poll
   useEffect(() => {
-    if (!user || loading) return;
-    const key = `lockin_timer_${user.id}`;
-    const saved = localStorage.getItem(key);
-    if (saved) {
-      try {
-        const state = JSON.parse(saved);
-        const mission = missions.find(m => m.id === state.missionId);
-        if (mission && mission.status === "Executing") {
-          setActiveFocusMission(mission);
-          setActiveTimerDuration(state.duration);
-          
-          let nextTime = state.timeLeft;
-          if (state.running) {
-            const elapsed = Math.floor((Date.now() - state.lastSaved) / 1000);
-            if (state.duration > 0) {
-              nextTime = Math.max(0, state.timeLeft - elapsed);
-            } else {
-              nextTime = state.timeLeft + elapsed;
-            }
-          }
-          setTimeLeftSeconds(nextTime);
-          setTimerRunning(nextTime > 0 || state.duration === 0 ? state.running : false);
-        } else {
-          localStorage.removeItem(key);
-        }
-      } catch (err) {
-        console.error("Failed to restore timer state", err);
-      }
+    if (!user || loading || timerRestoredRef.current) return;
+    timerRestoredRef.current = true;
+    const saved = readPersistedTimer(user.id);
+    if (!saved) return;
+    const mission = missions.find((m) => m.id === saved.missionId);
+    if (mission && mission.status === "Executing") {
+      setActiveFocusMission(mission);
+      setTimerAnchor(anchorFromPersisted(saved));
+      setFocusOverlayOpen(true);
+    } else {
+      persistTimer(user.id, null);
     }
   }, [missions, user, loading]);
 
-  const formatTime = (totalSecs: number) => {
-    const hrs = Math.floor(totalSecs / 3600);
-    const mins = Math.floor((totalSecs % 3600) / 60);
-    const secs = totalSecs % 60;
-    const pad = (n: number) => String(n).padStart(2, "0");
-    if (hrs > 0) {
-      return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+  const handleTimerComplete = useCallback(() => {
+    setTimerAnchor((prev) =>
+      prev
+        ? {
+            ...prev,
+            running: false,
+            endAt: null,
+            pausedLeft: 0,
+          }
+        : prev
+    );
+    if (typeof window === "undefined") return;
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(800, ctx.currentTime);
+      osc.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.2);
+    } catch (e) {
+      console.warn("AudioContext block", e);
     }
-    return `${pad(mins)}:${pad(secs)}`;
-  };
+  }, []);
+
+  const startFocusSession = useCallback((mission: Mission, durationSec: number) => {
+    setActiveFocusMission(mission);
+    setTimerAnchor(
+      durationSec > 0
+        ? createCountdownAnchor(mission.id, durationSec, true)
+        : createStopwatchAnchor(mission.id, true)
+    );
+    setFocusOverlayOpen(true);
+  }, []);
 
   async function load() {
     try {
@@ -177,54 +146,74 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
   }
 
   async function handleToggleTask(missionId: number, taskId: number) {
+    setMissionTasks((prev) => ({
+      ...prev,
+      [missionId]: (prev[missionId] || []).map((t) =>
+        t.id === taskId ? { ...t, completed: !t.completed } : t
+      ),
+    }));
     try {
       await api(`/tasks/${taskId}/toggle`, { method: "PUT" });
-      await loadTasks(missionId);
     } catch (err) {
       console.error("Failed to toggle task", err);
+      await loadTasks(missionId);
     }
   }
 
   async function handleAddTask(missionId: number) {
     const title = newTaskTitles[missionId] || "";
     if (!title.trim()) return;
+    const optimisticId = -Date.now();
+    const position = (missionTasks[missionId] || []).length;
+    setNewTaskTitles((prev) => ({ ...prev, [missionId]: "" }));
+    setMissionTasks((prev) => ({
+      ...prev,
+      [missionId]: [
+        ...(prev[missionId] || []),
+        { id: optimisticId, title: title.trim(), completed: false, position },
+      ],
+    }));
     try {
-      const currentTasks = missionTasks[missionId] || [];
-      const position = currentTasks.length;
       await api(`/tasks`, {
         method: "POST",
-        body: JSON.stringify({ title: title.trim(), missionId, position })
+        body: JSON.stringify({ title: title.trim(), missionId, position }),
       });
-      setNewTaskTitles(prev => ({ ...prev, [missionId]: "" }));
       await loadTasks(missionId);
     } catch (err) {
       console.error("Failed to add task", err);
+      await loadTasks(missionId);
     }
   }
 
   async function handleDeleteTask(missionId: number, taskId: number) {
+    setMissionTasks((prev) => ({
+      ...prev,
+      [missionId]: (prev[missionId] || []).filter((t) => t.id !== taskId),
+    }));
     try {
       await api(`/tasks/${taskId}`, { method: "DELETE" });
-      await loadTasks(missionId);
     } catch (err) {
       console.error("Failed to delete task", err);
+      await loadTasks(missionId);
     }
   }
 
   function initiateFinishSession(mission: Mission) {
     let elapsed = 0;
-    if (activeFocusMission && activeFocusMission.id === mission.id) {
-      elapsed = activeTimerDuration > 0 ? activeTimerDuration - timeLeftSeconds : timeLeftSeconds;
+    const durationSec = timerAnchor?.durationSec ?? 0;
+    if (activeFocusMission && activeFocusMission.id === mission.id && timerAnchor) {
+      elapsed = getElapsedSeconds(timerAnchor);
     } else {
       elapsed = (mission.focus_duration || 25) * 60;
     }
     const actualMins = Math.max(1, Math.round(elapsed / 60));
+    const timeLeft = timerAnchor ? Math.max(0, durationSec - elapsed) : 0;
 
     let failed = false;
-    if (activeFocusMission && activeFocusMission.id === mission.id && activeTimerDuration > 0) {
+    if (activeFocusMission && activeFocusMission.id === mission.id && durationSec > 0) {
       const tasksList = missionTasks[mission.id] || [];
-      const tasksCompleted = tasksList.filter(t => t.completed).length;
-      const underHalf = elapsed < (activeTimerDuration * 0.5);
+      const tasksCompleted = tasksList.filter((t) => t.completed).length;
+      const underHalf = elapsed < durationSec * 0.5;
       const noTasks = tasksCompleted === 0;
       const underThreeMins = elapsed < 180;
       if ((underHalf && noTasks) || underThreeMins) {
@@ -232,11 +221,11 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
       }
     }
 
-    if (activeFocusMission && activeFocusMission.id === mission.id && activeTimerDuration > 0 && timeLeftSeconds > 0) {
+    if (activeFocusMission && activeFocusMission.id === mission.id && durationSec > 0 && timeLeft > 0) {
       const confirmEnd = window.confirm(
         "Are you sure you want to end before the target time?\n\n" +
-        `You have only focused for ${actualMins} minute(s).\n` +
-        (failed ? "WARNING: This will count as a RUNWAY CRASH (5 Aura penalty)." : "")
+          `You have only focused for ${actualMins} minute(s).\n` +
+          (failed ? "WARNING: This will count as a RUNWAY CRASH (5 Aura penalty)." : "")
       );
       if (!confirmEnd) return;
     }
@@ -282,7 +271,8 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
       setShowRecapCard(true);
       setActiveReflectionMission(null);
       setActiveFocusMission(null);
-      setTimerRunning(false);
+      setTimerAnchor(null);
+      setFocusOverlayOpen(false);
       await Promise.all([load(), refreshUser()]);
     } catch (err: any) {
       alert(err.message || "Failed to finish focus session.");
@@ -362,14 +352,12 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
       if (showedUp) {
         const currentM = updatedList.find((m: any) => m.id === missionId);
         if (currentM && currentM.status === "Executing") {
-          setActiveFocusMission(currentM);
-          if (showTimerSelector === missionId) {
-            setTimerRunning(true);
-          } else {
-            setActiveTimerDuration(0);
-            setTimeLeftSeconds(0);
-            setTimerRunning(true);
-          }
+          const durationSec =
+            pendingDurationRef.current !== null
+              ? pendingDurationRef.current
+              : 0;
+          pendingDurationRef.current = null;
+          startFocusSession(currentM, durationSec);
         }
       }
     } catch (err: any) {
@@ -778,8 +766,7 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
                                   <button
                                     key={opt.label}
                                     onClick={async () => {
-                                      setActiveTimerDuration(opt.value * 60);
-                                      setTimeLeftSeconds(opt.value * 60);
+                                      pendingDurationRef.current = opt.value * 60;
                                       setShowTimerSelector(null);
                                       await handleAttendance(mission.id, true);
                                     }}
@@ -902,11 +889,10 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
                         </p>
                         <button
                           onClick={() => {
-                            setActiveFocusMission(mission);
-                            if (activeFocusMission?.id !== mission.id) {
-                              setActiveTimerDuration(0);
-                              setTimeLeftSeconds(0);
-                              setTimerRunning(true);
+                            if (activeFocusMission?.id === mission.id && timerAnchor) {
+                              setFocusOverlayOpen(true);
+                            } else {
+                              startFocusSession(mission, 0);
                             }
                           }}
                           className="mt-3 w-full flex h-9 items-center justify-center gap-1.5 rounded-lg bg-cherryRed text-xs font-black uppercase tracking-wider text-cotton shadow-[0_0_15px_rgba(129,1,0,0.15)] hover:bg-[#810100]/95 transition active:scale-[0.98]"
@@ -1242,7 +1228,7 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
       </Dialog>
 
       {/* Fullscreen Focus Overlay */}
-      {activeFocusMission && (
+      {focusOverlayOpen && activeFocusMission && timerAnchor && (
         <div 
           className="fixed inset-0 bg-[#120F0D] z-[990] flex flex-col justify-between p-6 sm:p-10 select-none overflow-y-auto text-cotton"
           style={{ backgroundImage: "linear-gradient(135deg, #1B1716 0%, #120F0D 100%)" }}
@@ -1259,7 +1245,7 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
             </div>
             
             <button
-              onClick={() => setActiveFocusMission(null)}
+              onClick={() => setFocusOverlayOpen(false)}
               className="flex h-8 items-center justify-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3.5 text-[10px] font-black uppercase tracking-wider text-zinc-400 hover:text-white hover:bg-white/10 transition"
             >
               Minimize
@@ -1273,22 +1259,22 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
               <div 
                 className="absolute h-56 w-56 sm:h-64 sm:w-64 rounded-full border border-cherryRed/10 animate-pulse pointer-events-none"
                 style={{
-                  boxShadow: `0 0 40px ${
-                    activeTimerDuration > 0
-                      ? "rgba(210, 4, 45, 0.15)"
-                      : "rgba(210, 4, 45, 0.15)"
-                  }`,
+                  boxShadow: "0 0 40px rgba(210, 4, 45, 0.15)",
                   borderColor: "rgba(210, 4, 45, 0.15)"
                 }}
               />
               
               <div className="flex flex-col items-center justify-center h-48 w-48 sm:h-56 sm:w-56 rounded-full bg-[#1B1716]/60 border border-white/5 shadow-2xl backdrop-blur-xl">
-                <span className="text-4xl sm:text-5xl font-black text-white tracking-widest tabular-nums leading-none">
-                  {formatTime(timeLeftSeconds)}
-                </span>
-                <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mt-2">
-                  {activeTimerDuration > 0 ? "Countdown" : "Elapsed Time"}
-                </span>
+                {timerAnchor ? (
+                  <FocusTimerDisplay
+                    anchor={timerAnchor}
+                    onComplete={handleTimerComplete}
+                  />
+                ) : (
+                  <span className="text-4xl sm:text-5xl font-black text-white tracking-widest tabular-nums leading-none">
+                    00:00
+                  </span>
+                )}
               </div>
             </div>
 
@@ -1353,10 +1339,12 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
           <div className="flex flex-col gap-3.5 border-t border-white/5 pt-5 max-w-sm mx-auto w-full">
             <div className="flex gap-3">
               <button
-                onClick={() => setTimerRunning(!timerRunning)}
+                onClick={() =>
+                  setTimerAnchor((prev) => (prev ? toggleTimerRunning(prev) : prev))
+                }
                 className="flex-1 flex h-11 items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 text-xs font-black uppercase tracking-wider text-cotton hover:bg-white/10 transition"
               >
-                {timerRunning ? "Pause Focus" : "Resume Focus"}
+                {timerAnchor?.running ? "Pause Focus" : "Resume Focus"}
               </button>
               <button
                 onClick={() => initiateFinishSession(activeFocusMission)}

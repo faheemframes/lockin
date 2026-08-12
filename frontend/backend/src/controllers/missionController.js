@@ -241,6 +241,23 @@ async function acceptMission(req, res) {
         throw new Error("NOT_FOUND");
       }
 
+      const existing = await tx.participation.findUnique({
+        where: {
+          unique_user_mission: {
+            userId: Number(userId),
+            missionId: Number(id)
+          }
+        }
+      });
+
+      // Already locked in / requested — do not create duplicates or re-notify
+      if (
+        existing &&
+        ["Requested", "Accepted", "Executing", "Completed"].includes(existing.status)
+      ) {
+        return { participation: existing, isNew: false };
+      }
+
       const participation = await tx.participation.upsert({
         where: {
           unique_user_mission: {
@@ -256,47 +273,50 @@ async function acceptMission(req, res) {
         }
       });
 
-      return participation;
+      return { participation, isNew: true };
     });
 
-    // Real-time Push Notification to Host
-    try {
-      const mission = await prisma.mission.findUnique({
-        where: { id: Number(id) },
-        select: { createdBy: true, title: true }
-      });
-      const applicant = await prisma.user.findUnique({
-        where: { id: Number(userId) },
-        select: { name: true }
-      });
-      if (mission && mission.createdBy) {
-        const supabaseClient = require("../config/supabase");
-        if (supabaseClient) {
-          const channel = supabaseClient.channel(`notifications:${mission.createdBy}`);
-          channel.subscribe((status) => {
-            if (status === "SUBSCRIBED") {
-              channel.send({
-                type: "broadcast",
-                event: "push_notification",
-                payload: {
-                  title: "New Join Request!",
-                  message: `${applicant?.name || "Someone"} requested to join your runway: "${mission.title}"`,
-                  type: "join_request",
-                  missionId: Number(id)
-                }
-              }).catch(err => console.error("Realtime notification broadcast failed:", err));
-            }
-          });
+    // Real-time Push Notification to Host (only on first request)
+    if (result.isNew) {
+      try {
+        const mission = await prisma.mission.findUnique({
+          where: { id: Number(id) },
+          select: { createdBy: true, title: true }
+        });
+        const applicant = await prisma.user.findUnique({
+          where: { id: Number(userId) },
+          select: { name: true }
+        });
+        if (mission && mission.createdBy) {
+          const supabaseClient = require("../config/supabase");
+          if (supabaseClient) {
+            const channel = supabaseClient.channel(`notifications:${mission.createdBy}`);
+            channel.subscribe((status) => {
+              if (status === "SUBSCRIBED") {
+                channel.send({
+                  type: "broadcast",
+                  event: "push_notification",
+                  payload: {
+                    title: "New Join Request!",
+                    message: `${applicant?.name || "Someone"} requested to join your runway: "${mission.title}"`,
+                    type: "join_request",
+                    missionId: Number(id)
+                  }
+                }).catch(err => console.error("Realtime notification broadcast failed:", err));
+              }
+            });
+          }
         }
+      } catch (err) {
+        console.error("Error sending join request notification:", err);
       }
-    } catch (err) {
-      console.error("Error sending join request notification:", err);
     }
 
-    res.status(201).json({
-      mission_id: result.missionId,
-      user_id: result.userId,
-      status: result.status
+    res.status(result.isNew ? 201 : 200).json({
+      mission_id: result.participation.missionId,
+      user_id: result.participation.userId,
+      status: result.participation.status,
+      already_locked: !result.isNew
     });
   } catch (error) {
     if (error.message === "USER_NOT_FOUND") {
@@ -841,7 +861,8 @@ async function getCampuses(req, res) {
   } catch (error) {
     if (!isDbUnavailable(error)) throw error;
     res.json([
-      { id: 1, name: "SRM IST, Kattankulathur (KTR)", location: "Chennai, Tamil Nadu" }
+      { id: 1, name: "SRM IST, Kattankulathur (KTR)", location: "Chennai, Tamil Nadu" },
+      { id: 2, name: "Taylor's University", location: "Subang Jaya, Selangor" }
     ]);
   }
 }

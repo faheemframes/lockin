@@ -39,7 +39,8 @@ async function main() {
       { college_name: "Indian Institute of Technology Delhi", short_name: "IIT Delhi", college_type: "IIT", city: "New Delhi", state: "Delhi", country: "India", official_domain: "iitd.ac.in", email_domain: "iitd.ac.in" },
       { college_name: "VIT University Vellore", short_name: "VIT Vellore", college_type: "Private Engineering", city: "Vellore", state: "Tamil Nadu", country: "India", official_domain: "vit.ac.in", email_domain: "vit.ac.in" },
       { college_name: "BITS Pilani", short_name: "BITS Pilani", college_type: "BITS", city: "Pilani", state: "Rajasthan", country: "India", official_domain: "bits-pilani.ac.in", email_domain: "pilani.bits-pilani.ac.in" },
-      { college_name: "National Institute of Technology Tiruchirappalli", short_name: "NIT Trichy", college_type: "NIT", city: "Tiruchirappalli", state: "Tamil Nadu", country: "India", official_domain: "nitt.edu", email_domain: "nitt.edu" }
+      { college_name: "National Institute of Technology Tiruchirappalli", short_name: "NIT Trichy", college_type: "NIT", city: "Tiruchirappalli", state: "Tamil Nadu", country: "India", official_domain: "nitt.edu", email_domain: "nitt.edu" },
+      { college_name: "Taylor's University", short_name: "Taylor's University", college_type: "Private University", city: "Subang Jaya", state: "Selangor", country: "Malaysia", official_domain: "taylors.edu.my", email_domain: "sd.taylors.edu.my" }
     ];
   }
 

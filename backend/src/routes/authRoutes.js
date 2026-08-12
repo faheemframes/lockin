@@ -5,7 +5,7 @@ const {
   checkDomain,
   syncProfile,
   getMe,
-  logout
+  logout,
 } = require("../controllers/authController");
 
 const router = express.Router();

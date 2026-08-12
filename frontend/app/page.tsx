@@ -2,10 +2,8 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Flame } from "lucide-react";
 import { User } from "./types";
 
-// Import custom modular components
 import Shell from "../components/Shell";
 import Header from "../components/Header";
 import Nav from "../components/Nav";
@@ -17,56 +15,7 @@ import SocialFeed from "../components/SocialFeed";
 import LoadingScreen from "../components/LoadingScreen";
 
 import { supabase } from "../lib/supabase";
-
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
-const SOCKET_URL = API.replace("/api", "");
-
-async function api(path: string, options: RequestInit = {}) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-  let authHeaders: Record<string, string> = {};
-  if (supabase) {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.access_token) {
-      authHeaders["Authorization"] = `Bearer ${session.access_token}`;
-    }
-  }
-
-  try {
-    const response = await fetch(`${API}${path}`, {
-      headers: { 
-        "Content-Type": "application/json", 
-        "bypass-tunnel-reminder": "true",
-        ...authHeaders,
-        ...(options.headers || {}) 
-      },
-      signal: controller.signal,
-      ...options
-    });
-    clearTimeout(timeoutId);
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      if (
-        (response.status === 401 && data.error === "Invalid or expired session token.") ||
-        (response.status === 404 && data.error === "User not found.")
-      ) {
-        if (typeof window !== "undefined") {
-          if (supabase) {
-            await supabase.auth.signOut().catch(() => {});
-          }
-          localStorage.removeItem("lockin_user_id");
-          window.location.reload();
-        }
-      }
-      throw new Error(data.error || "Request failed");
-    }
-    return data;
-  } catch (err) {
-    clearTimeout(timeoutId);
-    throw err;
-  }
-}
+import { api, SOCKET_URL, isProfileIncomplete } from "../lib/api";
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
@@ -75,7 +24,6 @@ export default function Home() {
   const [locked, setLocked] = useState(false);
   const [toast, setToast] = useState<{ title: string; message: string; type: string } | null>(null);
 
-  // Synchronize active tab from URL query params if present
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
@@ -86,8 +34,6 @@ export default function Home() {
     }
   }, []);
 
-
-  // Request Notification permission & Subscribe to Supabase Realtime Notifications
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window) {
       if (Notification.permission === "default") {
@@ -103,14 +49,11 @@ export default function Home() {
       "broadcast",
       { event: "push_notification" },
       ({ payload }: { payload: { title: string; message: string; type: string; missionId?: number } }) => {
-        // 1. Show in-app Toast
         setToast(payload);
-        // Auto dismiss after 4 seconds
         setTimeout(() => {
           setToast((current) => (current && current.message === payload.message ? null : current));
         }, 4000);
 
-        // 2. Issue browser native HTML5 Notification
         if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
           try {
             new Notification(payload.title, { body: payload.message });
@@ -137,7 +80,7 @@ export default function Home() {
         return;
       }
       const nextUser = await api("/auth/me");
-      if (nextUser.incomplete) {
+      if (isProfileIncomplete(nextUser)) {
         setUser(null);
         return;
       }
@@ -150,7 +93,6 @@ export default function Home() {
   }
 
   useEffect(() => {
-    // Force dark mode on mount
     document.documentElement.classList.remove("light");
 
     if (!supabase) {
@@ -158,17 +100,20 @@ export default function Home() {
       return;
     }
 
-    // Set up auth state change listener to sync login sessions
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session) {
         try {
           const nextUser = await api("/auth/me");
-          if (nextUser.incomplete) {
+          if (isProfileIncomplete(nextUser)) {
             setUser(null);
           } else {
             setUser(nextUser);
-            const lock = await api(`/users/${nextUser.id}/lock`);
-            setLocked(lock.locked);
+            try {
+              const lock = await api(`/users/${nextUser.id}/lock`);
+              setLocked(lock.locked);
+            } catch {
+              setLocked(false);
+            }
           }
         } catch {
           setUser(null);
@@ -238,7 +183,6 @@ export default function Home() {
       </AnimatePresence>
       <Nav tab={tab} setTab={setTab} />
 
-      {/* Real-time Custom Toast Notification */}
       <AnimatePresence>
         {toast && (
           <motion.div
@@ -251,8 +195,8 @@ export default function Home() {
               <h4 className="text-xs font-black text-white uppercase tracking-wider">{toast.title}</h4>
               <p className="text-[11px] text-zinc-400 font-semibold mt-1 leading-normal">{toast.message}</p>
             </div>
-            <button 
-              onClick={() => setToast(null)} 
+            <button
+              onClick={() => setToast(null)}
               className="text-zinc-500 hover:text-white text-[10px] font-black uppercase tracking-wider shrink-0 mt-0.5"
             >
               Dismiss

@@ -33,6 +33,7 @@ import { Input } from "./ui/input";
 import { User, InterestCategory } from "../app/types";
 
 import { supabase } from "../lib/supabase";
+import { getErrorMessage, isProfileIncomplete } from "../lib/api";
 
 interface ProfileGateProps {
   onReady: (user: User) => void;
@@ -135,6 +136,7 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
           { id: 6, name: "IIIT Hyderabad", location: "Hyderabad, TG" },
           { id: 7, name: "DTU Delhi", location: "Delhi" },
           { id: 8, name: "Manipal Institute of Technology", location: "Manipal, KA" },
+          { id: 9, name: "Taylor's University", location: "Subang Jaya, Selangor" },
         ]);
       });
 
@@ -165,39 +167,66 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
       });
   }, []);
 
-  // Detect email-verification redirect: Supabase fires SIGNED_IN after the
-  // user clicks the confirmation link, which reloads the page and loses
-  // React state (tempUserId). Recover by calling /api/auth/profile here.
+  async function resumeOnboarding(user: User & { incomplete?: boolean }) {
+    if (!isProfileIncomplete(user)) return false;
+    setTempUserId(user.id);
+    setForm((f) => ({
+      ...f,
+      email: user.email || f.email,
+      campusId: "",
+      campusName: user.college || "",
+      name: user.name || f.name,
+      department: user.department || "",
+    }));
+    setDirection(1);
+    setStep(3);
+    return true;
+  }
+
+  // Resume incomplete onboarding after reload / email verification redirect.
   useEffect(() => {
     if (!supabase) return;
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        // If there is already a tempUserId (in-memory session), nothing to do.
+
+    let cancelled = false;
+
+    async function bootstrapIncompleteSession() {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (!session || cancelled || tempUserId) return;
+
+        const syncRes = await api("/auth/profile", { method: "POST" });
+        if (!cancelled && syncRes?.user) {
+          await resumeOnboarding(syncRes.user);
+        }
+      } catch (e) {
+        console.warn("[ProfileGate] Could not resume incomplete session:", e);
+      }
+    }
+
+    bootstrapIncompleteSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && session) {
         if (tempUserId) return;
-        // Also skip if the user is already fully onboarded — page.tsx handles that.
         try {
           const syncRes = await api("/auth/profile", { method: "POST" });
           if (syncRes?.user) {
-            const isIncomplete = !syncRes.user.department || !syncRes.user.college;
-            if (isIncomplete) {
-              setTempUserId(syncRes.user.id);
-              setForm(f => ({
-                ...f,
-                campusId: "",
-                campusName: "",
-                name: syncRes.user.name || f.name,
-              }));
-              setDirection(1);
-              setStep(3);
-            }
-            // If complete, page.tsx's own auth listener will call onReady.
+            await resumeOnboarding(syncRes.user);
           }
         } catch (e) {
-          console.warn("[ProfileGate] Could not sync profile on SIGNED_IN:", e);
+          console.warn("[ProfileGate] Could not sync profile on auth change:", e);
         }
       }
     });
-    return () => subscription.unsubscribe();
+
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tempUserId]);
 
@@ -226,39 +255,33 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
       // 1. Verify email domain matches a supported college
       const checkRes = await api(`/auth/check-domain?email=${encodeURIComponent(form.email)}`);
       if (!checkRes.success) {
-        setError(checkRes.error || "Domain not supported.");
+        setError(getErrorMessage(checkRes.error, "Domain not supported."));
         setBusy(false);
         return;
       }
 
       if (!supabase) throw new Error("Supabase is not initialized.");
 
+      const email = form.email.trim().toLowerCase();
+
       if (mode === "signup") {
         const { data, error: signUpErr } = await supabase.auth.signUp({
-          email: form.email,
+          email,
           password: form.password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+          },
         });
 
         if (signUpErr) throw signUpErr;
 
         if (data.user && !data.session) {
-          // Verification link sent
+          // Confirmation email sent via Resend (Supabase custom SMTP)
           setStep(2);
         } else if (data.session) {
-          const syncRes = await api("/auth/profile", {
-            method: "POST"
-          });
-          const isIncomplete = !syncRes.user.department || !syncRes.user.college;
-          if (isIncomplete) {
-            setTempUserId(syncRes.user.id);
-            setForm(f => ({
-              ...f,
-              campusId: "",
-              campusName: "",
-              name: syncRes.user.name || f.name
-            }));
-            setDirection(1);
-            setStep(3);
+          const syncRes = await api("/auth/profile", { method: "POST" });
+          if (await resumeOnboarding(syncRes.user)) {
+            // continue campus onboarding
           } else {
             localStorage.setItem("lockin_user_id", String(syncRes.user.id));
             onReady(syncRes.user);
@@ -266,34 +289,23 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
         }
       } else if (mode === "login") {
         const { data, error: signInErr } = await supabase.auth.signInWithPassword({
-          email: form.email,
+          email,
           password: form.password,
         });
 
         if (signInErr) throw signInErr;
 
         if (data.session) {
-          const syncRes = await api("/auth/profile", {
-            method: "POST"
-          });
-          const isIncomplete = !syncRes.user.department || !syncRes.user.college;
-          if (isIncomplete) {
-            setTempUserId(syncRes.user.id);
-            setForm(f => ({
-              ...f,
-              campusId: "",
-              campusName: "",
-              name: syncRes.user.name || f.name
-            }));
-            setDirection(1);
-            setStep(3);
+          const syncRes = await api("/auth/profile", { method: "POST" });
+          if (await resumeOnboarding(syncRes.user)) {
+            // continue campus onboarding
           } else {
             localStorage.setItem("lockin_user_id", String(syncRes.user.id));
             onReady(syncRes.user);
           }
         }
       } else if (mode === "forgot") {
-        const { error: resetErr } = await supabase.auth.resetPasswordForEmail(form.email, {
+        const { error: resetErr } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/reset-password`,
         });
 
@@ -301,8 +313,8 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
 
         setStep(2);
       }
-    } catch (err: any) {
-      setError(err.message || "Authentication operation failed.");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Authentication operation failed."));
     } finally {
       setBusy(false);
     }
@@ -348,12 +360,14 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
   }
 
   function toggleInterest(id: string) {
-    setForm((f) => ({
-      ...f,
-      interests: f.interests.includes(id)
-        ? f.interests.filter((i) => i !== id)
-        : [...f.interests, id],
-    }));
+    React.startTransition(() => {
+      setForm((f) => ({
+        ...f,
+        interests: f.interests.includes(id)
+          ? f.interests.filter((i) => i !== id)
+          : [...f.interests, id],
+      }));
+    });
   }
 
   async function submit() {
@@ -421,7 +435,7 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
       localStorage.setItem("lockin_user_id", String(user.id));
       onReady(user);
     } catch (err: any) {
-      setError(err.message || "Registration failed. Try again.");
+      setError(getErrorMessage(err, "Registration failed. Try again."));
       setBusy(false);
     }
   }
@@ -498,7 +512,7 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
             className="mb-4 rounded-xl border border-cherryRed/35 bg-cherryRed/10 p-3 text-xs font-semibold text-[#ffa3a3] flex items-center gap-2"
           >
             <AlertTriangle className="h-4 w-4 shrink-0 text-cherryRed animate-bounce" />
-            <span>{error}</span>
+            <span>{typeof error === "string" ? error : getErrorMessage(error)}</span>
           </motion.div>
         )}
 

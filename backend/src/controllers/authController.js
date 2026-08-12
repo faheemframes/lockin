@@ -1,6 +1,51 @@
 const prisma = require("../config/db");
 const { isDbUnavailable } = require("../utils/dbFallback");
 
+async function resolveCollegeByEmail(email) {
+  const domain = email.trim().toLowerCase().split("@")[1];
+  let college = await prisma.college.findFirst({
+    where: { emailDomain: domain },
+  });
+
+  if (!college) {
+    const parts = domain.split(".");
+    if (parts.length > 2) {
+      const baseDomain = parts.slice(1).join(".");
+      college = await prisma.college.findFirst({
+        where: { emailDomain: baseDomain },
+      });
+    }
+  }
+
+  return college;
+}
+
+function isProfileIncomplete(user) {
+  if (!user) return true;
+  return !user.department || String(user.department).trim().length < 2;
+}
+
+function serializeUser(user) {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    email_verified: user.emailVerified,
+    college: user.college,
+    college_id: user.email,
+    department: user.department,
+    reputation_score: user.reputationScore,
+    bio: user.bio,
+    instagram: user.instagram,
+    github: user.github,
+    interests: user.interests,
+    campus_id: user.collegeId,
+    campus_name: user.collegeRef?.shortName || user.college || "",
+    verified_at: user.verifiedAt,
+    incomplete: isProfileIncomplete(user)
+  };
+}
+
 /**
  * GET /api/auth/check-domain
  * Query: { email: string }
@@ -13,27 +58,12 @@ async function checkDomain(req, res) {
     return res.status(400).json({ error: "Valid student email is required." });
   }
 
-  const normalizedEmail = email.trim().toLowerCase();
-  const domain = normalizedEmail.split("@")[1];
-
   try {
-    let college = await prisma.college.findFirst({
-      where: { emailDomain: domain }
-    });
-
-    if (!college) {
-      const parts = domain.split(".");
-      if (parts.length > 2) {
-        const baseDomain = parts.slice(1).join(".");
-        college = await prisma.college.findFirst({
-          where: { emailDomain: baseDomain }
-        });
-      }
-    }
+    const college = await resolveCollegeByEmail(email);
 
     if (!college) {
       return res.status(400).json({
-        error: "Only student email addresses from supported colleges are allowed."
+        error: "Only student email addresses from supported colleges are allowed.",
       });
     }
 
@@ -43,8 +73,8 @@ async function checkDomain(req, res) {
         id: college.id,
         name: college.shortName,
         full_name: college.collegeName,
-        college_type: college.collegeType
-      }
+        college_type: college.collegeType,
+      },
     });
   } catch (error) {
     if (!isDbUnavailable(error)) throw error;
@@ -76,20 +106,7 @@ async function syncProfile(req, res) {
       }
     });
 
-    const domain = email.trim().toLowerCase().split("@")[1];
-    let college = await prisma.college.findFirst({
-      where: { emailDomain: domain }
-    });
-
-    if (!college) {
-      const parts = domain.split(".");
-      if (parts.length > 2) {
-        const baseDomain = parts.slice(1).join(".");
-        college = await prisma.college.findFirst({
-          where: { emailDomain: baseDomain }
-        });
-      }
-    }
+    const college = await resolveCollegeByEmail(email);
 
     if (!user) {
       // Create new skeleton database profile
@@ -119,19 +136,7 @@ async function syncProfile(req, res) {
 
     res.json({
       success: true,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        email_verified: user.emailVerified,
-        college: user.college,
-        department: user.department,
-        reputation_score: user.reputationScore,
-        bio: user.bio,
-        instagram: user.instagram,
-        github: user.github,
-        interests: user.interests
-      }
+      user: serializeUser(user)
     });
   } catch (error) {
     if (!isDbUnavailable(error)) throw error;
@@ -148,31 +153,18 @@ async function getMe(req, res) {
     return res.status(401).json({ error: "Not authenticated." });
   }
 
-  if (!req.user) {
+  if (!req.user || isProfileIncomplete(req.user)) {
     return res.json({
       incomplete: true,
+      id: req.user?.id || null,
       email: req.supabaseUser.email,
-      name: req.supabaseUser.email.split("@")[0]
+      name: req.user?.name || req.supabaseUser.email.split("@")[0],
+      college: req.user?.college || null,
+      department: req.user?.department || null
     });
   }
 
-  res.json({
-    id: req.user.id,
-    name: req.user.name,
-    email: req.user.email,
-    email_verified: req.user.emailVerified,
-    college: req.user.college,
-    college_id: req.user.email, // Legacy mapping
-    department: req.user.department,
-    reputation_score: req.user.reputationScore,
-    bio: req.user.bio,
-    instagram: req.user.instagram,
-    github: req.user.github,
-    interests: req.user.interests,
-    campus_id: req.user.collegeId,
-    campus_name: req.user.collegeRef?.shortName || "",
-    verified_at: req.user.verifiedAt
-  });
+  res.json(serializeUser(req.user));
 }
 
 /**
@@ -187,5 +179,5 @@ module.exports = {
   checkDomain,
   syncProfile,
   getMe,
-  logout
+  logout,
 };

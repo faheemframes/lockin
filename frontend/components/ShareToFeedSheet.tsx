@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Image as ImageIcon, Globe, Users, School, Loader2, Check, Plus } from "lucide-react";
 import { uploadImage } from "../lib/supabase";
+import { api } from "../lib/api";
 
 interface ShareToFeedSheetProps {
   isOpen: boolean;
@@ -13,7 +14,6 @@ interface ShareToFeedSheetProps {
   preGeneratedCardImage?: string | null;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 const MAX_IMAGES = 4;
 
 export default function ShareToFeedSheet({ isOpen, onClose, recapId, recapData, preGeneratedCardImage }: ShareToFeedSheetProps) {
@@ -132,12 +132,9 @@ export default function ShareToFeedSheet({ isOpen, onClose, recapId, recapData, 
         uploadedUrls.push(recapData.metadata.screenshot);
       }
 
-      // Submit post to backend
-      const response = await fetch(`${API_URL}/posts`, {
+      // Submit post to backend (api() attaches Supabase Bearer token)
+      await api("/posts", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           userId: Number(userId),
           recapId: recapId ? Number(recapId) : null,
@@ -146,12 +143,6 @@ export default function ShareToFeedSheet({ isOpen, onClose, recapId, recapData, 
           visibility,
         }),
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to share post.");
-      }
 
       setSuccess(true);
       setTimeout(() => {

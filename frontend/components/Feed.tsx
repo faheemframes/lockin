@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useMotionValue, useTransform, useSpring, useMotionTemplate } from "framer-motion";
-import { Flame, CalendarClock, MapPin, X, Check, Plus, AlertCircle, ChevronLeft, ChevronRight, Users } from "lucide-react";
+import { Flame, CalendarClock, MapPin, X, Check, Plus, AlertCircle, ChevronLeft, ChevronRight, Users, Clock, Sparkles } from "lucide-react";
 import { User, Mission } from "../app/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
@@ -27,7 +27,9 @@ export default function Feed({ user, refreshUser, locked, setLocked, api, setTab
   const [activeCategory, setActiveCategory] = useState("all");
   const [index, setIndex] = useState(0);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
+  const loadGenRef = useRef(0);
 
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -45,9 +47,24 @@ export default function Feed({ user, refreshUser, locked, setLocked, api, setTab
   const [tasks, setTasks] = useState<string[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [isActing, setIsActing] = useState(false);
+  const actingRef = useRef(false);
   const [showCustomizeCover, setShowCustomizeCover] = useState(false);
   const [coverColor, setCoverColor] = useState("");
   const [coverImage, setCoverImage] = useState("");
+  // Stable min so datetime-local doesn't jitter on parent re-renders
+  const datetimeMinRef = useRef(
+    new Date(Date.now() + 5 * 60000).toISOString().slice(0, 16)
+  );
+
+  function markDismissed(missionId: string | number) {
+    const key = `lockin_passed_${user.id}`;
+    const passed = JSON.parse(localStorage.getItem(key) || "[]");
+    localStorage.setItem(
+      key,
+      JSON.stringify([...new Set([...passed, String(missionId)])])
+    );
+  }
 
   const addTask = () => {
     if (newTaskTitle.trim()) {
@@ -96,22 +113,49 @@ export default function Feed({ user, refreshUser, locked, setLocked, api, setTab
     tiltY.set(0);
   };
 
-  async function load(catId: string = "all") {
+  async function load(catId: string = "all", opts?: { silent?: boolean }) {
+    const gen = ++loadGenRef.current;
+    if (!opts?.silent) setLoading(true);
     try {
       const [feed, lock] = await Promise.all([
         api(`/missions/feed?userId=${user.id}&categoryId=${catId}`),
         api(`/users/${user.id}/lock`)
       ]);
+      // Ignore stale responses (Strict Mode double-fetch / category race)
+      if (gen !== loadGenRef.current) return;
       setLocked(lock.locked);
       const passed = JSON.parse(localStorage.getItem(`lockin_passed_${user.id}`) || "[]");
-      setMissions(feed.filter((item: Mission) => !passed.includes(item.id)));
+      const next = (Array.isArray(feed) ? feed : []).filter(
+        (item: Mission) => !passed.includes(String(item.id))
+      );
+      setMissions((prev) => {
+        // Keep the current front card if it still exists — avoids flash/swap
+        const currentId = prev[0] ? String(prev[0].id) : null;
+        if (currentId) {
+          const stillIdx = next.findIndex((m: Mission) => String(m.id) === currentId);
+          if (stillIdx > 0) {
+            const kept = next.splice(stillIdx, 1)[0];
+            next.unshift(kept);
+          }
+        }
+        return next;
+      });
       setIndex(0);
     } catch (err: any) {
+      if (gen !== loadGenRef.current) return;
       setError(err.message || "Failed to load feed.");
+    } finally {
+      if (gen === loadGenRef.current) setLoading(false);
     }
   }
 
-  useEffect(() => { load(activeCategory); }, [user.id, activeCategory]);
+  useEffect(() => {
+    load(activeCategory);
+    return () => {
+      // Invalidate in-flight loads on unmount / dep change (Strict Mode safe)
+      loadGenRef.current += 1;
+    };
+  }, [user.id, activeCategory]);
   useEffect(() => {
     api("/missions/categories")
       .then((data) => setCategories(data))
@@ -119,31 +163,79 @@ export default function Feed({ user, refreshUser, locked, setLocked, api, setTab
   }, []);
 
   const currentMission = missions[index];
+  const isSideQuest = Boolean(currentMission?.is_side_quest);
 
   async function handleAction(action: "accept" | "pass") {
-    if (!currentMission) return;
+    if (!currentMission || actingRef.current) return;
+    actingRef.current = true;
+    setIsActing(true);
     setError("");
+
+    const mission = currentMission;
+    // Remove card immediately so the same swipe/event can't fire again
+    setMissions((prev) => prev.filter((m) => String(m.id) !== String(mission.id)));
+    x.set(0);
+
+    // Pass is permanent — can't swipe back to this event
+    if (action === "pass") {
+      markDismissed(mission.id);
+    }
+
     try {
       if (action === "accept") {
-        await api(`/missions/${currentMission.id}/accept`, {
-          method: "POST",
-          body: JSON.stringify({ userId: user.id })
-        });
+        if (mission.is_side_quest) {
+          if (!mission.template_id) throw new Error("Side Quest template missing.");
+          setSubmitting(true);
+          await api("/missions/from-template", {
+            method: "POST",
+            body: JSON.stringify({
+              templateId: mission.template_id,
+              creator_id: user.id,
+              missionType: "solo"
+            })
+          });
+        } else {
+          await api(`/missions/${mission.id}/accept`, {
+            method: "POST",
+            body: JSON.stringify({ userId: user.id })
+          });
+        }
+        markDismissed(mission.id);
         await refreshUser();
         setTab?.("active");
-      } else {
-        await api(`/missions/${currentMission.id}/pass`, { method: "POST" });
-        const key = `lockin_passed_${user.id}`;
-        const passed = JSON.parse(localStorage.getItem(key) || "[]");
-        localStorage.setItem(key, JSON.stringify([...new Set([...passed, currentMission.id])]));
+      } else if (!mission.is_side_quest) {
+        await api(`/missions/${mission.id}/pass`, { method: "POST" });
       }
-      setIndex((curr) => curr + 1);
-      x.set(0);
     } catch (err: any) {
       if (err.message && err.message.includes("limit")) setLocked(true);
       setError(err.message || "Operation failed.");
-      x.set(0);
+    } finally {
+      actingRef.current = false;
+      setIsActing(false);
+      setSubmitting(false);
     }
+  }
+
+  async function handleLockInSolo() {
+    if (!currentMission?.is_side_quest || !currentMission.template_id) return;
+    await handleAction("accept");
+  }
+
+  function handleMakeGroupFromTemplate() {
+    if (!currentMission?.is_side_quest) return;
+    const templateTasks = currentMission.default_tasks || [];
+    setForm({
+      title: currentMission.title,
+      description: currentMission.description,
+      location: user.location || "SRM KTR Library",
+      datetime: "",
+      categoryId: currentMission.category_id ? String(currentMission.category_id) : "1",
+      missionType: "group"
+    });
+    setTasks([...templateTasks]);
+    setCoverColor(currentMission.cover_color || "");
+    setCoverImage(currentMission.cover_image || "");
+    setShowCreate(true);
   }
 
   async function handleCreateMission(e: React.FormEvent) {
@@ -178,7 +270,7 @@ export default function Feed({ user, refreshUser, locked, setLocked, api, setTab
       setCoverColor("");
       setCoverImage("");
       setShowCustomizeCover(false);
-      await load(activeCategory);
+      await load(activeCategory, { silent: true });
     } catch (err: any) {
       setError(err.message || "Could not launch mission.");
     } finally {
@@ -285,17 +377,31 @@ export default function Feed({ user, refreshUser, locked, setLocked, api, setTab
         <div className="absolute inset-x-3 top-3 h-[420px] rounded-[28px] border border-white/[0.055] bg-white/[0.025] scale-[0.97] translate-y-2 -z-10" />
  
         <AnimatePresence mode="wait">
-          {currentMission ? (
+          {loading && !currentMission ? (
+            <motion.div
+              key="feed-loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex h-[430px] w-full flex-col items-center justify-center rounded-[28px] border border-white/[0.06] bg-white/[0.02] p-8 text-center backdrop-blur-md"
+            >
+              <div className="h-8 w-8 rounded-full border-2 border-cherryRed/25 border-t-cherryRed animate-spin mb-4" />
+              <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-500">
+                Loading runways...
+              </p>
+            </motion.div>
+          ) : currentMission ? (
             <motion.article
               key={currentMission.id}
               ref={cardRef}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
-              drag="x"
+              drag={isActing ? false : "x"}
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.55}
               dragSnapToOrigin
               onDragEnd={(_, info) => {
+                if (actingRef.current) return;
                 if (info.offset.x > 120) {
                   if (locked) {
                     setError("Runway limit reached. Complete active queue first.");
@@ -346,7 +452,7 @@ export default function Feed({ user, refreshUser, locked, setLocked, api, setTab
                       className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-[28px] bg-gradient-to-br from-cherryRed/[0.12] to-transparent backdrop-blur-[2px]"
                     >
                       <div className="rounded-2xl border border-cherryRed/40 bg-black/90 px-5 py-2.5 text-[11px] font-black tracking-[0.2em] text-white uppercase shadow-[0_0_30px_rgba(210,4,45,.35)] flex items-center gap-1.5">
-                        <Check className="h-4 w-4 text-cherryRed stroke-[3]" /> Lock In
+                        <Check className="h-4 w-4 text-cherryRed stroke-[3]" /> {isSideQuest ? "Lock In Solo" : "Lock In"}
                       </div>
                     </motion.div>
 
@@ -367,21 +473,40 @@ export default function Feed({ user, refreshUser, locked, setLocked, api, setTab
                       {/* Creator row */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-[12px] border border-white/[0.07] bg-white/[0.04] text-[12px] font-black text-cotton/90">
-                            {initials(currentMission.creator_name)}
+                          <div className={`flex h-10 w-10 items-center justify-center rounded-[12px] border text-[12px] font-black ${
+                            isSideQuest
+                              ? "border-cherryRed/25 bg-cherryRed/[0.1] text-cherryRed"
+                              : "border-white/[0.07] bg-white/[0.04] text-cotton/90"
+                          }`}>
+                            {isSideQuest ? <Sparkles className="h-4 w-4" /> : initials(currentMission.creator_name)}
                           </div>
                           <div className="text-left">
-                            <h3 className="text-[13px] font-semibold text-cotton/95 leading-tight">
-                              {currentMission.creator_name}
-                            </h3>
-                            <p className="text-[10px] font-medium text-zinc-500 mt-0.5 uppercase tracking-wide">
-                              {currentMission.creator_department || "Department"}
-                            </p>
-                            {currentMission.locked_in_count !== undefined && currentMission.locked_in_count > 2 && (
-                              <div className="flex items-center gap-1 mt-1 text-[9px] font-black uppercase text-zinc-500">
-                                <Users className="h-3 w-3 text-luxuryGold" />
-                                <span>{currentMission.locked_in_count} people locked in</span>
-                              </div>
+                            {isSideQuest ? (
+                              <>
+                                <div className="flex items-center gap-2">
+                                  <span className="rounded-full border border-cherryRed/35 bg-cherryRed/[0.12] px-2 py-0.5 text-[8px] font-black tracking-[0.16em] text-cherryRed uppercase">
+                                    Side Quest
+                                  </span>
+                                </div>
+                                <p className="text-[10px] font-medium text-zinc-500 mt-1 uppercase tracking-wide">
+                                  Curated by LOCKIN
+                                </p>
+                              </>
+                            ) : (
+                              <>
+                                <h3 className="text-[13px] font-semibold text-cotton/95 leading-tight">
+                                  {currentMission.creator_name}
+                                </h3>
+                                <p className="text-[10px] font-medium text-zinc-500 mt-0.5 uppercase tracking-wide">
+                                  {currentMission.creator_department || "Department"}
+                                </p>
+                                {currentMission.locked_in_count !== undefined && currentMission.locked_in_count > 2 && (
+                                  <div className="flex items-center gap-1 mt-1 text-[9px] font-black uppercase text-zinc-500">
+                                    <Users className="h-3 w-3 text-luxuryGold" />
+                                    <span>{currentMission.locked_in_count} people locked in</span>
+                                  </div>
+                                )}
+                              </>
                             )}
                           </div>
                         </div>
@@ -404,23 +529,53 @@ export default function Feed({ user, refreshUser, locked, setLocked, api, setTab
                         <p className="text-[12px] font-normal leading-relaxed text-zinc-400 line-clamp-5">
                           {currentMission.description}
                         </p>
+                        {isSideQuest && (currentMission.default_tasks?.length ?? 0) > 0 && (
+                          <p className="text-[10px] font-medium text-zinc-500">
+                            {currentMission.default_tasks!.length} checklist items ready
+                          </p>
+                        )}
                       </div>
                     </div>
 
                     {/* Meta block */}
                     <div className="space-y-2 z-10">
-                      <div className="flex items-center gap-2.5 rounded-[14px] border border-white/[0.06] bg-black/30 p-3">
-                        <CalendarClock className="h-4 w-4 text-white shrink-0 opacity-80" />
-                        <span className="text-[12px] font-medium text-cotton/85">
-                          {formatDate(currentMission.datetime)}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2.5 rounded-[14px] border border-white/[0.06] bg-black/30 p-3">
-                        <MapPin className="h-4 w-4 text-cherryRed shrink-0 opacity-80" />
-                        <span className="text-[12px] font-medium text-cotton/85 truncate">
-                          {currentMission.location}
-                        </span>
-                      </div>
+                      {isSideQuest ? (
+                        <>
+                          <div className="flex items-center gap-2.5 rounded-[14px] border border-white/[0.06] bg-black/30 p-3">
+                            <Clock className="h-4 w-4 text-white shrink-0 opacity-80" />
+                            <span className="text-[12px] font-medium text-cotton/85">
+                              ~{currentMission.estimated_duration || currentMission.focus_duration || 25} min
+                              {currentMission.difficulty ? ` · ${currentMission.difficulty}` : ""}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMakeGroupFromTemplate();
+                            }}
+                            className="w-full text-left rounded-[14px] border border-white/[0.06] bg-black/30 p-3 hover:bg-white/[0.04] transition"
+                          >
+                            <span className="text-[11px] font-semibold text-cotton/85">Want company?</span>
+                            <span className="block text-[10px] text-zinc-500 mt-0.5">Make it a Group Mission →</span>
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex items-center gap-2.5 rounded-[14px] border border-white/[0.06] bg-black/30 p-3">
+                            <CalendarClock className="h-4 w-4 text-white shrink-0 opacity-80" />
+                            <span className="text-[12px] font-medium text-cotton/85">
+                              {currentMission.datetime ? formatDate(currentMission.datetime) : "Flexible"}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2.5 rounded-[14px] border border-white/[0.06] bg-black/30 p-3">
+                            <MapPin className="h-4 w-4 text-cherryRed shrink-0 opacity-80" />
+                            <span className="text-[12px] font-medium text-cotton/85 truncate">
+                              {currentMission.location}
+                            </span>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </>
                 );
@@ -452,7 +607,7 @@ export default function Feed({ user, refreshUser, locked, setLocked, api, setTab
               </div>
               <h3 className="text-[14px] font-black text-cotton uppercase tracking-wider">Feed Cleared</h3>
               <p className="mt-2 text-[12px] font-normal text-zinc-500 leading-relaxed max-w-[220px]">
-                No runways nearby. Launch one yourself or swap filters.
+                No runways nearby. Refresh for Side Quests or launch one yourself.
               </p>
             </motion.div>
           )}
@@ -468,7 +623,7 @@ export default function Feed({ user, refreshUser, locked, setLocked, api, setTab
               <div key={i} className={`h-1 rounded-full transition-all ${i === 0 ? "w-5 bg-cherryRed/60" : "w-1.5 bg-white/10"}`} />
             ))}
           </div>
-          <span className="swipe-hint text-cherryRed/70">Lock In →</span>
+          <span className="swipe-hint text-cherryRed/70">{isSideQuest ? "Lock In Solo →" : "Lock In →"}</span>
         </div>
       )}
 
@@ -480,24 +635,58 @@ export default function Feed({ user, refreshUser, locked, setLocked, api, setTab
 
       {/* Action buttons */}
       {currentMission && (
-        <div className="mt-5 grid grid-cols-2 gap-3 shrink-0">
-          <button
-            onClick={() => handleAction("pass")}
-            className="flex h-11 items-center justify-center gap-2 rounded-[14px] border border-white/[0.07] bg-white/[0.03] text-[12px] font-bold uppercase tracking-wider text-zinc-400 transition hover:bg-white/[0.06] hover:text-white active:scale-[0.97]"
-          >
-            <X className="h-4 w-4" /> Pass
-          </button>
-          <button
-            onClick={() => !locked && handleAction("accept")}
-            disabled={locked}
-            className={`flex h-11 items-center justify-center gap-2 rounded-[14px] border text-[12px] font-black uppercase tracking-wider transition active:scale-[0.97] ${
-              locked
-                ? "border-white/[0.04] bg-white/[0.02] text-zinc-700 cursor-not-allowed"
-                : "border-cherryRed/40 bg-cherryRed text-cotton shadow-[0_0_24px_rgba(129,1,0,0.3)] hover:bg-cherryRed/90"
-            }`}
-          >
-            <Check className="h-4 w-4 stroke-[2.5]" /> Lock In
-          </button>
+        <div className={`mt-5 grid gap-3 shrink-0 ${isSideQuest ? "grid-cols-1" : "grid-cols-2"}`}>
+          {isSideQuest ? (
+            <>
+              <button
+                onClick={() => !locked && !isActing && handleLockInSolo()}
+                disabled={locked || isActing || submitting}
+                className={`flex h-11 items-center justify-center gap-2 rounded-[14px] border text-[12px] font-black uppercase tracking-wider transition active:scale-[0.97] ${
+                  locked || isActing || submitting
+                    ? "border-white/[0.04] bg-white/[0.02] text-zinc-700 cursor-not-allowed"
+                    : "border-cherryRed/40 bg-cherryRed text-cotton shadow-[0_0_24px_rgba(129,1,0,0.3)] hover:bg-cherryRed/90"
+                }`}
+              >
+                <Check className="h-4 w-4 stroke-[2.5]" /> {submitting || isActing ? "Locking In..." : "Lock In Solo"}
+              </button>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => !isActing && handleAction("pass")}
+                  disabled={isActing}
+                  className="flex h-11 items-center justify-center gap-2 rounded-[14px] border border-white/[0.07] bg-white/[0.03] text-[12px] font-bold uppercase tracking-wider text-zinc-400 transition hover:bg-white/[0.06] hover:text-white active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <X className="h-4 w-4" /> Pass
+                </button>
+                <button
+                  onClick={handleMakeGroupFromTemplate}
+                  className="flex h-11 items-center justify-center gap-2 rounded-[14px] border border-white/[0.1] bg-white/[0.04] text-[11px] font-bold uppercase tracking-wider text-cotton/80 transition hover:bg-white/[0.07] hover:text-white active:scale-[0.97]"
+                >
+                  <Users className="h-4 w-4" /> Group
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => !isActing && handleAction("pass")}
+                disabled={isActing}
+                className="flex h-11 items-center justify-center gap-2 rounded-[14px] border border-white/[0.07] bg-white/[0.03] text-[12px] font-bold uppercase tracking-wider text-zinc-400 transition hover:bg-white/[0.06] hover:text-white active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <X className="h-4 w-4" /> Pass
+              </button>
+              <button
+                onClick={() => !locked && !isActing && handleAction("accept")}
+                disabled={locked || isActing}
+                className={`flex h-11 items-center justify-center gap-2 rounded-[14px] border text-[12px] font-black uppercase tracking-wider transition active:scale-[0.97] ${
+                  locked || isActing
+                    ? "border-white/[0.04] bg-white/[0.02] text-zinc-700 cursor-not-allowed"
+                    : "border-cherryRed/40 bg-cherryRed text-cotton shadow-[0_0_24px_rgba(129,1,0,0.3)] hover:bg-cherryRed/90"
+                }`}
+              >
+                <Check className="h-4 w-4 stroke-[2.5]" /> {isActing ? "Locking In..." : "Lock In"}
+              </button>
+            </>
+          )}
         </div>
       )}
 
@@ -590,8 +779,8 @@ export default function Feed({ user, refreshUser, locked, setLocked, api, setTab
                 <Input
                   type="datetime-local"
                   value={form.datetime}
-                  min={new Date(Date.now() + 5 * 60000).toISOString().slice(0, 16)}
-                  onChange={(e) => setForm({ ...form, datetime: e.target.value })}
+                  min={datetimeMinRef.current}
+                  onChange={(e) => setForm((prev) => ({ ...prev, datetime: e.target.value }))}
                   className="h-10 border-white/[0.08] bg-black/40 text-[12px] text-white"
                   required
                 />

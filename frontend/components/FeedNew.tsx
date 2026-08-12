@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useMotionValue, useTransform } from "framer-motion";
 import { Flame, CalendarClock, MapPin, X, Check, Plus, AlertCircle, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { User, Mission } from "../app/types";
@@ -50,6 +50,9 @@ export default function FeedNew({ user, refreshUser, locked, setLocked, api, set
   const [tasks, setTasks] = useState<string[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const datetimeMinRef = useRef(
+    new Date(Date.now() + 5 * 60000).toISOString().slice(0, 16)
+  );
 
   const addTask = () => {
     if (newTaskTitle.trim()) {
@@ -575,8 +578,8 @@ export default function FeedNew({ user, refreshUser, locked, setLocked, api, set
                 <Input
                   type="datetime-local"
                   value={form.datetime}
-                  min={new Date(Date.now() + 5 * 60000).toISOString().slice(0, 16)}
-                  onChange={(e) => setForm({ ...form, datetime: e.target.value })}
+                  min={datetimeMinRef.current}
+                  onChange={(e) => setForm((prev) => ({ ...prev, datetime: e.target.value }))}
                   className="h-10.5 border-white/10 bg-black/40 text-xs text-white"
                   required
                 />

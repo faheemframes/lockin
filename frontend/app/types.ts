@@ -16,15 +16,16 @@ export interface User {
   campus_name?: string;
   verified_at?: string;
   avatar_url?: string | null;
+  incomplete?: boolean;
 }
 
 export interface Mission {
-  id: number;
-  creator_id: number;
+  id: number | string;
+  creator_id: number | null;
   title: string;
   description: string;
-  location: string;
-  datetime: string;
+  location: string | null;
+  datetime: string | null;
   creator_name?: string;
   creator_department?: string;
   status?: string;
@@ -41,6 +42,9 @@ export interface Mission {
   category_color?: string;
   mission_type?: string;
   focus_duration?: number;
+  estimated_duration?: number;
+  difficulty?: string | null;
+  default_tasks?: string[];
   cover_color?: string | null;
   cover_image?: string | null;
   locked_in_count?: number;
@@ -51,6 +55,9 @@ export interface Mission {
     reputation_score: number;
     is_host: boolean;
   }>;
+  is_side_quest?: boolean;
+  item_type?: "mission" | "side_quest";
+  template_id?: number;
 }
 
 export interface Message {

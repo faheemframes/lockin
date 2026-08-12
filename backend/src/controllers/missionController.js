@@ -1,6 +1,10 @@
 const prisma = require("../config/db");
 const memoryStore = require("../data/memoryStore");
 const { isDbUnavailable } = require("../utils/dbFallback");
+const {
+  getActiveSideQuests,
+  interleaveSideQuests
+} = require("./missionTemplateController");
 
 function assertUserId(userId, res) {
   if (!userId) {
@@ -194,11 +198,21 @@ async function getMissionFeed(req, res) {
         cover_color: m.coverColor,
         cover_image: m.coverImage,
         locked_in_count: attendees.length,
-        attendees: attendees
+        attendees: attendees,
+        is_side_quest: false,
+        item_type: "mission"
       };
     });
 
-    res.json(rows);
+    // Mix LOCKIN Side Quests into the feed (templates only — no Mission rows created)
+    let sideQuests = [];
+    try {
+      sideQuests = await getActiveSideQuests(categoryId, undefined, numericUserId);
+    } catch (sideQuestError) {
+      console.warn("Side Quest feed mix skipped:", sideQuestError.message);
+    }
+
+    res.json(interleaveSideQuests(rows, sideQuests));
   } catch (error) {
     if (!isDbUnavailable(error)) throw error;
     res.json(memoryStore.getMissionFeed(userId, categoryId));
@@ -241,6 +255,23 @@ async function acceptMission(req, res) {
         throw new Error("NOT_FOUND");
       }
 
+      const existing = await tx.participation.findUnique({
+        where: {
+          unique_user_mission: {
+            userId: Number(userId),
+            missionId: Number(id)
+          }
+        }
+      });
+
+      // Already locked in / requested — do not create duplicates or re-notify
+      if (
+        existing &&
+        ["Requested", "Accepted", "Executing", "Completed"].includes(existing.status)
+      ) {
+        return { participation: existing, isNew: false };
+      }
+
       const participation = await tx.participation.upsert({
         where: {
           unique_user_mission: {
@@ -256,47 +287,50 @@ async function acceptMission(req, res) {
         }
       });
 
-      return participation;
+      return { participation, isNew: true };
     });
 
-    // Real-time Push Notification to Host
-    try {
-      const mission = await prisma.mission.findUnique({
-        where: { id: Number(id) },
-        select: { createdBy: true, title: true }
-      });
-      const applicant = await prisma.user.findUnique({
-        where: { id: Number(userId) },
-        select: { name: true }
-      });
-      if (mission && mission.createdBy) {
-        const supabaseClient = require("../config/supabase");
-        if (supabaseClient) {
-          const channel = supabaseClient.channel(`notifications:${mission.createdBy}`);
-          channel.subscribe((status) => {
-            if (status === "SUBSCRIBED") {
-              channel.send({
-                type: "broadcast",
-                event: "push_notification",
-                payload: {
-                  title: "New Join Request!",
-                  message: `${applicant?.name || "Someone"} requested to join your runway: "${mission.title}"`,
-                  type: "join_request",
-                  missionId: Number(id)
-                }
-              }).catch(err => console.error("Realtime notification broadcast failed:", err));
-            }
-          });
+    // Real-time Push Notification to Host (only on first request)
+    if (result.isNew) {
+      try {
+        const mission = await prisma.mission.findUnique({
+          where: { id: Number(id) },
+          select: { createdBy: true, title: true }
+        });
+        const applicant = await prisma.user.findUnique({
+          where: { id: Number(userId) },
+          select: { name: true }
+        });
+        if (mission && mission.createdBy) {
+          const supabaseClient = require("../config/supabase");
+          if (supabaseClient) {
+            const channel = supabaseClient.channel(`notifications:${mission.createdBy}`);
+            channel.subscribe((status) => {
+              if (status === "SUBSCRIBED") {
+                channel.send({
+                  type: "broadcast",
+                  event: "push_notification",
+                  payload: {
+                    title: "New Join Request!",
+                    message: `${applicant?.name || "Someone"} requested to join your runway: "${mission.title}"`,
+                    type: "join_request",
+                    missionId: Number(id)
+                  }
+                }).catch(err => console.error("Realtime notification broadcast failed:", err));
+              }
+            });
+          }
         }
+      } catch (err) {
+        console.error("Error sending join request notification:", err);
       }
-    } catch (err) {
-      console.error("Error sending join request notification:", err);
     }
 
-    res.status(201).json({
-      mission_id: result.missionId,
-      user_id: result.userId,
-      status: result.status
+    res.status(result.isNew ? 201 : 200).json({
+      mission_id: result.participation.missionId,
+      user_id: result.participation.userId,
+      status: result.participation.status,
+      already_locked: !result.isNew
     });
   } catch (error) {
     if (error.message === "USER_NOT_FOUND") {
@@ -841,7 +875,8 @@ async function getCampuses(req, res) {
   } catch (error) {
     if (!isDbUnavailable(error)) throw error;
     res.json([
-      { id: 1, name: "SRM IST, Kattankulathur (KTR)", location: "Chennai, Tamil Nadu" }
+      { id: 1, name: "SRM IST, Kattankulathur (KTR)", location: "Chennai, Tamil Nadu" },
+      { id: 2, name: "Taylor's University", location: "Subang Jaya, Selangor" }
     ]);
   }
 }
@@ -966,5 +1001,7 @@ module.exports = {
   approveParticipant,
   getCategories,
   getCampuses,
-  submitVibeCheck
+  submitVibeCheck,
+  getTemplateById: require("./missionTemplateController").getTemplateById,
+  lockInFromTemplate: require("./missionTemplateController").lockInFromTemplate
 };

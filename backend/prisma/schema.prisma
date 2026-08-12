@@ -108,6 +108,28 @@ model Mission {
   @@map("mission")
 }
 
+/// LOCKIN-curated Side Quest templates. Displayed in the mission feed;
+/// locking in creates a real Mission — templates themselves are never Missions.
+model MissionTemplate {
+  id                Int      @id @default(autoincrement()) @map("template_id")
+  title             String   @map("template_title") @db.VarChar(100)
+  description       String   @default("") @db.Text
+  category          String   @db.VarChar(50)
+  categoryId        Int?     @map("category_id")
+  estimatedDuration Int      @default(25) @map("estimated_duration")
+  difficulty        String?  @db.VarChar(20)
+  defaultTasks      Json     @default("[]") @map("default_tasks")
+  coverImage        String?  @map("cover_image") @db.Text
+  coverColor        String?  @map("cover_color") @db.VarChar(50)
+  isActive          Boolean  @default(true) @map("is_active")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive])
+  @@index([categoryId])
+  @@map("mission_template")
+}
+
 model Task {
   id          Int       @id @default(autoincrement()) @map("task_id")
   title       String    @db.VarChar(200)

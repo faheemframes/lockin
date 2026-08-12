@@ -17,21 +17,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.method === "POST" && route === "profile") {
       const user = await getAuthUser(req, res);
       if (!user) return;
-      (req as any).user = user;
+      (req as any).supabaseUser = user;
       return await syncProfile(req, res);
     }
 
     if (req.method === "GET" && route === "me") {
       const user = await getAuthUser(req, res);
       if (!user) return;
-      (req as any).user = user;
+      (req as any).supabaseUser = user;
       return await getMe(req, res);
     }
 
     if (req.method === "POST" && route === "logout") {
       const user = await getAuthUser(req, res);
       if (!user) return;
-      (req as any).user = user;
+      (req as any).supabaseUser = user;
       return await logout(req, res);
     }
 
