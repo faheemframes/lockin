@@ -34,17 +34,17 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
   const [chatMission, setChatMission] = useState<Mission | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
-  const [inputCodes, setInputCodes] = useState<{ [missionId: number]: string }>({});
-  const [errors, setErrors] = useState<{ [missionId: number]: string }>({});
-  const [submitting, setSubmitting] = useState<{ [missionId: number]: boolean }>({});
-  const [tasksCompletedInput, setTasksCompletedInput] = useState<{ [missionId: number]: string }>({});
+  const [inputCodes, setInputCodes] = useState<{ [missionId: string | number]: string }>({});
+  const [errors, setErrors] = useState<{ [missionId: string | number]: string }>({});
+  const [submitting, setSubmitting] = useState<{ [missionId: string | number]: boolean }>({});
+  const [tasksCompletedInput, setTasksCompletedInput] = useState<{ [missionId: string | number]: string }>({});
   const [recapData, setRecapData] = useState<any | null>(null);
   const [showRecapCard, setShowRecapCard] = useState(false);
 
   // New V2 states
-  const [missionTasks, setMissionTasks] = useState<{ [missionId: number]: any[] }>({});
-  const [loadingTasks, setLoadingTasks] = useState<{ [missionId: number]: boolean }>({});
-  const [newTaskTitles, setNewTaskTitles] = useState<{ [missionId: number]: string }>({});
+  const [missionTasks, setMissionTasks] = useState<{ [missionId: string | number]: any[] }>({});
+  const [loadingTasks, setLoadingTasks] = useState<{ [missionId: string | number]: boolean }>({});
+  const [newTaskTitles, setNewTaskTitles] = useState<{ [missionId: string | number]: string }>({});
 
   const [activeReflectionMission, setActiveReflectionMission] = useState<Mission | null>(null);
   const [reflectionText, setReflectionText] = useState("");
@@ -62,7 +62,7 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
   const [activeFocusMission, setActiveFocusMission] = useState<Mission | null>(null);
   const [timerAnchor, setTimerAnchor] = useState<TimerAnchor | null>(null);
   const [focusOverlayOpen, setFocusOverlayOpen] = useState(false);
-  const [showTimerSelector, setShowTimerSelector] = useState<number | null>(null);
+  const [showTimerSelector, setShowTimerSelector] = useState<string | number | null>(null);
   const timerRestoredRef = useRef(false);
   const pendingDurationRef = useRef<number | null>(null);
 
@@ -133,7 +133,7 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
     }
   }
 
-  async function loadTasks(missionId: number) {
+  async function loadTasks(missionId: string | number) {
     setLoadingTasks(prev => ({ ...prev, [missionId]: true }));
     try {
       const tasks = await api(`/tasks/mission/${missionId}`);
@@ -145,7 +145,7 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
     }
   }
 
-  async function handleToggleTask(missionId: number, taskId: number) {
+  async function handleToggleTask(missionId: string | number, taskId: number) {
     setMissionTasks((prev) => ({
       ...prev,
       [missionId]: (prev[missionId] || []).map((t) =>
@@ -160,7 +160,7 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
     }
   }
 
-  async function handleAddTask(missionId: number) {
+  async function handleAddTask(missionId: string | number) {
     const title = newTaskTitles[missionId] || "";
     if (!title.trim()) return;
     const optimisticId = -Date.now();
@@ -185,7 +185,7 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
     }
   }
 
-  async function handleDeleteTask(missionId: number, taskId: number) {
+  async function handleDeleteTask(missionId: string | number, taskId: number) {
     setMissionTasks((prev) => ({
       ...prev,
       [missionId]: (prev[missionId] || []).filter((t) => t.id !== taskId),
@@ -281,7 +281,7 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
     }
   }
 
-  async function handleViewMissionRecap(missionId: number) {
+  async function handleViewMissionRecap(missionId: string | number) {
     try {
       const result = await api(`/recaps/mission/${missionId}/user/${user.id}`);
       setRecapData(result);
@@ -291,7 +291,7 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
     }
   }
 
-  async function handleVibeCheck(missionId: number, rating: "W" | "L") {
+  async function handleVibeCheck(missionId: string | number, rating: "W" | "L") {
     try {
       await api(`/missions/${missionId}/vibe-check`, {
         method: "POST",
@@ -320,7 +320,7 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
     });
   }, [missions]);
 
-  async function handleApprove(missionId: number, participantId: number) {
+  async function handleApprove(missionId: string | number, participantId: number) {
     try {
       await api(`/missions/${missionId}/approve-participant`, {
         method: "POST",
@@ -332,7 +332,7 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
     }
   }
 
-  async function handleAttendance(missionId: number, showedUp: boolean, targetParticipantId?: number) {
+  async function handleAttendance(missionId: string | number, showedUp: boolean, targetParticipantId?: number) {
     const code = inputCodes[missionId] || "";
     const pId = targetParticipantId || user.id; // if creator calls, it passes the participant's ID
 
@@ -455,11 +455,13 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
     URL.revokeObjectURL(url);
   };
 
-  const isDue = (datetime: string) => {
+  const isDue = (datetime: string | null) => {
+    if (!datetime) return false;
     return new Date(datetime).getTime() <= Date.now();
   };
 
-  const timeLeft = (datetime: string) => {
+  const timeLeft = (datetime: string | null) => {
+    if (!datetime) return "Ready";
     const diff = new Date(datetime).getTime() - Date.now();
     if (diff <= 0) return "Ready";
     const hours = Math.floor(diff / 3600000);

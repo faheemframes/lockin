@@ -186,6 +186,7 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
   // Resume incomplete onboarding after reload / email verification redirect.
   useEffect(() => {
     if (!supabase) return;
+    const client = supabase;
 
     let cancelled = false;
 
@@ -193,7 +194,7 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
       try {
         const {
           data: { session },
-        } = await supabase.auth.getSession();
+        } = await client.auth.getSession();
         if (!session || cancelled || tempUserId) return;
 
         const syncRes = await api("/auth/profile", { method: "POST" });
@@ -209,7 +210,7 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = client.auth.onAuthStateChange(async (event, session) => {
       if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && session) {
         if (tempUserId) return;
         try {

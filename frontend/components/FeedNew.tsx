@@ -182,7 +182,8 @@ export default function FeedNew({ user, refreshUser, locked, setLocked, api, set
       .toUpperCase();
   };
 
-  const formatDate = (value: string) => {
+  const formatDate = (value: string | null) => {
+    if (!value) return "Flexible";
     return new Intl.DateTimeFormat("en", {
       weekday: "short",
       hour: "numeric",

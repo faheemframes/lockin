@@ -188,7 +188,7 @@ export default function Profile({ user, refreshUser, api }: ProfileProps) {
     }
   }
 
-  async function handleViewMissionRecap(missionId: number) {
+  async function handleViewMissionRecap(missionId: string | number) {
     try {
       const result = await api(`/recaps/mission/${missionId}/user/${user.id}`);
       setRecapData(result);
@@ -658,10 +658,12 @@ export default function Profile({ user, refreshUser, api }: ProfileProps) {
                           <p className="text-[10px] text-zinc-600">
                             {m.role === "creator" ? "You hosted" : `Partner: ${m.creator_name}`}
                             {" · "}
-                            {new Date(m.datetime).toLocaleDateString("en-IN", {
-                              day: "numeric",
-                              month: "short",
-                            })}
+                            {m.datetime
+                              ? new Date(m.datetime).toLocaleDateString("en-IN", {
+                                  day: "numeric",
+                                  month: "short",
+                                })
+                              : "Flexible"}
                           </p>
                         </div>
                         {done && (
