@@ -10,23 +10,28 @@ const {
   approveParticipant,
   getCategories,
   getCampuses,
-  submitVibeCheck
+  submitVibeCheck,
+  getTemplateById,
+  lockInFromTemplate
 } = require("../controllers/missionController");
 const { finishSession } = require("../controllers/recapController");
+const { requireAuth } = require("../middleware/auth");
 
 const router = express.Router();
 
-router.post("/", asyncHandler(createMission));
+router.post("/", requireAuth, asyncHandler(createMission));
+router.post("/from-template", requireAuth, asyncHandler(lockInFromTemplate));
 router.get("/categories", asyncHandler(getCategories));
 router.get("/campuses", asyncHandler(getCampuses));
-router.get("/feed", asyncHandler(getMissionFeed));
-router.get("/active/:userId", asyncHandler(getActiveMissions));
-router.post("/:id/accept", asyncHandler(acceptMission));
-router.post("/:id/pass", asyncHandler(passMission));
-router.post("/:id/attendance", asyncHandler(submitAttendance));
-router.post("/:id/finish", asyncHandler(finishSession));
-router.post("/:id/vibe-check", asyncHandler(submitVibeCheck));
-router.post("/:id/approve-participant", asyncHandler(approveParticipant));
+router.get("/feed", requireAuth, asyncHandler(getMissionFeed));
+router.get("/templates/:id", requireAuth, asyncHandler(getTemplateById));
+router.get("/active/:userId", requireAuth, asyncHandler(getActiveMissions));
+router.post("/:id/accept", requireAuth, asyncHandler(acceptMission));
+router.post("/:id/pass", requireAuth, asyncHandler(passMission));
+router.post("/:id/attendance", requireAuth, asyncHandler(submitAttendance));
+router.post("/:id/finish", requireAuth, asyncHandler(finishSession));
+router.post("/:id/vibe-check", requireAuth, asyncHandler(submitVibeCheck));
+router.post("/:id/approve-participant", requireAuth, asyncHandler(approveParticipant));
 
 module.exports = router;
 

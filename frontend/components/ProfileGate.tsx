@@ -24,10 +24,16 @@ import {
   Gamepad2,
   Palette,
   PenLine,
-  Heart
+  Heart,
+  Mail,
+  KeyRound,
+  X
 } from "lucide-react";
 import { Input } from "./ui/input";
-import { User } from "../app/types";
+import { User, InterestCategory } from "../app/types";
+
+import { supabase } from "../lib/supabase";
+import { getErrorMessage, isProfileIncomplete } from "../lib/api";
 
 interface ProfileGateProps {
   onReady: (user: User) => void;
@@ -40,15 +46,7 @@ interface Campus {
   location?: string;
 }
 
-const INTEREST_TAGS = [
-  { id: "Coding", label: "Coding", icon: Code },
-  { id: "Study", label: "Study", icon: BookOpen },
-  { id: "Design", label: "Design", icon: Palette },
-  { id: "Sports", label: "Sports", icon: Dumbbell },
-  { id: "Gaming", label: "Gaming", icon: Gamepad2 },
-  { id: "Writing", label: "Writing", icon: PenLine },
-  { id: "Fitness", label: "Fitness", icon: Heart },
-];
+
 
 
 
@@ -79,9 +77,9 @@ const TUTORIAL_STEPS = [
   },
   {
     icon: Trophy,
-    color: "text-white",
-    bg: "bg-white/8 border-white/20",
-    glow: "shadow-[0_0_30px_rgba(255,255,255,0.08)]",
+    color: "text-cherryRed",
+    bg: "bg-cherryRed/10 border-cherryRed/30",
+    glow: "shadow-[0_0_30px_rgba(129,1,0,0.2)]",
     title: "Aura & Leaderboard",
     body: "Aura Points stack up with every completed mission. Climb your campus leaderboard. Reputation is earned, not claimed.",
   },
@@ -102,8 +100,15 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
   const [tutorialSlide, setTutorialSlide] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [interestCategories, setInterestCategories] = useState<InterestCategory[]>([]);
+  const [devOtp, setDevOtp] = useState("");
+  const [tempUserId, setTempUserId] = useState<number | null>(null);
+  const [mode, setMode] = useState<"login" | "signup" | "forgot">("login");
 
   const [form, setForm] = useState({
+    email: "",
+    password: "",
+    otpCode: "",
     campusId: "" as string | number,
     campusName: "",
     college_id: "",
@@ -131,9 +136,99 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
           { id: 6, name: "IIIT Hyderabad", location: "Hyderabad, TG" },
           { id: 7, name: "DTU Delhi", location: "Delhi" },
           { id: 8, name: "Manipal Institute of Technology", location: "Manipal, KA" },
+          { id: 9, name: "Taylor's University", location: "Subang Jaya, Selangor" },
+        ]);
+      });
+
+    api("/interests/categories")
+      .then((data: InterestCategory[]) => setInterestCategories(data))
+      .catch(() => {
+        setInterestCategories([
+          { id: 1, name: "Coding", emoji: null, color: "#3b82f6" },
+          { id: 2, name: "AI", emoji: null, color: "#8b5cf6" },
+          { id: 3, name: "Startups", emoji: null, color: "#f59e0b" },
+          { id: 4, name: "Hackathons", emoji: null, color: "#ef4444" },
+          { id: 5, name: "Open Source", emoji: null, color: "#10b981" },
+          { id: 6, name: "Design", emoji: null, color: "#ec4899" },
+          { id: 7, name: "Content Creation", emoji: null, color: "#f97316" },
+          { id: 8, name: "Fitness", emoji: null, color: "#14b8a6" },
+          { id: 9, name: "Study Sessions", emoji: null, color: "#6366f1" },
+          { id: 10, name: "Research", emoji: null, color: "#0ea5e9" },
+          { id: 11, name: "Placements", emoji: null, color: "#e11d48" },
+          { id: 12, name: "Competitive Programming", emoji: null, color: "#eab308" },
+          { id: 13, name: "Reading", emoji: null, color: "#a855f7" },
+          { id: 14, name: "Languages", emoji: null, color: "#06b6d4" },
+          { id: 15, name: "Career", emoji: null, color: "#64748b" },
+          { id: 16, name: "Projects", emoji: null, color: "#f43f5e" },
+          { id: 17, name: "Networking", emoji: null, color: "#22c55e" },
+          { id: 18, name: "Events", emoji: null, color: "#d946ef" },
+          { id: 19, name: "Other", emoji: null, color: "#a1a1aa" }
         ]);
       });
   }, []);
+
+  async function resumeOnboarding(user: User & { incomplete?: boolean }) {
+    if (!isProfileIncomplete(user)) return false;
+    setTempUserId(user.id);
+    setForm((f) => ({
+      ...f,
+      email: user.email || f.email,
+      campusId: "",
+      campusName: user.college || "",
+      name: user.name || f.name,
+      department: user.department || "",
+    }));
+    setDirection(1);
+    setStep(3);
+    return true;
+  }
+
+  // Resume incomplete onboarding after reload / email verification redirect.
+  useEffect(() => {
+    if (!supabase) return;
+
+    let cancelled = false;
+
+    async function bootstrapIncompleteSession() {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (!session || cancelled || tempUserId) return;
+
+        const syncRes = await api("/auth/profile", { method: "POST" });
+        if (!cancelled && syncRes?.user) {
+          await resumeOnboarding(syncRes.user);
+        }
+      } catch (e) {
+        console.warn("[ProfileGate] Could not resume incomplete session:", e);
+      }
+    }
+
+    bootstrapIncompleteSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && session) {
+        if (tempUserId) return;
+        try {
+          const syncRes = await api("/auth/profile", { method: "POST" });
+          if (syncRes?.user) {
+            await resumeOnboarding(syncRes.user);
+          }
+        } catch (e) {
+          console.warn("[ProfileGate] Could not sync profile on auth change:", e);
+        }
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tempUserId]);
 
   const filteredCampuses = campusSearch.trim()
     ? campuses.filter((c) =>
@@ -142,7 +237,99 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
       )
     : campuses;
 
-  function goNext() {
+  async function handleAuthSubmit() {
+    if (!form.email || !form.email.includes("@")) {
+      setValidation({ email: "Valid student email is required." });
+      return;
+    }
+    if (mode !== "forgot" && (!form.password || form.password.length < 6)) {
+      setValidation({ password: "Password must be at least 6 characters." });
+      return;
+    }
+
+    setBusy(true);
+    setError("");
+    setValidation({});
+
+    try {
+      // 1. Verify email domain matches a supported college
+      const checkRes = await api(`/auth/check-domain?email=${encodeURIComponent(form.email)}`);
+      if (!checkRes.success) {
+        setError(getErrorMessage(checkRes.error, "Domain not supported."));
+        setBusy(false);
+        return;
+      }
+
+      if (!supabase) throw new Error("Supabase is not initialized.");
+
+      const email = form.email.trim().toLowerCase();
+
+      if (mode === "signup") {
+        const { data, error: signUpErr } = await supabase.auth.signUp({
+          email,
+          password: form.password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+          },
+        });
+
+        if (signUpErr) throw signUpErr;
+
+        if (data.user && !data.session) {
+          // Confirmation email sent via Resend (Supabase custom SMTP)
+          setStep(2);
+        } else if (data.session) {
+          const syncRes = await api("/auth/profile", { method: "POST" });
+          if (await resumeOnboarding(syncRes.user)) {
+            // continue campus onboarding
+          } else {
+            localStorage.setItem("lockin_user_id", String(syncRes.user.id));
+            onReady(syncRes.user);
+          }
+        }
+      } else if (mode === "login") {
+        const { data, error: signInErr } = await supabase.auth.signInWithPassword({
+          email,
+          password: form.password,
+        });
+
+        if (signInErr) throw signInErr;
+
+        if (data.session) {
+          const syncRes = await api("/auth/profile", { method: "POST" });
+          if (await resumeOnboarding(syncRes.user)) {
+            // continue campus onboarding
+          } else {
+            localStorage.setItem("lockin_user_id", String(syncRes.user.id));
+            onReady(syncRes.user);
+          }
+        }
+      } else if (mode === "forgot") {
+        const { error: resetErr } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+
+        if (resetErr) throw resetErr;
+
+        setStep(2);
+      }
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Authentication operation failed."));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function goNext() {
+    if (step === 1) {
+      await handleAuthSubmit();
+      return;
+    }
+    if (step === 2) {
+      setMode("login");
+      setStep(1);
+      return;
+    }
     if (!validateStep(step)) return;
     setDirection(1);
     setStep((s) => s + 1);
@@ -158,14 +345,14 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
 
   function validateStep(s: number) {
     const errs: { [key: string]: string } = {};
-    if (s === 1) {
+    if (s === 3) {
       if (!form.campusId && form.campusName.trim().length < 3)
         errs.campusId = "Select a campus or type your college name (min 3 chars).";
       const reg = form.college_id.trim().toUpperCase();
-      if (!reg || reg.length < 6) errs.college_id = "Enter a valid registration number.";
+      if (!reg || reg.length < 6) errs.college_id = "Enter your college student ID/roll number.";
       if (form.department.trim().length < 2) errs.department = "Enter your department & year.";
     }
-    if (s === 2) {
+    if (s === 4) {
       if (form.name.trim().length < 2) errs.name = "Name must be at least 2 characters.";
     }
     setValidation(errs);
@@ -173,56 +360,104 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
   }
 
   function toggleInterest(id: string) {
-    setForm((f) => ({
-      ...f,
-      interests: f.interests.includes(id)
-        ? f.interests.filter((i) => i !== id)
-        : [...f.interests, id],
-    }));
+    React.startTransition(() => {
+      setForm((f) => ({
+        ...f,
+        interests: f.interests.includes(id)
+          ? f.interests.filter((i) => i !== id)
+          : [...f.interests, id],
+      }));
+    });
   }
 
   async function submit() {
+    let resolvedUserId = tempUserId;
+
+    // If tempUserId was lost (e.g. page reload after email verification),
+    // try to recover it from the active Supabase session.
+    if (!resolvedUserId && supabase) {
+      try {
+        const syncRes = await api("/auth/profile", { method: "POST" });
+        if (syncRes?.user?.id) {
+          resolvedUserId = syncRes.user.id;
+          setTempUserId(resolvedUserId);
+        }
+      } catch (e) {
+        console.warn("[submit] Could not recover userId:", e);
+      }
+    }
+
+    if (!resolvedUserId) {
+      setError("Session expired. Please log in again.");
+      setStep(1);
+      return;
+    }
     setBusy(true);
     setError("");
     try {
       const college = form.campusName || "Campus";
-      const user = await api("/users", {
-        method: "POST",
+      const interestsStr = form.interests
+        .map((id) => {
+          const cat = interestCategories.find((c) => String(c.id) === id);
+          return cat ? cat.name : id;
+        })
+        .join(", ");
+
+      const user = await api(`/users/${resolvedUserId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name.trim(),
           college: college,
-          college_id: form.college_id.trim().toUpperCase(),
+          collegeId: form.campusId ? Number(form.campusId) : null,
           department: form.department.trim(),
           bio: form.bio.trim(),
           instagram: form.instagram.trim(),
           github: form.github.trim(),
-          interests: form.interests.join(", "),
-          campusId: form.campusId ? Number(form.campusId) : null,
+          interests: interestsStr,
           location: form.location,
         }),
       });
+
+      try {
+        await api("/interests", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user.id,
+            categoryIds: form.interests.map(Number)
+          })
+        });
+      } catch (interestErr) {
+        console.error("Failed to save relational interests:", interestErr);
+      }
+
       localStorage.setItem("lockin_user_id", String(user.id));
       onReady(user);
     } catch (err: any) {
-      setError(err.message || "Registration failed. Try again.");
+      setError(getErrorMessage(err, "Registration failed. Try again."));
       setBusy(false);
     }
   }
 
-  const totalSteps = 5; // 0-4
-  const progressSteps = [1, 2, 3]; // steps 1-3 have progress bar
+  const totalSteps = 7; // 0-6
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-zinc-950 flex items-center justify-center">
+    <div className="relative min-h-screen w-full overflow-y-auto flex flex-col items-center justify-start md:justify-center py-8 px-4"
+      style={{ background: "linear-gradient(160deg, #141110 0%, #0D0A09 100%)" }}
+    >
+      {/* Race stripe top */}
+      <div className="race-stripe pointer-events-none absolute left-0 right-0 top-0 h-[2px] opacity-80 z-50" />
       {/* Background glow blobs */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-cherryRed/8 blur-[120px]" />
-        <div className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-luxuryMaroon/8 blur-[120px]" />
+        <div className="absolute -top-32 -left-32 h-[500px] w-[500px] rounded-full bg-cherryRed/[0.09] blur-[140px]" />
+        <div className="absolute -bottom-32 -right-32 h-[500px] w-[500px] rounded-full bg-luxuryMaroon/[0.09] blur-[140px]" />
+        <div className="grid-noise absolute inset-0 opacity-80" />
       </div>
 
-      <div className="relative z-10 w-full max-w-sm mx-auto px-4 py-8">
-        {/* Progress indicator for steps 1-3 */}
-        {step >= 1 && step <= 3 && (
+      <div className="relative z-10 w-full max-w-sm mx-auto my-auto">
+        {/* Progress indicator for profile onboarding steps 3-5 */}
+        {step >= 3 && step <= 5 && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -235,7 +470,7 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
               <ChevronLeft className="h-4 w-4" />
             </button>
             <div className="flex-1 flex gap-1.5">
-              {progressSteps.map((s) => (
+              {[3, 4, 5].map((s) => (
                 <div
                   key={s}
                   className={`h-1 flex-1 rounded-full transition-all duration-500 ${
@@ -245,8 +480,39 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
               ))}
             </div>
             <span className="text-[10px] font-black tracking-widest text-zinc-600 uppercase">
-              {step}/3
+              {step - 2}/3
             </span>
+          </motion.div>
+        )}
+
+        {/* Back button for email/otp steps (steps 1 & 2) */}
+        {(step === 1 || step === 2) && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-2 mb-6"
+          >
+            <button
+              onClick={goBack}
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-zinc-400 transition hover:text-white"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <span className="text-[10px] font-black tracking-widest text-zinc-500 uppercase">
+              {step === 1 ? "Email Verification" : "OTP Code"}
+            </span>
+          </motion.div>
+        )}
+
+        {/* Global Error Banner */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 rounded-xl border border-cherryRed/35 bg-cherryRed/10 p-3 text-xs font-semibold text-[#ffa3a3] flex items-center gap-2"
+          >
+            <AlertTriangle className="h-4 w-4 shrink-0 text-cherryRed animate-bounce" />
+            <span>{typeof error === "string" ? error : getErrorMessage(error)}</span>
           </motion.div>
         )}
 
@@ -268,6 +534,50 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
             )}
 
             {step === 1 && (
+              <motion.div
+                key="email"
+                custom={direction}
+                variants={SLIDE_VARIANTS}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              >
+                <EmailStep
+                  form={form}
+                  setForm={setForm}
+                  validation={validation}
+                  onNext={goNext}
+                  busy={busy}
+                  mode={mode}
+                  setMode={setMode}
+                />
+              </motion.div>
+            )}
+
+            {step === 2 && (
+              <motion.div
+                key="otp"
+                custom={direction}
+                variants={SLIDE_VARIANTS}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              >
+                <OtpStep
+                  form={form}
+                  setForm={setForm}
+                  validation={validation}
+                  onNext={goNext}
+                  busy={busy}
+                  mode={mode}
+                  setMode={setMode}
+                />
+              </motion.div>
+            )}
+
+            {step === 3 && (
               <motion.div
                 key="campus"
                 custom={direction}
@@ -291,7 +601,7 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
               </motion.div>
             )}
 
-            {step === 2 && (
+            {step === 4 && (
               <motion.div
                 key="profile"
                 custom={direction}
@@ -310,7 +620,7 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
               </motion.div>
             )}
 
-            {step === 3 && (
+            {step === 5 && (
               <motion.div
                 key="socials"
                 custom={direction}
@@ -326,11 +636,12 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
                   toggleInterest={toggleInterest}
                   onNext={goNext}
                   onBack={goBack}
+                  interestCategories={interestCategories}
                 />
               </motion.div>
             )}
 
-            {step === 4 && (
+            {step === 6 && (
               <motion.div
                 key="tutorial"
                 custom={direction}
@@ -360,65 +671,65 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
 /* ─── STEP 0: SPLASH ──────────────────────────────────────────────── */
 function SplashStep({ onNext }: { onNext: () => void }) {
   return (
-    <div className="flex flex-col items-center text-center space-y-8 pt-8">
+    <div className="flex flex-col items-center text-center space-y-7 pt-6">
       <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
+        initial={{ scale: 0.7, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
-        className="flex h-24 w-24 items-center justify-center rounded-[28px] border border-white/10 bg-black/60 p-2 shadow-[0_0_50px_rgba(255,255,255,0.08)] backdrop-blur-md"
+        transition={{ delay: 0.08, type: "spring", stiffness: 220, damping: 20 }}
+        className="flex h-[88px] w-[88px] items-center justify-center rounded-[26px] border border-white/[0.09] bg-black/70 p-2 shadow-[0_0_60px_rgba(129,1,0,0.2),0_0_0_1px_rgba(255,255,255,0.04)] backdrop-blur-md"
       >
         <img src="/logo.png" alt="LOCKIN Logo" className="h-full w-full object-contain" />
       </motion.div>
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
+        transition={{ delay: 0.18 }}
         className="space-y-2"
       >
-        <h1 className="text-4xl md:text-5xl font-display font-semibold tracking-tight text-white">LOCKIN</h1>
-        <p className="text-sm font-sans font-normal text-zinc-400 leading-relaxed max-w-[260px]">
+        <h1 className="text-[40px] font-display font-bold tracking-[0.06em] text-white leading-none">LOCKIN</h1>
+        <p className="text-[13px] font-normal text-zinc-400 leading-relaxed max-w-[240px] mx-auto">
           Stop chatting. Start executing.
         </p>
       </motion.div>
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.35 }}
-        className="grid grid-cols-1 gap-3 w-full text-left"
+        transition={{ delay: 0.3 }}
+        className="grid grid-cols-1 gap-2 w-full text-left"
       >
         {[
           { icon: Zap, color: "text-cherryRed", text: "Accept missions from campus builders" },
-          { icon: Timer, color: "text-white", text: "Start Focus Lock — prove the work" },
-          { icon: Star, color: "text-cherryRed", text: "Rate the vibe, earn Aura Points" },
-          { icon: Trophy, color: "text-white", text: "Climb your campus leaderboard" },
+          { icon: Timer, color: "text-zinc-300", text: "Focus Lock — prove the work is done" },
+          { icon: Star, color: "text-cherryRed", text: "Rate the vibe, earn Aura points" },
+          { icon: Trophy, color: "text-cherryRed", text: "Climb your campus leaderboard" },
         ].map(({ icon: Icon, color, text }, i) => (
           <motion.div
             key={text}
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -16 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 + i * 0.08 }}
-            className="flex items-center gap-3 rounded-xl border border-white/5 bg-zinc-900/60 px-4 py-3"
+            transition={{ delay: 0.36 + i * 0.07 }}
+            className="flex items-center gap-3 rounded-[14px] border border-white/[0.06] bg-white/[0.03] px-4 py-3"
           >
-            <Icon className={`h-4 w-4 shrink-0 ${color}`} />
-            <span className="text-xs font-sans font-normal text-zinc-300">{text}</span>
+            <Icon className={`h-[15px] w-[15px] shrink-0 ${color}`} />
+            <span className="text-[12px] font-normal text-zinc-300">{text}</span>
           </motion.div>
         ))}
       </motion.div>
 
       <motion.button
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.75 }}
+        transition={{ delay: 0.68 }}
         onClick={onNext}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-cherryRed/20 bg-[#810100] py-4 text-sm font-sans font-medium text-cotton shadow-[0_0_30px_rgba(129,1,0,0.25)] transition-all hover:bg-[#810100]/95 active:scale-[0.97]"
+        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-cherryRed/30 bg-cherryRed py-4 text-[13px] font-bold text-white shadow-[0_0_32px_rgba(210,4,45,.35)] transition-all hover:bg-cherryRed/90 active:scale-[0.97]"
       >
         <Flame className="h-4 w-4 fill-current" />
         Let's Lock In
       </motion.button>
 
-      <p className="text-[10px] font-sans font-normal text-zinc-700">Campus-only. No randos. Just builders.</p>
+      <p className="text-[10px] font-normal text-zinc-700 pb-2">Campus-only. No randos. Just builders.</p>
     </div>
   );
 }
@@ -438,7 +749,7 @@ function CampusStep({
   return (
     <div className="space-y-6">
       <div>
-        <span className="text-[10px] font-black uppercase tracking-widest text-luxuryGold">
+        <span className="text-[10px] font-black uppercase tracking-widest text-cherryRed">
           Step 1 of 3
         </span>
         <h2 className="mt-1 text-2xl font-black tracking-tight text-white uppercase">
@@ -466,6 +777,18 @@ function CampusStep({
               <span className="flex-1 truncate text-xs">
                 {form.campusName || "Search your college..."}
               </span>
+              {form.campusName && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setForm((f: any) => ({ ...f, campusId: "", campusName: "" }));
+                  }}
+                  className="p-1 rounded-md hover:bg-white/10 text-zinc-400 hover:text-white transition"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
               <ChevronRight
                 className={`h-3.5 w-3.5 text-zinc-600 transition-transform ${showCampusList ? "rotate-90" : ""}`}
               />
@@ -535,7 +858,7 @@ function CampusStep({
                 setForm((f: any) => ({ ...f, campusName: e.target.value }))
               }
               placeholder="e.g. VIT Bhopal, Lovely Professional University..."
-              className="h-11 border-white/10 bg-black/40 text-sm text-white placeholder-zinc-700 focus:border-luxuryGold focus:ring-2 focus:ring-luxuryGold/10"
+              className="h-11 border-white/10 bg-black/40 text-sm text-white placeholder-zinc-700 focus:border-cherryRed focus:ring-2 focus:ring-cherryRed/10"
             />
             <p className="text-[9px] text-zinc-600 leading-tight">
               Make sure spelling is exact. This is how your campus community will find you.
@@ -554,7 +877,7 @@ function CampusStep({
               setForm((f: any) => ({ ...f, college_id: e.target.value }))
             }
             placeholder="e.g. RA2211003010123"
-            className={`h-11 border-white/10 bg-black/40 text-sm text-white placeholder-zinc-700 uppercase focus:border-luxuryGold focus:ring-2 focus:ring-luxuryGold/10 ${
+            className={`h-11 border-white/10 bg-black/40 text-sm text-white placeholder-zinc-700 uppercase focus:border-cherryRed focus:ring-2 focus:ring-cherryRed/10 ${
               validation.college_id ? "border-cherryRed/50" : ""
             }`}
           />
@@ -572,7 +895,7 @@ function CampusStep({
               setForm((f: any) => ({ ...f, department: e.target.value }))
             }
             placeholder="e.g. CSE, 3rd Year"
-            className={`h-11 border-white/10 bg-black/40 text-sm text-white placeholder-zinc-700 focus:border-luxuryGold focus:ring-2 focus:ring-luxuryGold/10 ${
+            className={`h-11 border-white/10 bg-black/40 text-sm text-white placeholder-zinc-700 focus:border-cherryRed focus:ring-2 focus:ring-cherryRed/10 ${
               validation.department ? "border-cherryRed/50" : ""
             }`}
           />
@@ -590,7 +913,7 @@ function ProfileStep({ form, setForm, validation, onNext }: any) {
   return (
     <div className="space-y-6">
       <div>
-        <span className="text-[10px] font-black uppercase tracking-widest text-luxuryGold">
+        <span className="text-[10px] font-black uppercase tracking-widest text-cherryRed">
           Step 2 of 3
         </span>
         <h2 className="mt-1 text-2xl font-black tracking-tight text-white uppercase">
@@ -611,7 +934,7 @@ function ProfileStep({ form, setForm, validation, onNext }: any) {
               setForm((f: any) => ({ ...f, name: e.target.value }))
             }
             placeholder="e.g. Faheem"
-            className={`h-11 border-white/10 bg-black/40 text-sm text-white placeholder-zinc-700 focus:border-luxuryGold focus:ring-2 focus:ring-luxuryGold/10 ${
+            className={`h-11 border-white/10 bg-black/40 text-sm text-white placeholder-zinc-700 focus:border-cherryRed focus:ring-2 focus:ring-cherryRed/10 ${
               validation.name ? "border-cherryRed/50" : ""
             }`}
           />
@@ -639,7 +962,7 @@ function ProfileStep({ form, setForm, validation, onNext }: any) {
             }
             placeholder="What are you building? What do you vibe with?"
             rows={3}
-            className="w-full resize-none rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm text-white placeholder-zinc-700 outline-none transition focus:border-luxuryGold focus:ring-2 focus:ring-luxuryGold/10"
+            className="w-full resize-none rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-sm text-white placeholder-zinc-700 outline-none transition focus:border-cherryRed focus:ring-2 focus:ring-cherryRed/10"
           />
         </div>
 
@@ -655,7 +978,7 @@ function ProfileStep({ form, setForm, validation, onNext }: any) {
               setForm((f: any) => ({ ...f, location: e.target.value }))
             }
             placeholder="e.g. Main Library, Block B Canteen, IT Lab"
-            className="h-11 border-white/10 bg-black/40 text-sm text-white placeholder-zinc-700 focus:border-luxuryGold focus:ring-2 focus:ring-luxuryGold/10"
+            className="h-11 border-white/10 bg-black/40 text-sm text-white placeholder-zinc-700 focus:border-cherryRed focus:ring-2 focus:ring-cherryRed/10"
           />
         </div>
 
@@ -667,11 +990,11 @@ function ProfileStep({ form, setForm, validation, onNext }: any) {
 }
 
 /* ─── STEP 3: SOCIALS & INTERESTS ────────────────────────────────── */
-function SocialsStep({ form, setForm, toggleInterest, onNext, onBack }: any) {
+function SocialsStep({ form, setForm, toggleInterest, onNext, onBack, interestCategories }: any) {
   return (
     <div className="space-y-6">
       <div>
-        <span className="text-[10px] font-black uppercase tracking-widest text-luxuryGold">
+        <span className="text-[10px] font-black uppercase tracking-widest text-cherryRed">
           Step 3 of 3
         </span>
         <h2 className="mt-1 text-2xl font-black tracking-tight text-white uppercase">
@@ -695,7 +1018,7 @@ function SocialsStep({ form, setForm, toggleInterest, onNext, onBack }: any) {
                 setForm((f: any) => ({ ...f, instagram: e.target.value.replace("@", "") }))
               }
               placeholder="username"
-              className="h-11 border-white/10 bg-black/40 pl-7 text-sm text-white placeholder-zinc-700 focus:border-luxuryGold focus:ring-2 focus:ring-luxuryGold/10"
+              className="h-11 border-white/10 bg-black/40 pl-7 text-sm text-white placeholder-zinc-700 focus:border-cherryRed focus:ring-2 focus:ring-cherryRed/10"
             />
           </div>
         </div>
@@ -714,7 +1037,7 @@ function SocialsStep({ form, setForm, toggleInterest, onNext, onBack }: any) {
                 setForm((f: any) => ({ ...f, github: e.target.value.replace("@", "") }))
               }
               placeholder="username"
-              className="h-11 border-white/10 bg-black/40 pl-7 text-sm text-white placeholder-zinc-700 focus:border-luxuryGold focus:ring-2 focus:ring-luxuryGold/10"
+              className="h-11 border-white/10 bg-black/40 pl-7 text-sm text-white placeholder-zinc-700 focus:border-cherryRed focus:ring-2 focus:ring-cherryRed/10"
             />
           </div>
         </div>
@@ -725,21 +1048,25 @@ function SocialsStep({ form, setForm, toggleInterest, onNext, onBack }: any) {
             Focus Interests <span className="text-zinc-600 normal-case font-medium">(pick any)</span>
           </label>
           <div className="flex flex-wrap gap-2">
-            {INTEREST_TAGS.map(({ id, label, icon: Icon }) => {
-              const selected = form.interests.includes(id);
+            {interestCategories.map((cat: any) => {
+              const selected = form.interests.includes(String(cat.id));
               return (
                 <button
-                  key={id}
+                  key={cat.id}
                   type="button"
-                  onClick={() => toggleInterest(id)}
+                  onClick={() => toggleInterest(String(cat.id))}
                   className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-bold transition-all active:scale-95 ${
                     selected
-                      ? "border-luxuryGold/60 bg-luxuryGold/15 text-luxuryGold"
+                      ? "border-cherryRed bg-cherryRed/10 text-white"
                       : "border-white/10 bg-white/5 text-zinc-500 hover:border-white/20 hover:text-zinc-300"
                   }`}
+                  style={{
+                    borderColor: selected ? cat.color : undefined,
+                    backgroundColor: selected ? `${cat.color}1c` : undefined,
+                    color: selected ? cat.color : undefined
+                  }}
                 >
-                  <Icon className="h-3 w-3" />
-                  {label}
+                  {cat.name}
                   {selected && <Check className="h-3 w-3" />}
                 </button>
               );
@@ -813,15 +1140,20 @@ function TutorialStep({
 
         {/* Dot indicators */}
         <div className="flex justify-center gap-1.5 pb-4">
-          {TUTORIAL_STEPS.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setTutorialSlide(i)}
-              className={`h-1.5 rounded-full transition-all ${
-                i === tutorialSlide ? "w-5 bg-cherryRed" : "w-1.5 bg-zinc-700"
-              }`}
-            />
-          ))}
+          {TUTORIAL_STEPS.map((_, i) => {
+            const colors = ["bg-cherryRed", "bg-white", "bg-cherryRed", "bg-cherryRed"];
+            const activeColor = colors[i];
+            const inactiveColor = i === 1 ? "bg-white/20" : "bg-cherryRed/20";
+            return (
+              <button
+                key={i}
+                onClick={() => setTutorialSlide(i)}
+                className={`h-1.5 w-6 rounded-full transition-all duration-300 ${
+                  i === tutorialSlide ? activeColor : inactiveColor
+                }`}
+              />
+            );
+          })}
         </div>
       </div>
 
@@ -849,12 +1181,168 @@ function TutorialStep({
           animate={{ opacity: 1, y: 0 }}
           onClick={onSubmit}
           disabled={busy}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-cherryRed/35 bg-[#810100] py-4 text-sm font-black uppercase tracking-widest text-cotton shadow-[0_0_30px_rgba(129,1,0,0.25)] transition-all hover:bg-[#810100]/95 active:scale-[0.97] disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-cherryRed/35 bg-cherryRed py-4 text-sm font-black uppercase tracking-widest text-white shadow-[0_0_30px_rgba(210,4,45,0.25)] transition-all hover:bg-cherryRed/95 active:scale-[0.97] disabled:opacity-50"
         >
           <Flame className="h-4 w-4 fill-current" />
           {busy ? "Activating Pilot..." : "Initialize Lock-In"}
         </motion.button>
       )}
+    </div>
+  );
+}
+
+/* ─── STEP 1: EMAIL VERIFICATION ──────────────────────────────────── */
+function EmailStep({ form, setForm, validation, onNext, busy, mode, setMode }: any) {
+  return (
+    <div className="space-y-6">
+      <div>
+        <span className="text-[10px] font-black uppercase tracking-widest text-cherryRed font-mono">
+          {mode === "login" ? "Student Login" : mode === "signup" ? "Student Signup" : "Password Recovery"}
+        </span>
+        <h2 className="mt-1 text-2xl font-black tracking-tight text-white uppercase font-display">
+          {mode === "login" ? "Welcome Back" : mode === "signup" ? "Create Account" : "Reset Password"}
+        </h2>
+        <p className="mt-1 text-xs text-zinc-500 font-sans">
+          {mode === "login" 
+            ? "Log in with your college credentials." 
+            : mode === "signup" 
+              ? "Use your college email domain to unlock your campus feed." 
+              : "Enter your email to receive a password reset link."}
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        {/* Email input */}
+        <div className="space-y-1.5">
+          <label className="text-[9px] font-black uppercase tracking-wider text-zinc-400 flex items-center gap-1.5 font-mono">
+            <Mail className="h-3.5 w-3.5" />
+            College Email Address
+          </label>
+          <Input
+            type="email"
+            value={form.email}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setForm((f: any) => ({ ...f, email: e.target.value }))
+            }
+            placeholder="e.g. name@srmist.edu.in"
+            className={`h-11 border-white/10 bg-black/40 text-xs text-white placeholder-zinc-700 focus:border-cherryRed focus:ring-2 focus:ring-cherryRed/10 ${
+              validation.email ? "border-cherryRed/50" : ""
+            }`}
+          />
+          {validation.email && <FieldError msg={validation.email} />}
+        </div>
+
+        {/* Password input (only shown for login and signup modes) */}
+        {mode !== "forgot" && (
+          <div className="space-y-1.5">
+            <label className="text-[9px] font-black uppercase tracking-wider text-zinc-400 flex items-center gap-1.5 font-mono">
+              <KeyRound className="h-3.5 w-3.5" />
+              Password
+            </label>
+            <Input
+              type="password"
+              value={form.password}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setForm((f: any) => ({ ...f, password: e.target.value }))
+              }
+              placeholder="Min. 6 characters"
+              className={`h-11 border-white/10 bg-black/40 text-xs text-white placeholder-zinc-700 focus:border-cherryRed focus:ring-2 focus:ring-cherryRed/10 ${
+                validation.password ? "border-cherryRed/50" : ""
+              }`}
+            />
+            {validation.password && <FieldError msg={validation.password} />}
+          </div>
+        )}
+      </div>
+
+      {/* Button */}
+      <button
+        type="button"
+        disabled={busy || !form.email || (mode !== "forgot" && !form.password)}
+        onClick={onNext}
+        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-cherryRed/20 bg-cherryRed py-4 text-sm font-sans font-medium text-white shadow-[0_0_30px_rgba(210,4,45,0.25)] transition-all hover:bg-cherryRed/95 active:scale-[0.97] disabled:opacity-50"
+      >
+        {busy 
+          ? "Processing..." 
+          : mode === "login" 
+            ? "Log In →" 
+            : mode === "signup" 
+              ? "Sign Up →" 
+              : "Send Reset Link →"}
+      </button>
+
+      {/* Mode selectors */}
+      <div className="flex flex-col gap-2.5 items-center pt-2">
+        {mode === "login" ? (
+          <>
+            <button
+              type="button"
+              onClick={() => setMode("signup")}
+              className="text-[10px] font-black uppercase tracking-wider text-zinc-400 hover:text-white transition font-mono"
+            >
+              Don't have an account? Sign Up
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("forgot")}
+              className="text-[10px] font-bold text-zinc-500 hover:text-zinc-300 transition font-mono"
+            >
+              Forgot Password?
+            </button>
+          </>
+        ) : mode === "signup" ? (
+          <button
+            type="button"
+            onClick={() => setMode("login")}
+            className="text-[10px] font-black uppercase tracking-wider text-zinc-400 hover:text-white transition font-mono"
+          >
+            Already have an account? Log In
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setMode("login")}
+            className="text-[10px] font-black uppercase tracking-wider text-zinc-400 hover:text-white transition font-mono"
+          >
+            Back to Log In
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ─── STEP 2: EMAIL VERIFICATION CHECK INBOX ──────────────────────── */
+function OtpStep({ form, onNext, busy, mode, setMode }: any) {
+  return (
+    <div className="space-y-6 text-center">
+      <div className="flex flex-col items-center">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-cherryRed/30 bg-cherryRed/10 shadow-[0_0_30px_rgba(129,1,0,0.2)] mb-4">
+          <Mail className="h-7 w-7 text-cherryRed animate-pulse" />
+        </div>
+        <span className="text-[10px] font-black uppercase tracking-widest text-cherryRed font-mono">
+          {mode === "forgot" ? "Check Email" : "Verification Required"}
+        </span>
+        <h2 className="mt-1 text-xl font-black tracking-tight text-white uppercase font-display">
+          {mode === "forgot" ? "Reset Link Sent" : "Verify Student Email"}
+        </h2>
+        <p className="mt-2 text-xs text-zinc-400 leading-relaxed max-w-[280px] mx-auto font-sans">
+          {mode === "forgot"
+            ? `We have sent a secure password reset link to ${form.email}. Please follow the link in your inbox to reset your password.`
+            : `We have sent a verification confirmation link to ${form.email}. Please click the link to verify your email and unlock your campus feed.`}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        onClick={() => {
+          setMode("login");
+          onNext(); // Will trigger goNext, going back to Login
+        }}
+        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 py-4 text-xs font-display font-black uppercase tracking-widest text-white transition-all hover:bg-white/10 active:scale-[0.97]"
+      >
+        Back to Log In
+      </button>
     </div>
   );
 }
@@ -871,7 +1359,7 @@ function NextButton({
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full items-center justify-center gap-2 rounded-2xl border border-luxuryGold/35 bg-luxuryGold py-4 text-sm font-black uppercase tracking-widest text-black shadow-[0_0_20px_rgba(197,168,128,0.2)] transition-all hover:bg-luxuryGold/95 active:scale-[0.97]"
+      className="flex w-full items-center justify-center gap-2 rounded-2xl border border-cherryRed/35 bg-cherryRed py-4 text-sm font-black uppercase tracking-widest text-white shadow-[0_0_20px_rgba(210,4,45,0.25)] transition-all hover:bg-cherryRed/95 active:scale-[0.97]"
     >
       {label}
       <ChevronRight className="h-4 w-4" />

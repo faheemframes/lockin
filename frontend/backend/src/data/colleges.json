@@ -1,0 +1,4092 @@
+[
+  {
+    "college_name": "Birla Institute of Technology and Science, Pilani - Dubai Campus",
+    "short_name": "BITS Pilani Dubai",
+    "college_type": "BITS",
+    "city": "Dubai",
+    "state": "International",
+    "country": "India",
+    "official_domain": "bits-dubai.ac.in",
+    "email_domain": "dubai.bits-pilani.ac.in"
+  },
+  {
+    "college_name": "Birla Institute of Technology and Science, Pilani - Goa Campus",
+    "short_name": "BITS Pilani Goa",
+    "college_type": "BITS",
+    "city": "Zuarinagar",
+    "state": "Goa",
+    "country": "India",
+    "official_domain": "bits-pilani.ac.in",
+    "email_domain": "goa.bits-pilani.ac.in"
+  },
+  {
+    "college_name": "Birla Institute of Technology and Science, Pilani - Hyderabad Campus",
+    "short_name": "BITS Pilani Hyderabad",
+    "college_type": "BITS",
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "bits-pilani.ac.in",
+    "email_domain": "hyderabad.bits-pilani.ac.in"
+  },
+  {
+    "college_name": "Birla Institute of Technology and Science, Pilani - Pilani Campus",
+    "short_name": "BITS Pilani",
+    "college_type": "BITS",
+    "city": "Pilani",
+    "state": "Rajasthan",
+    "country": "India",
+    "official_domain": "bits-pilani.ac.in",
+    "email_domain": "pilani.bits-pilani.ac.in"
+  },
+  {
+    "college_name": "Aligarh Muslim University",
+    "short_name": "AMU",
+    "college_type": "Central University",
+    "city": "Aligarh",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "amu.ac.in",
+    "email_domain": "amu.ac.in"
+  },
+  {
+    "college_name": "Assam University",
+    "short_name": "AU Silchar",
+    "college_type": "Central University",
+    "city": "Silchar",
+    "state": "Assam",
+    "country": "India",
+    "official_domain": "aus.ac.in",
+    "email_domain": "aus.ac.in"
+  },
+  {
+    "college_name": "Babasaheb Bhimrao Ambedkar University",
+    "short_name": "BBAU",
+    "college_type": "Central University",
+    "city": "Lucknow",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "bbau.ac.in",
+    "email_domain": "bbau.ac.in"
+  },
+  {
+    "college_name": "Banaras Hindu University",
+    "short_name": "BHU",
+    "college_type": "Central University",
+    "city": "Varanasi",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "bhu.ac.in",
+    "email_domain": "bhu.ac.in"
+  },
+  {
+    "college_name": "Central University of Gujarat",
+    "short_name": "CUG",
+    "college_type": "Central University",
+    "city": "Gandhinagar",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "cug.ac.in",
+    "email_domain": "cug.ac.in"
+  },
+  {
+    "college_name": "Central University of Haryana",
+    "short_name": "CUH",
+    "college_type": "Central University",
+    "city": "Mahendragarh",
+    "state": "Haryana",
+    "country": "India",
+    "official_domain": "cuh.ac.in",
+    "email_domain": "cuh.ac.in"
+  },
+  {
+    "college_name": "Central University of Himachal Pradesh",
+    "short_name": "CUHP",
+    "college_type": "Central University",
+    "city": "Dharamshala",
+    "state": "Himachal Pradesh",
+    "country": "India",
+    "official_domain": "cuhimachal.ac.in",
+    "email_domain": "cuhimachal.ac.in"
+  },
+  {
+    "college_name": "Central University of Jammu",
+    "short_name": "CUJ",
+    "college_type": "Central University",
+    "city": "Jammu",
+    "state": "Jammu and Kashmir",
+    "country": "India",
+    "official_domain": "cujammu.ac.in",
+    "email_domain": "cujammu.ac.in"
+  },
+  {
+    "college_name": "Central University of Jharkhand",
+    "short_name": "CUJ",
+    "college_type": "Central University",
+    "city": "Ranchi",
+    "state": "Jharkhand",
+    "country": "India",
+    "official_domain": "cuj.ac.in",
+    "email_domain": "cuj.ac.in"
+  },
+  {
+    "college_name": "Central University of Karnataka",
+    "short_name": "CUK",
+    "college_type": "Central University",
+    "city": "Kalaburagi",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "cuk.ac.in",
+    "email_domain": "cuk.ac.in"
+  },
+  {
+    "college_name": "Central University of Kashmir",
+    "short_name": "CUKashmir",
+    "college_type": "Central University",
+    "city": "Ganderbal",
+    "state": "Jammu and Kashmir",
+    "country": "India",
+    "official_domain": "cukashmir.ac.in",
+    "email_domain": "cukashmir.ac.in"
+  },
+  {
+    "college_name": "Central University of Kerala",
+    "short_name": "CUKerala",
+    "college_type": "Central University",
+    "city": "Kasaragod",
+    "state": "Kerala",
+    "country": "India",
+    "official_domain": "cukerala.ac.in",
+    "email_domain": "cukerala.ac.in"
+  },
+  {
+    "college_name": "Central University of Odisha",
+    "short_name": "CUO",
+    "college_type": "Central University",
+    "city": "Koraput",
+    "state": "Odisha",
+    "country": "India",
+    "official_domain": "cuo.ac.in",
+    "email_domain": "cuo.ac.in"
+  },
+  {
+    "college_name": "Central University of Punjab",
+    "short_name": "CUP",
+    "college_type": "Central University",
+    "city": "Bathinda",
+    "state": "Punjab",
+    "country": "India",
+    "official_domain": "cup.edu.in",
+    "email_domain": "cup.edu.in"
+  },
+  {
+    "college_name": "Central University of Rajasthan",
+    "short_name": "CURAJ",
+    "college_type": "Central University",
+    "city": "Ajmer",
+    "state": "Rajasthan",
+    "country": "India",
+    "official_domain": "curaj.ac.in",
+    "email_domain": "curaj.ac.in"
+  },
+  {
+    "college_name": "Central University of South Bihar",
+    "short_name": "CUSB",
+    "college_type": "Central University",
+    "city": "Gaya",
+    "state": "Bihar",
+    "country": "India",
+    "official_domain": "cusb.ac.in",
+    "email_domain": "cusb.ac.in"
+  },
+  {
+    "college_name": "Central University of Tamil Nadu",
+    "short_name": "CUTN",
+    "college_type": "Central University",
+    "city": "Thiruvarur",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "cutn.ac.in",
+    "email_domain": "cutn.ac.in"
+  },
+  {
+    "college_name": "English and Foreign Languages University",
+    "short_name": "EFLU",
+    "college_type": "Central University",
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "efluniversity.ac.in",
+    "email_domain": "efluniversity.ac.in"
+  },
+  {
+    "college_name": "Hemvati Nandan Bahuguna Garhwal University",
+    "short_name": "HNBGU",
+    "college_type": "Central University",
+    "city": "Srinagar",
+    "state": "Uttarakhand",
+    "country": "India",
+    "official_domain": "hnbgu.ac.in",
+    "email_domain": "hnbgu.ac.in"
+  },
+  {
+    "college_name": "Indira Gandhi National Open University",
+    "short_name": "IGNOU",
+    "college_type": "Central University",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "official_domain": "ignou.ac.in",
+    "email_domain": "ignou.ac.in"
+  },
+  {
+    "college_name": "Jamia Millia Islamia",
+    "short_name": "JMI",
+    "college_type": "Central University",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "official_domain": "jmi.ac.in",
+    "email_domain": "jmi.ac.in"
+  },
+  {
+    "college_name": "Jawaharlal Nehru University",
+    "short_name": "JNU",
+    "college_type": "Central University",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "official_domain": "jnu.ac.in",
+    "email_domain": "jnu.ac.in"
+  },
+  {
+    "college_name": "Mahatma Gandhi Antarrashtriya Hindi Vishwavidyalaya",
+    "short_name": "MGAHV",
+    "college_type": "Central University",
+    "city": "Wardha",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "hindivishwa.org",
+    "email_domain": "hindivishwa.org"
+  },
+  {
+    "college_name": "Manipur University",
+    "short_name": "MU Imphal",
+    "college_type": "Central University",
+    "city": "Imphal",
+    "state": "Manipur",
+    "country": "India",
+    "official_domain": "manipuruniv.ac.in",
+    "email_domain": "manipuruniv.ac.in"
+  },
+  {
+    "college_name": "Maulana Azad National Urdu University",
+    "short_name": "MANUU",
+    "college_type": "Central University",
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "manuu.edu.in",
+    "email_domain": "manuu.edu.in"
+  },
+  {
+    "college_name": "Mizoram University",
+    "short_name": "MZU",
+    "college_type": "Central University",
+    "city": "Aizawl",
+    "state": "Mizoram",
+    "country": "India",
+    "official_domain": "mzu.edu.in",
+    "email_domain": "mzu.edu.in"
+  },
+  {
+    "college_name": "Nagaland University",
+    "short_name": "NU",
+    "college_type": "Central University",
+    "city": "Lumami",
+    "state": "Nagaland",
+    "country": "India",
+    "official_domain": "nagalanduniversity.ac.in",
+    "email_domain": "nagalanduniversity.ac.in"
+  },
+  {
+    "college_name": "North Eastern Hill University",
+    "short_name": "NEHU",
+    "college_type": "Central University",
+    "city": "Shillong",
+    "state": "Meghalaya",
+    "country": "India",
+    "official_domain": "nehu.ac.in",
+    "email_domain": "nehu.ac.in"
+  },
+  {
+    "college_name": "Pondicherry University",
+    "short_name": "PU",
+    "college_type": "Central University",
+    "city": "Puducherry",
+    "state": "Puducherry",
+    "country": "India",
+    "official_domain": "pondiuni.edu.in",
+    "email_domain": "pondiuni.edu.in"
+  },
+  {
+    "college_name": "Rajiv Gandhi University",
+    "short_name": "RGU",
+    "college_type": "Central University",
+    "city": "Itanagar",
+    "state": "Arunachal Pradesh",
+    "country": "India",
+    "official_domain": "rgu.ac.in",
+    "email_domain": "rgu.ac.in"
+  },
+  {
+    "college_name": "Sikkim University",
+    "short_name": "SU",
+    "college_type": "Central University",
+    "city": "Gangtok",
+    "state": "Sikkim",
+    "country": "India",
+    "official_domain": "cus.ac.in",
+    "email_domain": "cus.ac.in"
+  },
+  {
+    "college_name": "Tezpur University",
+    "short_name": "TU",
+    "college_type": "Central University",
+    "city": "Tezpur",
+    "state": "Assam",
+    "country": "India",
+    "official_domain": "tezu.ernet.in",
+    "email_domain": "tezu.ernet.in"
+  },
+  {
+    "college_name": "Tripura University",
+    "short_name": "TU Agartala",
+    "college_type": "Central University",
+    "city": "Agartala",
+    "state": "Tripura",
+    "country": "India",
+    "official_domain": "tripurauniv.ac.in",
+    "email_domain": "tripurauniv.ac.in"
+  },
+  {
+    "college_name": "University of Allahabad",
+    "short_name": "AU",
+    "college_type": "Central University",
+    "city": "Allahabad",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "allduniv.ac.in",
+    "email_domain": "allduniv.ac.in"
+  },
+  {
+    "college_name": "University of Delhi",
+    "short_name": "DU",
+    "college_type": "Central University",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "official_domain": "du.ac.in",
+    "email_domain": "du.ac.in"
+  },
+  {
+    "college_name": "University of Hyderabad",
+    "short_name": "UoH",
+    "college_type": "Central University",
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "uohyd.ac.in",
+    "email_domain": "uohyd.ac.in"
+  },
+  {
+    "college_name": "Visva-Bharati University",
+    "short_name": "Visva-Bharati",
+    "college_type": "Central University",
+    "city": "Santiniketan",
+    "state": "West Bengal",
+    "country": "India",
+    "official_domain": "visvabharati.ac.in",
+    "email_domain": "visvabharati.ac.in"
+  },
+  {
+    "college_name": "Amrita Vishwa Vidyapeetham, Amritapuri Campus",
+    "short_name": "Amrita Amritapuri",
+    "college_type": "Deemed University",
+    "city": "Kollam",
+    "state": "Kerala",
+    "country": "India",
+    "official_domain": "amrita.edu",
+    "email_domain": "am.amrita.edu"
+  },
+  {
+    "college_name": "Amrita Vishwa Vidyapeetham, Bengaluru Campus",
+    "short_name": "Amrita Bengaluru",
+    "college_type": "Deemed University",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "amrita.edu",
+    "email_domain": "blr.amrita.edu"
+  },
+  {
+    "college_name": "Amrita Vishwa Vidyapeetham, Chennai Campus",
+    "short_name": "Amrita Chennai",
+    "college_type": "Deemed University",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "amrita.edu",
+    "email_domain": "ch.amrita.edu"
+  },
+  {
+    "college_name": "Amrita Vishwa Vidyapeetham, Coimbatore Campus",
+    "short_name": "Amrita Coimbatore",
+    "college_type": "Deemed University",
+    "city": "Coimbatore",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "amrita.edu",
+    "email_domain": "cb.amrita.edu"
+  },
+  {
+    "college_name": "Banasthali Vidyapith",
+    "short_name": "Banasthali",
+    "college_type": "Deemed University",
+    "city": "Banasthali",
+    "state": "Rajasthan",
+    "country": "India",
+    "official_domain": "banasthali.org",
+    "email_domain": "banasthali.org"
+  },
+  {
+    "college_name": "Bharath Institute of Higher Education and Research",
+    "short_name": "BIHER",
+    "college_type": "Deemed University",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "bharathuniv.ac.in",
+    "email_domain": "bharathuniv.ac.in"
+  },
+  {
+    "college_name": "Bharati Vidyapeeth Deemed University",
+    "short_name": "BVDU",
+    "college_type": "Deemed University",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "bharatividyapeeth.edu",
+    "email_domain": "bharatividyapeeth.edu"
+  },
+  {
+    "college_name": "CEPT University",
+    "short_name": "CEPT",
+    "college_type": "Deemed University",
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "cept.ac.in",
+    "email_domain": "cept.ac.in"
+  },
+  {
+    "college_name": "Chitkara University, Himachal Pradesh",
+    "short_name": "Chitkara HP",
+    "college_type": "Deemed University",
+    "city": "Solan",
+    "state": "Himachal Pradesh",
+    "country": "India",
+    "official_domain": "chitkara.edu.in",
+    "email_domain": "chitkara.edu.in"
+  },
+  {
+    "college_name": "Chitkara University, Punjab",
+    "short_name": "Chitkara Punjab",
+    "college_type": "Deemed University",
+    "city": "Rajpura",
+    "state": "Punjab",
+    "country": "India",
+    "official_domain": "chitkara.edu.in",
+    "email_domain": "chitkara.edu.in"
+  },
+  {
+    "college_name": "Datta Meghe Institute of Higher Education and Research",
+    "short_name": "DMIHER",
+    "college_type": "Deemed University",
+    "city": "Wardha",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "dmiher.edu.in",
+    "email_domain": "dmiher.edu.in"
+  },
+  {
+    "college_name": "DIT University",
+    "short_name": "DITU",
+    "college_type": "Deemed University",
+    "city": "Dehradun",
+    "state": "Uttarakhand",
+    "country": "India",
+    "official_domain": "dituniversity.edu.in",
+    "email_domain": "dituniversity.edu.in"
+  },
+  {
+    "college_name": "Dr. D.Y. Patil Vidyapeeth",
+    "short_name": "DPU",
+    "college_type": "Deemed University",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "dpu.edu.in",
+    "email_domain": "dpu.edu.in"
+  },
+  {
+    "college_name": "Graphic Era Deemed University",
+    "short_name": "Graphic Era",
+    "college_type": "Deemed University",
+    "city": "Dehradun",
+    "state": "Uttarakhand",
+    "country": "India",
+    "official_domain": "geu.ac.in",
+    "email_domain": "geu.ac.in"
+  },
+  {
+    "college_name": "ICFAI Foundation for Higher Education",
+    "short_name": "IFHE",
+    "college_type": "Deemed University",
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "ifheindia.org",
+    "email_domain": "ifheindia.org"
+  },
+  {
+    "college_name": "IILM University",
+    "short_name": "IILM",
+    "college_type": "Deemed University",
+    "city": "Greater Noida",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "iilm.edu",
+    "email_domain": "iilm.edu"
+  },
+  {
+    "college_name": "Jaypee Institute of Information Technology",
+    "short_name": "JIIT",
+    "college_type": "Deemed University",
+    "city": "Noida",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "jiit.ac.in",
+    "email_domain": "jiit.ac.in"
+  },
+  {
+    "college_name": "JSS Academy of Higher Education and Research",
+    "short_name": "JSSAHER",
+    "college_type": "Deemed University",
+    "city": "Mysuru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "jssuni.edu.in",
+    "email_domain": "jssuni.edu.in"
+  },
+  {
+    "college_name": "Kalasalingam Academy of Research and Education",
+    "short_name": "KARE",
+    "college_type": "Deemed University",
+    "city": "Krishnankoil",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "kalasalingam.ac.in",
+    "email_domain": "kalasalingam.ac.in"
+  },
+  {
+    "college_name": "Karunya Institute of Technology and Sciences",
+    "short_name": "Karunya",
+    "college_type": "Deemed University",
+    "city": "Coimbatore",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "karunya.edu",
+    "email_domain": "karunya.edu"
+  },
+  {
+    "college_name": "Koneru Lakshmaiah Education Foundation",
+    "short_name": "KL University",
+    "college_type": "Deemed University",
+    "city": "Guntur",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "official_domain": "kluniversity.in",
+    "email_domain": "kluniversity.in"
+  },
+  {
+    "college_name": "Manipal Academy of Higher Education",
+    "short_name": "MAHE",
+    "college_type": "Deemed University",
+    "city": "Manipal",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "manipal.edu",
+    "email_domain": "learner.manipal.edu"
+  },
+  {
+    "college_name": "Manav Rachna International Institute of Research and Studies",
+    "short_name": "MRIIRS",
+    "college_type": "Deemed University",
+    "city": "Faridabad",
+    "state": "Haryana",
+    "country": "India",
+    "official_domain": "manavrachna.edu.in",
+    "email_domain": "manavrachna.edu.in"
+  },
+  {
+    "college_name": "NIMS University",
+    "short_name": "NIMS",
+    "college_type": "Deemed University",
+    "city": "Jaipur",
+    "state": "Rajasthan",
+    "country": "India",
+    "official_domain": "nimsuniversity.org",
+    "email_domain": "nimsuniversity.org"
+  },
+  {
+    "college_name": "NIIT University",
+    "short_name": "NU",
+    "college_type": "Deemed University",
+    "city": "Neemrana",
+    "state": "Rajasthan",
+    "country": "India",
+    "official_domain": "niituniversity.in",
+    "email_domain": "niituniversity.in"
+  },
+  {
+    "college_name": "O.P. Jindal Global University",
+    "short_name": "JGU",
+    "college_type": "Deemed University",
+    "city": "Sonipat",
+    "state": "Haryana",
+    "country": "India",
+    "official_domain": "jgu.edu.in",
+    "email_domain": "jgu.edu.in"
+  },
+  {
+    "college_name": "Periyar Maniammai Institute of Science and Technology",
+    "short_name": "PMIST",
+    "college_type": "Deemed University",
+    "city": "Thanjavur",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "pmu.edu",
+    "email_domain": "pmu.edu"
+  },
+  {
+    "college_name": "Rai University",
+    "short_name": "Rai Univ",
+    "college_type": "Deemed University",
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "raiuniversity.edu",
+    "email_domain": "raiuniversity.edu"
+  },
+  {
+    "college_name": "RKDF University",
+    "short_name": "RKDF",
+    "college_type": "Deemed University",
+    "city": "Bhopal",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "official_domain": "rkdf.ac.in",
+    "email_domain": "rkdf.ac.in"
+  },
+  {
+    "college_name": "Sathyabama Institute of Science and Technology",
+    "short_name": "Sathyabama",
+    "college_type": "Deemed University",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "sathyabama.ac.in",
+    "email_domain": "sathyabama.ac.in"
+  },
+  {
+    "college_name": "Saveetha Institute of Medical and Technical Sciences",
+    "short_name": "SIMATS",
+    "college_type": "Deemed University",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "saveetha.com",
+    "email_domain": "saveetha.com"
+  },
+  {
+    "college_name": "Shanmugha Arts, Science, Technology and Research Academy",
+    "short_name": "SASTRA",
+    "college_type": "Deemed University",
+    "city": "Thanjavur",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "sastra.edu",
+    "email_domain": "sastra.edu"
+  },
+  {
+    "college_name": "Shoolini University",
+    "short_name": "Shoolini",
+    "college_type": "Deemed University",
+    "city": "Solan",
+    "state": "Himachal Pradesh",
+    "country": "India",
+    "official_domain": "shooliniuniversity.com",
+    "email_domain": "shooliniuniversity.com"
+  },
+  {
+    "college_name": "Sri Chandrasekharendra Saraswathi Viswa Mahavidyalaya",
+    "short_name": "SCSVMV",
+    "college_type": "Deemed University",
+    "city": "Kanchipuram",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "kfrfranchipuram.ac.in",
+    "email_domain": "kfrfranchipuram.ac.in"
+  },
+  {
+    "college_name": "Sri Ramachandra Institute of Higher Education and Research",
+    "short_name": "SRIHER",
+    "college_type": "Deemed University",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "sriramachandra.edu.in",
+    "email_domain": "sriramachandra.edu.in"
+  },
+  {
+    "college_name": "Sri Sathya Sai Institute of Higher Learning",
+    "short_name": "SSSIHL",
+    "college_type": "Deemed University",
+    "city": "Puttaparthi",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "official_domain": "sssihl.edu.in",
+    "email_domain": "sssihl.edu.in"
+  },
+  {
+    "college_name": "SRM Institute of Science and Technology",
+    "short_name": "SRMIST",
+    "college_type": "Deemed University",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "srmist.edu.in",
+    "email_domain": "srmist.edu.in"
+  },
+  {
+    "college_name": "Suresh Gyan Vihar University",
+    "short_name": "SGVU",
+    "college_type": "Deemed University",
+    "city": "Jaipur",
+    "state": "Rajasthan",
+    "country": "India",
+    "official_domain": "gyanvihar.org",
+    "email_domain": "gyanvihar.org"
+  },
+  {
+    "college_name": "Symbiosis International University",
+    "short_name": "SIU",
+    "college_type": "Deemed University",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "siu.edu.in",
+    "email_domain": "siu.edu.in"
+  },
+  {
+    "college_name": "Thapar Institute of Engineering and Technology",
+    "short_name": "Thapar",
+    "college_type": "Deemed University",
+    "city": "Patiala",
+    "state": "Punjab",
+    "country": "India",
+    "official_domain": "thapar.edu",
+    "email_domain": "thapar.edu"
+  },
+  {
+    "college_name": "Vel Tech Rangarajan Dr. Sagunthala R&D Institute of Science and Technology",
+    "short_name": "Vel Tech",
+    "college_type": "Deemed University",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "veltech.edu.in",
+    "email_domain": "veltech.edu.in"
+  },
+  {
+    "college_name": "Vignan's Foundation for Science, Technology and Research",
+    "short_name": "VFSTR",
+    "college_type": "Deemed University",
+    "city": "Guntur",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "official_domain": "vignan.ac.in",
+    "email_domain": "vignan.ac.in"
+  },
+  {
+    "college_name": "Vellore Institute of Technology",
+    "short_name": "VIT Vellore",
+    "college_type": "Deemed University",
+    "city": "Vellore",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "vit.ac.in",
+    "email_domain": "vit.ac.in"
+  },
+  {
+    "college_name": "Vellore Institute of Technology, Andhra Pradesh",
+    "short_name": "VIT-AP",
+    "college_type": "Deemed University",
+    "city": "Amaravati",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "official_domain": "vitap.ac.in",
+    "email_domain": "vitap.ac.in"
+  },
+  {
+    "college_name": "Vellore Institute of Technology, Bhopal",
+    "short_name": "VIT Bhopal",
+    "college_type": "Deemed University",
+    "city": "Bhopal",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "official_domain": "vitbhopal.ac.in",
+    "email_domain": "vitbhopal.ac.in"
+  },
+  {
+    "college_name": "Vellore Institute of Technology, Chennai",
+    "short_name": "VIT Chennai",
+    "college_type": "Deemed University",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "vit.ac.in",
+    "email_domain": "vit.ac.in"
+  },
+  {
+    "college_name": "Vinayaka Mission's Research Foundation",
+    "short_name": "VMRF",
+    "college_type": "Deemed University",
+    "city": "Salem",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "vmrf.edu.in",
+    "email_domain": "vmrf.edu.in"
+  },
+  {
+    "college_name": "Woxsen University",
+    "short_name": "Woxsen",
+    "college_type": "Deemed University",
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "woxsen.edu.in",
+    "email_domain": "woxsen.edu.in"
+  },
+  {
+    "college_name": "ABV Indian Institute of Information Technology and Management, Gwalior",
+    "short_name": "IIITM Gwalior",
+    "college_type": "IIIT",
+    "city": "Gwalior",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "official_domain": "iiitm.ac.in",
+    "email_domain": "iiitm.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Agartala",
+    "short_name": "IIIT Agartala",
+    "college_type": "IIIT",
+    "city": "Agartala",
+    "state": "Tripura",
+    "country": "India",
+    "official_domain": "iiitagartala.ac.in",
+    "email_domain": "iiitagartala.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Allahabad",
+    "short_name": "IIIT Allahabad",
+    "college_type": "IIIT",
+    "city": "Allahabad",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "iiita.ac.in",
+    "email_domain": "iiita.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Bhagalpur",
+    "short_name": "IIIT Bhagalpur",
+    "college_type": "IIIT",
+    "city": "Bhagalpur",
+    "state": "Bihar",
+    "country": "India",
+    "official_domain": "iiitbh.ac.in",
+    "email_domain": "iiitbh.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Bhopal",
+    "short_name": "IIIT Bhopal",
+    "college_type": "IIIT",
+    "city": "Bhopal",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "official_domain": "iiitbhopal.ac.in",
+    "email_domain": "iiitbhopal.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Dharwad",
+    "short_name": "IIIT Dharwad",
+    "college_type": "IIIT",
+    "city": "Dharwad",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "iiitdwd.ac.in",
+    "email_domain": "iiitdwd.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Kalyani",
+    "short_name": "IIIT Kalyani",
+    "college_type": "IIIT",
+    "city": "Kalyani",
+    "state": "West Bengal",
+    "country": "India",
+    "official_domain": "iiitkalyani.ac.in",
+    "email_domain": "iiitkalyani.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Kota",
+    "short_name": "IIIT Kota",
+    "college_type": "IIIT",
+    "city": "Kota",
+    "state": "Rajasthan",
+    "country": "India",
+    "official_domain": "iiitkota.ac.in",
+    "email_domain": "iiitkota.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Kottayam",
+    "short_name": "IIIT Kottayam",
+    "college_type": "IIIT",
+    "city": "Kottayam",
+    "state": "Kerala",
+    "country": "India",
+    "official_domain": "iiitkottayam.ac.in",
+    "email_domain": "iiitkottayam.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Lucknow",
+    "short_name": "IIIT Lucknow",
+    "college_type": "IIIT",
+    "city": "Lucknow",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "iiitl.ac.in",
+    "email_domain": "iiitl.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Manipur",
+    "short_name": "IIIT Manipur",
+    "college_type": "IIIT",
+    "city": "Imphal",
+    "state": "Manipur",
+    "country": "India",
+    "official_domain": "iiitmanipur.ac.in",
+    "email_domain": "iiitmanipur.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Nagpur",
+    "short_name": "IIIT Nagpur",
+    "college_type": "IIIT",
+    "city": "Nagpur",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "iiitn.ac.in",
+    "email_domain": "iiitn.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Pune",
+    "short_name": "IIIT Pune",
+    "college_type": "IIIT",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "iiitp.ac.in",
+    "email_domain": "iiitp.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Raichur",
+    "short_name": "IIIT Raichur",
+    "college_type": "IIIT",
+    "city": "Raichur",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "iiitr.ac.in",
+    "email_domain": "iiitr.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Ranchi",
+    "short_name": "IIIT Ranchi",
+    "college_type": "IIIT",
+    "city": "Ranchi",
+    "state": "Jharkhand",
+    "country": "India",
+    "official_domain": "iiitranchi.ac.in",
+    "email_domain": "iiitranchi.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Sonepat",
+    "short_name": "IIIT Sonepat",
+    "college_type": "IIIT",
+    "city": "Sonepat",
+    "state": "Haryana",
+    "country": "India",
+    "official_domain": "iiitsonepat.ac.in",
+    "email_domain": "iiitsonepat.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Sri City",
+    "short_name": "IIIT Sri City",
+    "college_type": "IIIT",
+    "city": "Sri City",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "official_domain": "iiits.in",
+    "email_domain": "iiits.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Surat",
+    "short_name": "IIIT Surat",
+    "college_type": "IIIT",
+    "city": "Surat",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "iiitsurat.ac.in",
+    "email_domain": "iiitsurat.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Tiruchirappalli",
+    "short_name": "IIIT Trichy",
+    "college_type": "IIIT",
+    "city": "Tiruchirappalli",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "iiitt.ac.in",
+    "email_domain": "iiitt.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Una",
+    "short_name": "IIIT Una",
+    "college_type": "IIIT",
+    "city": "Una",
+    "state": "Himachal Pradesh",
+    "country": "India",
+    "official_domain": "iiitu.ac.in",
+    "email_domain": "iiitu.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Information Technology, Vadodara",
+    "short_name": "IIIT Vadodara",
+    "college_type": "IIIT",
+    "city": "Vadodara",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "iiitvadodara.ac.in",
+    "email_domain": "iiitvadodara.ac.in"
+  },
+  {
+    "college_name": "Indraprastha Institute of Information Technology, Delhi",
+    "short_name": "IIIT Delhi",
+    "college_type": "IIIT",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "official_domain": "iiitd.ac.in",
+    "email_domain": "iiitd.ac.in"
+  },
+  {
+    "college_name": "International Institute of Information Technology, Bangalore",
+    "short_name": "IIIT Bangalore",
+    "college_type": "IIIT",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "iiitb.ac.in",
+    "email_domain": "iiitb.ac.in"
+  },
+  {
+    "college_name": "International Institute of Information Technology, Hyderabad",
+    "short_name": "IIIT Hyderabad",
+    "college_type": "IIIT",
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "iiit.ac.in",
+    "email_domain": "iiit.ac.in"
+  },
+  {
+    "college_name": "IIITDM Jabalpur",
+    "short_name": "IIITDM Jabalpur",
+    "college_type": "IIIT",
+    "city": "Jabalpur",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "official_domain": "iiitdmj.ac.in",
+    "email_domain": "iiitdmj.ac.in"
+  },
+  {
+    "college_name": "IIITDM Kancheepuram",
+    "short_name": "IIITDM Kancheepuram",
+    "college_type": "IIIT",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "iiitdm.ac.in",
+    "email_domain": "iiitdm.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Bhilai",
+    "short_name": "IIT Bhilai",
+    "college_type": "IIT",
+    "city": "Bhilai",
+    "state": "Chhattisgarh",
+    "country": "India",
+    "official_domain": "iitbhilai.ac.in",
+    "email_domain": "iitbhilai.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Bhubaneswar",
+    "short_name": "IIT Bhubaneswar",
+    "college_type": "IIT",
+    "city": "Bhubaneswar",
+    "state": "Odisha",
+    "country": "India",
+    "official_domain": "iitbbs.ac.in",
+    "email_domain": "iitbbs.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Bombay",
+    "short_name": "IIT Bombay",
+    "college_type": "IIT",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "iitb.ac.in",
+    "email_domain": "iitb.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Delhi",
+    "short_name": "IIT Delhi",
+    "college_type": "IIT",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "official_domain": "iitd.ac.in",
+    "email_domain": "iitd.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Dharwad",
+    "short_name": "IIT Dharwad",
+    "college_type": "IIT",
+    "city": "Dharwad",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "iitdh.ac.in",
+    "email_domain": "iitdh.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology (Indian School of Mines) Dhanbad",
+    "short_name": "IIT Dhanbad",
+    "college_type": "IIT",
+    "city": "Dhanbad",
+    "state": "Jharkhand",
+    "country": "India",
+    "official_domain": "iitism.ac.in",
+    "email_domain": "iitism.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Gandhinagar",
+    "short_name": "IIT Gandhinagar",
+    "college_type": "IIT",
+    "city": "Gandhinagar",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "iitgn.ac.in",
+    "email_domain": "iitgn.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Goa",
+    "short_name": "IIT Goa",
+    "college_type": "IIT",
+    "city": "Ponda",
+    "state": "Goa",
+    "country": "India",
+    "official_domain": "iitgoa.ac.in",
+    "email_domain": "iitgoa.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Guwahati",
+    "short_name": "IIT Guwahati",
+    "college_type": "IIT",
+    "city": "Guwahati",
+    "state": "Assam",
+    "country": "India",
+    "official_domain": "iitg.ac.in",
+    "email_domain": "iitg.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Hyderabad",
+    "short_name": "IIT Hyderabad",
+    "college_type": "IIT",
+    "city": "Sangareddy",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "iith.ac.in",
+    "email_domain": "iith.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Indore",
+    "short_name": "IIT Indore",
+    "college_type": "IIT",
+    "city": "Indore",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "official_domain": "iiti.ac.in",
+    "email_domain": "iiti.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Jammu",
+    "short_name": "IIT Jammu",
+    "college_type": "IIT",
+    "city": "Jammu",
+    "state": "Jammu and Kashmir",
+    "country": "India",
+    "official_domain": "iitjammu.ac.in",
+    "email_domain": "iitjammu.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Jodhpur",
+    "short_name": "IIT Jodhpur",
+    "college_type": "IIT",
+    "city": "Jodhpur",
+    "state": "Rajasthan",
+    "country": "India",
+    "official_domain": "iitj.ac.in",
+    "email_domain": "iitj.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Kanpur",
+    "short_name": "IIT Kanpur",
+    "college_type": "IIT",
+    "city": "Kanpur",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "iitk.ac.in",
+    "email_domain": "iitk.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Kharagpur",
+    "short_name": "IIT Kharagpur",
+    "college_type": "IIT",
+    "city": "Kharagpur",
+    "state": "West Bengal",
+    "country": "India",
+    "official_domain": "iitkgp.ac.in",
+    "email_domain": "iitkgp.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Madras",
+    "short_name": "IIT Madras",
+    "college_type": "IIT",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "iitm.ac.in",
+    "email_domain": "iitm.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Mandi",
+    "short_name": "IIT Mandi",
+    "college_type": "IIT",
+    "city": "Mandi",
+    "state": "Himachal Pradesh",
+    "country": "India",
+    "official_domain": "iitmandi.ac.in",
+    "email_domain": "iitmandi.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Palakkad",
+    "short_name": "IIT Palakkad",
+    "college_type": "IIT",
+    "city": "Palakkad",
+    "state": "Kerala",
+    "country": "India",
+    "official_domain": "iitpkd.ac.in",
+    "email_domain": "iitpkd.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Patna",
+    "short_name": "IIT Patna",
+    "college_type": "IIT",
+    "city": "Patna",
+    "state": "Bihar",
+    "country": "India",
+    "official_domain": "iitp.ac.in",
+    "email_domain": "iitp.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Roorkee",
+    "short_name": "IIT Roorkee",
+    "college_type": "IIT",
+    "city": "Roorkee",
+    "state": "Uttarakhand",
+    "country": "India",
+    "official_domain": "iitr.ac.in",
+    "email_domain": "iitr.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Ropar",
+    "short_name": "IIT Ropar",
+    "college_type": "IIT",
+    "city": "Rupnagar",
+    "state": "Punjab",
+    "country": "India",
+    "official_domain": "iitrpr.ac.in",
+    "email_domain": "iitrpr.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology Tirupati",
+    "short_name": "IIT Tirupati",
+    "college_type": "IIT",
+    "city": "Tirupati",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "official_domain": "iittp.ac.in",
+    "email_domain": "iittp.ac.in"
+  },
+  {
+    "college_name": "Indian Institute of Technology (BHU) Varanasi",
+    "short_name": "IIT BHU",
+    "college_type": "IIT",
+    "city": "Varanasi",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "iitbhu.ac.in",
+    "email_domain": "iitbhu.ac.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Bathinda",
+    "short_name": "AIIMS Bathinda",
+    "college_type": "Medical",
+    "city": "Bathinda",
+    "state": "Punjab",
+    "country": "India",
+    "official_domain": "aiimsbathinda.edu.in",
+    "email_domain": "aiimsbathinda.edu.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Bhopal",
+    "short_name": "AIIMS Bhopal",
+    "college_type": "Medical",
+    "city": "Bhopal",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "official_domain": "aiimsbhopal.edu.in",
+    "email_domain": "aiimsbhopal.edu.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Bhubaneswar",
+    "short_name": "AIIMS Bhubaneswar",
+    "college_type": "Medical",
+    "city": "Bhubaneswar",
+    "state": "Odisha",
+    "country": "India",
+    "official_domain": "aiimsbhubaneswar.nic.in",
+    "email_domain": "aiimsbhubaneswar.nic.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Bibinagar",
+    "short_name": "AIIMS Bibinagar",
+    "college_type": "Medical",
+    "city": "Bibinagar",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "aiimsbibinagar.edu.in",
+    "email_domain": "aiimsbibinagar.edu.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Bilaspur",
+    "short_name": "AIIMS Bilaspur",
+    "college_type": "Medical",
+    "city": "Bilaspur",
+    "state": "Himachal Pradesh",
+    "country": "India",
+    "official_domain": "aiimsbilaspur.edu.in",
+    "email_domain": "aiimsbilaspur.edu.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Deoghar",
+    "short_name": "AIIMS Deoghar",
+    "college_type": "Medical",
+    "city": "Deoghar",
+    "state": "Jharkhand",
+    "country": "India",
+    "official_domain": "aiimsdeoghar.edu.in",
+    "email_domain": "aiimsdeoghar.edu.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Gorakhpur",
+    "short_name": "AIIMS Gorakhpur",
+    "college_type": "Medical",
+    "city": "Gorakhpur",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "aiimsgorakhpur.edu.in",
+    "email_domain": "aiimsgorakhpur.edu.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Jammu",
+    "short_name": "AIIMS Jammu",
+    "college_type": "Medical",
+    "city": "Jammu",
+    "state": "Jammu and Kashmir",
+    "country": "India",
+    "official_domain": "aiimsjammu.edu.in",
+    "email_domain": "aiimsjammu.edu.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Jodhpur",
+    "short_name": "AIIMS Jodhpur",
+    "college_type": "Medical",
+    "city": "Jodhpur",
+    "state": "Rajasthan",
+    "country": "India",
+    "official_domain": "aiimsjodhpur.edu.in",
+    "email_domain": "aiimsjodhpur.edu.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Kalyani",
+    "short_name": "AIIMS Kalyani",
+    "college_type": "Medical",
+    "city": "Kalyani",
+    "state": "West Bengal",
+    "country": "India",
+    "official_domain": "aiimskalyani.edu.in",
+    "email_domain": "aiimskalyani.edu.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Madurai",
+    "short_name": "AIIMS Madurai",
+    "college_type": "Medical",
+    "city": "Madurai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "aiimsmadurai.edu.in",
+    "email_domain": "aiimsmadurai.edu.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Mangalagiri",
+    "short_name": "AIIMS Mangalagiri",
+    "college_type": "Medical",
+    "city": "Mangalagiri",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "official_domain": "aiimsmangalagiri.edu.in",
+    "email_domain": "aiimsmangalagiri.edu.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Nagpur",
+    "short_name": "AIIMS Nagpur",
+    "college_type": "Medical",
+    "city": "Nagpur",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "aiimsnagpur.edu.in",
+    "email_domain": "aiimsnagpur.edu.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, New Delhi",
+    "short_name": "AIIMS Delhi",
+    "college_type": "Medical",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "official_domain": "aiims.edu",
+    "email_domain": "aiims.edu"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Patna",
+    "short_name": "AIIMS Patna",
+    "college_type": "Medical",
+    "city": "Patna",
+    "state": "Bihar",
+    "country": "India",
+    "official_domain": "aiimspatna.edu.in",
+    "email_domain": "aiimspatna.edu.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Raebareli",
+    "short_name": "AIIMS Raebareli",
+    "college_type": "Medical",
+    "city": "Raebareli",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "aiimsraebareli.edu.in",
+    "email_domain": "aiimsraebareli.edu.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Raipur",
+    "short_name": "AIIMS Raipur",
+    "college_type": "Medical",
+    "city": "Raipur",
+    "state": "Chhattisgarh",
+    "country": "India",
+    "official_domain": "aiimsraipur.edu.in",
+    "email_domain": "aiimsraipur.edu.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Rajkot",
+    "short_name": "AIIMS Rajkot",
+    "college_type": "Medical",
+    "city": "Rajkot",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "aiimsrajkot.edu.in",
+    "email_domain": "aiimsrajkot.edu.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Rishikesh",
+    "short_name": "AIIMS Rishikesh",
+    "college_type": "Medical",
+    "city": "Rishikesh",
+    "state": "Uttarakhand",
+    "country": "India",
+    "official_domain": "aiimsrishikesh.edu.in",
+    "email_domain": "aiimsrishikesh.edu.in"
+  },
+  {
+    "college_name": "All India Institute of Medical Sciences, Vijaypur",
+    "short_name": "AIIMS Vijaypur",
+    "college_type": "Medical",
+    "city": "Vijaypur",
+    "state": "Jammu and Kashmir",
+    "country": "India",
+    "official_domain": "aiimsvijaypur.edu.in",
+    "email_domain": "aiimsvijaypur.edu.in"
+  },
+  {
+    "college_name": "Armed Forces Medical College",
+    "short_name": "AFMC",
+    "college_type": "Medical",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "afmc.nic.in",
+    "email_domain": "afmc.nic.in"
+  },
+  {
+    "college_name": "Bangalore Medical College and Research Institute",
+    "short_name": "BMCRI",
+    "college_type": "Medical",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "bmcri.org",
+    "email_domain": "bmcri.org"
+  },
+  {
+    "college_name": "B.J. Medical College, Ahmedabad",
+    "short_name": "BJMC Ahmedabad",
+    "college_type": "Medical",
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "bjmcamd.edu.in",
+    "email_domain": "bjmcamd.edu.in"
+  },
+  {
+    "college_name": "B.J. Medical College, Pune",
+    "short_name": "BJMC Pune",
+    "college_type": "Medical",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "bjmcpune.org",
+    "email_domain": "bjmcpune.org"
+  },
+  {
+    "college_name": "Christian Medical College, Ludhiana",
+    "short_name": "CMC Ludhiana",
+    "college_type": "Medical",
+    "city": "Ludhiana",
+    "state": "Punjab",
+    "country": "India",
+    "official_domain": "cmcludhiana.in",
+    "email_domain": "cmcludhiana.in"
+  },
+  {
+    "college_name": "Christian Medical College, Vellore",
+    "short_name": "CMC Vellore",
+    "college_type": "Medical",
+    "city": "Vellore",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "cmcvellore.ac.in",
+    "email_domain": "cmcvellore.ac.in"
+  },
+  {
+    "college_name": "Government Medical College, Chandigarh",
+    "short_name": "GMCH Chandigarh",
+    "college_type": "Medical",
+    "city": "Chandigarh",
+    "state": "Chandigarh",
+    "country": "India",
+    "official_domain": "gmch.gov.in",
+    "email_domain": "gmch.gov.in"
+  },
+  {
+    "college_name": "Government Medical College, Kozhikode",
+    "short_name": "GMC Kozhikode",
+    "college_type": "Medical",
+    "city": "Kozhikode",
+    "state": "Kerala",
+    "country": "India",
+    "official_domain": "gmckozhikode.org",
+    "email_domain": "gmckozhikode.org"
+  },
+  {
+    "college_name": "Government Medical College, Nagpur",
+    "short_name": "GMC Nagpur",
+    "college_type": "Medical",
+    "city": "Nagpur",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "gmcnagpur.gov.in",
+    "email_domain": "gmcnagpur.gov.in"
+  },
+  {
+    "college_name": "Government Medical College, Thiruvananthapuram",
+    "short_name": "GMC Trivandrum",
+    "college_type": "Medical",
+    "city": "Thiruvananthapuram",
+    "state": "Kerala",
+    "country": "India",
+    "official_domain": "tmc.kerala.gov.in",
+    "email_domain": "tmc.kerala.gov.in"
+  },
+  {
+    "college_name": "Grant Medical College",
+    "short_name": "GMC Mumbai",
+    "college_type": "Medical",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "gmcjjh.org",
+    "email_domain": "gmcjjh.org"
+  },
+  {
+    "college_name": "Institute of Medical Sciences, BHU",
+    "short_name": "IMS BHU",
+    "college_type": "Medical",
+    "city": "Varanasi",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "bhu.ac.in",
+    "email_domain": "bhu.ac.in"
+  },
+  {
+    "college_name": "Jawaharlal Institute of Postgraduate Medical Education and Research",
+    "short_name": "JIPMER",
+    "college_type": "Medical",
+    "city": "Puducherry",
+    "state": "Puducherry",
+    "country": "India",
+    "official_domain": "jipmer.edu.in",
+    "email_domain": "jipmer.edu.in"
+  },
+  {
+    "college_name": "Kasturba Medical College, Mangalore",
+    "short_name": "KMC Mangalore",
+    "college_type": "Medical",
+    "city": "Mangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "manipal.edu",
+    "email_domain": "manipal.edu"
+  },
+  {
+    "college_name": "Kasturba Medical College, Manipal",
+    "short_name": "KMC Manipal",
+    "college_type": "Medical",
+    "city": "Manipal",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "manipal.edu",
+    "email_domain": "manipal.edu"
+  },
+  {
+    "college_name": "King George's Medical University",
+    "short_name": "KGMU",
+    "college_type": "Medical",
+    "city": "Lucknow",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "kgmu.org",
+    "email_domain": "kgmu.org"
+  },
+  {
+    "college_name": "Lady Hardinge Medical College",
+    "short_name": "LHMC",
+    "college_type": "Medical",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "official_domain": "lhmc-hosp.gov.in",
+    "email_domain": "lhmc-hosp.gov.in"
+  },
+  {
+    "college_name": "Madras Medical College",
+    "short_name": "MMC",
+    "college_type": "Medical",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "mmc.tn.gov.in",
+    "email_domain": "mmc.tn.gov.in"
+  },
+  {
+    "college_name": "Maulana Azad Medical College",
+    "short_name": "MAMC",
+    "college_type": "Medical",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "official_domain": "mamc.ac.in",
+    "email_domain": "mamc.ac.in"
+  },
+  {
+    "college_name": "Nizam's Institute of Medical Sciences",
+    "short_name": "NIMS Hyderabad",
+    "college_type": "Medical",
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "nims.edu.in",
+    "email_domain": "nims.edu.in"
+  },
+  {
+    "college_name": "Osmania Medical College",
+    "short_name": "OMC",
+    "college_type": "Medical",
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "osmaniamch.in",
+    "email_domain": "osmaniamch.in"
+  },
+  {
+    "college_name": "Postgraduate Institute of Medical Education and Research",
+    "short_name": "PGIMER",
+    "college_type": "Medical",
+    "city": "Chandigarh",
+    "state": "Chandigarh",
+    "country": "India",
+    "official_domain": "pgimer.edu.in",
+    "email_domain": "pgimer.edu.in"
+  },
+  {
+    "college_name": "Pt. B.D. Sharma Postgraduate Institute of Medical Sciences",
+    "short_name": "PGIMS Rohtak",
+    "college_type": "Medical",
+    "city": "Rohtak",
+    "state": "Haryana",
+    "country": "India",
+    "official_domain": "pgimsrohtak.ac.in",
+    "email_domain": "pgimsrohtak.ac.in"
+  },
+  {
+    "college_name": "Sanjay Gandhi Postgraduate Institute of Medical Sciences",
+    "short_name": "SGPGIMS",
+    "college_type": "Medical",
+    "city": "Lucknow",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "sgpgi.ac.in",
+    "email_domain": "sgpgi.ac.in"
+  },
+  {
+    "college_name": "Seth G.S. Medical College",
+    "short_name": "Seth GSMC",
+    "college_type": "Medical",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "kem.edu",
+    "email_domain": "kem.edu"
+  },
+  {
+    "college_name": "Sher-i-Kashmir Institute of Medical Sciences",
+    "short_name": "SKIMS",
+    "college_type": "Medical",
+    "city": "Srinagar",
+    "state": "Jammu and Kashmir",
+    "country": "India",
+    "official_domain": "skims.ac.in",
+    "email_domain": "skims.ac.in"
+  },
+  {
+    "college_name": "Sri Ramachandra Medical College and Research Institute",
+    "short_name": "SRMC",
+    "college_type": "Medical",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "sriramachandra.edu.in",
+    "email_domain": "sriramachandra.edu.in"
+  },
+  {
+    "college_name": "St. John's Medical College",
+    "short_name": "SJMC",
+    "college_type": "Medical",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "stjohns.in",
+    "email_domain": "stjohns.in"
+  },
+  {
+    "college_name": "Topiwala National Medical College",
+    "short_name": "TNMC",
+    "college_type": "Medical",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "tnmc.edu.in",
+    "email_domain": "tnmc.edu.in"
+  },
+  {
+    "college_name": "University College of Medical Sciences",
+    "short_name": "UCMS Delhi",
+    "college_type": "Medical",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "official_domain": "ucms.ac.in",
+    "email_domain": "ucms.ac.in"
+  },
+  {
+    "college_name": "Vardhman Mahavir Medical College",
+    "short_name": "VMMC",
+    "college_type": "Medical",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "official_domain": "vmmc-sjh.nic.in",
+    "email_domain": "vmmc-sjh.nic.in"
+  },
+  {
+    "college_name": "Mahatma Gandhi Medical College and Research Institute",
+    "short_name": "MGMCRI",
+    "college_type": "Medical",
+    "city": "Puducherry",
+    "state": "Puducherry",
+    "country": "India",
+    "official_domain": "mgmcri.ac.in",
+    "email_domain": "mgmcri.ac.in"
+  },
+  {
+    "college_name": "Government Medical College, Amritsar",
+    "short_name": "GMC Amritsar",
+    "college_type": "Medical",
+    "city": "Amritsar",
+    "state": "Punjab",
+    "country": "India",
+    "official_domain": "gmcamritsar.com",
+    "email_domain": "gmcamritsar.com"
+  },
+  {
+    "college_name": "Government Medical College, Kottayam",
+    "short_name": "GMC Kottayam",
+    "college_type": "Medical",
+    "city": "Kottayam",
+    "state": "Kerala",
+    "country": "India",
+    "official_domain": "gmckt.ac.in",
+    "email_domain": "gmckt.ac.in"
+  },
+  {
+    "college_name": "Government Stanley Medical College",
+    "short_name": "Stanley MC",
+    "college_type": "Medical",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "stanleymedicalcollege.ac.in",
+    "email_domain": "stanleymedicalcollege.ac.in"
+  },
+  {
+    "college_name": "Indira Gandhi Medical College, Shimla",
+    "short_name": "IGMC Shimla",
+    "college_type": "Medical",
+    "city": "Shimla",
+    "state": "Himachal Pradesh",
+    "country": "India",
+    "official_domain": "igmcshimla.hp.gov.in",
+    "email_domain": "igmcshimla.hp.gov.in"
+  },
+  {
+    "college_name": "Lokmanya Tilak Municipal Medical College",
+    "short_name": "LTMMC",
+    "college_type": "Medical",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "ltmmc.ac.in",
+    "email_domain": "ltmmc.ac.in"
+  },
+  {
+    "college_name": "Motilal Nehru National Institute of Technology Allahabad",
+    "short_name": "MNNIT",
+    "college_type": "NIT",
+    "city": "Allahabad",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "mnnit.ac.in",
+    "email_domain": "mnnit.ac.in"
+  },
+  {
+    "college_name": "Malaviya National Institute of Technology Jaipur",
+    "short_name": "MNIT Jaipur",
+    "college_type": "NIT",
+    "city": "Jaipur",
+    "state": "Rajasthan",
+    "country": "India",
+    "official_domain": "mnit.ac.in",
+    "email_domain": "mnit.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Agartala",
+    "short_name": "NIT Agartala",
+    "college_type": "NIT",
+    "city": "Agartala",
+    "state": "Tripura",
+    "country": "India",
+    "official_domain": "nita.ac.in",
+    "email_domain": "nita.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Andhra Pradesh",
+    "short_name": "NIT AP",
+    "college_type": "NIT",
+    "city": "Tadepalligudem",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "official_domain": "nitandhra.ac.in",
+    "email_domain": "nitandhra.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Arunachal Pradesh",
+    "short_name": "NIT AP",
+    "college_type": "NIT",
+    "city": "Yupia",
+    "state": "Arunachal Pradesh",
+    "country": "India",
+    "official_domain": "nitap.ac.in",
+    "email_domain": "nitap.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Calicut",
+    "short_name": "NIT Calicut",
+    "college_type": "NIT",
+    "city": "Kozhikode",
+    "state": "Kerala",
+    "country": "India",
+    "official_domain": "nitc.ac.in",
+    "email_domain": "nitc.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Delhi",
+    "short_name": "NIT Delhi",
+    "college_type": "NIT",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "official_domain": "nitdelhi.ac.in",
+    "email_domain": "nitdelhi.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Durgapur",
+    "short_name": "NIT Durgapur",
+    "college_type": "NIT",
+    "city": "Durgapur",
+    "state": "West Bengal",
+    "country": "India",
+    "official_domain": "nitdgp.ac.in",
+    "email_domain": "nitdgp.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Goa",
+    "short_name": "NIT Goa",
+    "college_type": "NIT",
+    "city": "Ponda",
+    "state": "Goa",
+    "country": "India",
+    "official_domain": "nitgoa.ac.in",
+    "email_domain": "nitgoa.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Hamirpur",
+    "short_name": "NIT Hamirpur",
+    "college_type": "NIT",
+    "city": "Hamirpur",
+    "state": "Himachal Pradesh",
+    "country": "India",
+    "official_domain": "nith.ac.in",
+    "email_domain": "nith.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Jalandhar",
+    "short_name": "NIT Jalandhar",
+    "college_type": "NIT",
+    "city": "Jalandhar",
+    "state": "Punjab",
+    "country": "India",
+    "official_domain": "nitj.ac.in",
+    "email_domain": "nitj.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Jamshedpur",
+    "short_name": "NIT Jamshedpur",
+    "college_type": "NIT",
+    "city": "Jamshedpur",
+    "state": "Jharkhand",
+    "country": "India",
+    "official_domain": "nitjsr.ac.in",
+    "email_domain": "nitjsr.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Karnataka, Surathkal",
+    "short_name": "NITK Surathkal",
+    "college_type": "NIT",
+    "city": "Surathkal",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "nitk.ac.in",
+    "email_domain": "nitk.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Kurukshetra",
+    "short_name": "NIT Kurukshetra",
+    "college_type": "NIT",
+    "city": "Kurukshetra",
+    "state": "Haryana",
+    "country": "India",
+    "official_domain": "nitkkr.ac.in",
+    "email_domain": "nitkkr.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Manipur",
+    "short_name": "NIT Manipur",
+    "college_type": "NIT",
+    "city": "Imphal",
+    "state": "Manipur",
+    "country": "India",
+    "official_domain": "nitmanipur.ac.in",
+    "email_domain": "nitmanipur.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Meghalaya",
+    "short_name": "NIT Meghalaya",
+    "college_type": "NIT",
+    "city": "Shillong",
+    "state": "Meghalaya",
+    "country": "India",
+    "official_domain": "nitm.ac.in",
+    "email_domain": "nitm.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Mizoram",
+    "short_name": "NIT Mizoram",
+    "college_type": "NIT",
+    "city": "Aizawl",
+    "state": "Mizoram",
+    "country": "India",
+    "official_domain": "nitmz.ac.in",
+    "email_domain": "nitmz.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Nagaland",
+    "short_name": "NIT Nagaland",
+    "college_type": "NIT",
+    "city": "Dimapur",
+    "state": "Nagaland",
+    "country": "India",
+    "official_domain": "nitnagaland.ac.in",
+    "email_domain": "nitnagaland.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Patna",
+    "short_name": "NIT Patna",
+    "college_type": "NIT",
+    "city": "Patna",
+    "state": "Bihar",
+    "country": "India",
+    "official_domain": "nitp.ac.in",
+    "email_domain": "nitp.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Puducherry",
+    "short_name": "NIT Puducherry",
+    "college_type": "NIT",
+    "city": "Karaikal",
+    "state": "Puducherry",
+    "country": "India",
+    "official_domain": "nitpy.ac.in",
+    "email_domain": "nitpy.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Raipur",
+    "short_name": "NIT Raipur",
+    "college_type": "NIT",
+    "city": "Raipur",
+    "state": "Chhattisgarh",
+    "country": "India",
+    "official_domain": "nitrr.ac.in",
+    "email_domain": "nitrr.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Rourkela",
+    "short_name": "NIT Rourkela",
+    "college_type": "NIT",
+    "city": "Rourkela",
+    "state": "Odisha",
+    "country": "India",
+    "official_domain": "nitrkl.ac.in",
+    "email_domain": "nitrkl.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Sikkim",
+    "short_name": "NIT Sikkim",
+    "college_type": "NIT",
+    "city": "Ravangla",
+    "state": "Sikkim",
+    "country": "India",
+    "official_domain": "nitsikkim.ac.in",
+    "email_domain": "nitsikkim.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Silchar",
+    "short_name": "NIT Silchar",
+    "college_type": "NIT",
+    "city": "Silchar",
+    "state": "Assam",
+    "country": "India",
+    "official_domain": "nits.ac.in",
+    "email_domain": "nits.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Srinagar",
+    "short_name": "NIT Srinagar",
+    "college_type": "NIT",
+    "city": "Srinagar",
+    "state": "Jammu and Kashmir",
+    "country": "India",
+    "official_domain": "nitsri.ac.in",
+    "email_domain": "nitsri.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Tiruchirappalli",
+    "short_name": "NIT Trichy",
+    "college_type": "NIT",
+    "city": "Tiruchirappalli",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "nitt.edu",
+    "email_domain": "nitt.edu"
+  },
+  {
+    "college_name": "National Institute of Technology Uttarakhand",
+    "short_name": "NIT Uttarakhand",
+    "college_type": "NIT",
+    "city": "Srinagar",
+    "state": "Uttarakhand",
+    "country": "India",
+    "official_domain": "nituk.ac.in",
+    "email_domain": "nituk.ac.in"
+  },
+  {
+    "college_name": "National Institute of Technology Warangal",
+    "short_name": "NIT Warangal",
+    "college_type": "NIT",
+    "city": "Warangal",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "nitw.ac.in",
+    "email_domain": "nitw.ac.in"
+  },
+  {
+    "college_name": "Sardar Vallabhbhai National Institute of Technology, Surat",
+    "short_name": "SVNIT Surat",
+    "college_type": "NIT",
+    "city": "Surat",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "svnit.ac.in",
+    "email_domain": "svnit.ac.in"
+  },
+  {
+    "college_name": "Visvesvaraya National Institute of Technology, Nagpur",
+    "short_name": "VNIT Nagpur",
+    "college_type": "NIT",
+    "city": "Nagpur",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "vnit.ac.in",
+    "email_domain": "vnit.ac.in"
+  },
+  {
+    "college_name": "Acharya Institute of Technology",
+    "short_name": "AIT Bengaluru",
+    "college_type": "Private Engineering",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "acharya.ac.in",
+    "email_domain": "acharya.ac.in"
+  },
+  {
+    "college_name": "Amity University, Greater Noida",
+    "short_name": "Amity Noida",
+    "college_type": "Private Engineering",
+    "city": "Noida",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "amity.edu",
+    "email_domain": "s.amity.edu"
+  },
+  {
+    "college_name": "Amity University, Gurgaon",
+    "short_name": "Amity Gurgaon",
+    "college_type": "Private Engineering",
+    "city": "Gurgaon",
+    "state": "Haryana",
+    "country": "India",
+    "official_domain": "amity.edu",
+    "email_domain": "s.amity.edu"
+  },
+  {
+    "college_name": "Amity University, Jaipur",
+    "short_name": "Amity Jaipur",
+    "college_type": "Private Engineering",
+    "city": "Jaipur",
+    "state": "Rajasthan",
+    "country": "India",
+    "official_domain": "amity.edu",
+    "email_domain": "s.amity.edu"
+  },
+  {
+    "college_name": "Amity University, Kolkata",
+    "short_name": "Amity Kolkata",
+    "college_type": "Private Engineering",
+    "city": "Kolkata",
+    "state": "West Bengal",
+    "country": "India",
+    "official_domain": "amity.edu",
+    "email_domain": "s.amity.edu"
+  },
+  {
+    "college_name": "Amity University, Lucknow",
+    "short_name": "Amity Lucknow",
+    "college_type": "Private Engineering",
+    "city": "Lucknow",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "amity.edu",
+    "email_domain": "s.amity.edu"
+  },
+  {
+    "college_name": "Amity University, Mumbai",
+    "short_name": "Amity Mumbai",
+    "college_type": "Private Engineering",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "amity.edu",
+    "email_domain": "s.amity.edu"
+  },
+  {
+    "college_name": "Amity University, Raipur",
+    "short_name": "Amity Raipur",
+    "college_type": "Private Engineering",
+    "city": "Raipur",
+    "state": "Chhattisgarh",
+    "country": "India",
+    "official_domain": "amity.edu",
+    "email_domain": "s.amity.edu"
+  },
+  {
+    "college_name": "Ashoka University",
+    "short_name": "Ashoka",
+    "college_type": "Private Engineering",
+    "city": "Sonipat",
+    "state": "Haryana",
+    "country": "India",
+    "official_domain": "ashoka.edu.in",
+    "email_domain": "ashoka.edu.in"
+  },
+  {
+    "college_name": "B.M.S. College of Engineering",
+    "short_name": "BMSCE",
+    "college_type": "Private Engineering",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "bmsce.ac.in",
+    "email_domain": "bmsce.ac.in"
+  },
+  {
+    "college_name": "Bennett University",
+    "short_name": "Bennett",
+    "college_type": "Private Engineering",
+    "city": "Greater Noida",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "bennett.edu.in",
+    "email_domain": "bennett.edu.in"
+  },
+  {
+    "college_name": "Birla Institute of Technology, Mesra",
+    "short_name": "BIT Mesra",
+    "college_type": "Private Engineering",
+    "city": "Ranchi",
+    "state": "Jharkhand",
+    "country": "India",
+    "official_domain": "bitmesra.ac.in",
+    "email_domain": "bitmesra.ac.in"
+  },
+  {
+    "college_name": "Chandigarh University",
+    "short_name": "CU",
+    "college_type": "Private Engineering",
+    "city": "Mohali",
+    "state": "Punjab",
+    "country": "India",
+    "official_domain": "cuchd.in",
+    "email_domain": "cuchd.in"
+  },
+  {
+    "college_name": "Christ University",
+    "short_name": "Christ",
+    "college_type": "Private Engineering",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "christuniversity.in",
+    "email_domain": "christuniversity.in"
+  },
+  {
+    "college_name": "CMR Institute of Technology",
+    "short_name": "CMRIT",
+    "college_type": "Private Engineering",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "cmrit.ac.in",
+    "email_domain": "cmrit.ac.in"
+  },
+  {
+    "college_name": "Cochin University of Science and Technology",
+    "short_name": "CUSAT",
+    "college_type": "Private Engineering",
+    "city": "Kochi",
+    "state": "Kerala",
+    "country": "India",
+    "official_domain": "cusat.ac.in",
+    "email_domain": "cusat.ac.in"
+  },
+  {
+    "college_name": "College of Engineering, Guindy (Anna University)",
+    "short_name": "CEG",
+    "college_type": "Private Engineering",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "annauniv.edu",
+    "email_domain": "annauniv.edu"
+  },
+  {
+    "college_name": "College of Engineering Pune",
+    "short_name": "COEP",
+    "college_type": "Private Engineering",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "coep.org.in",
+    "email_domain": "coep.org.in"
+  },
+  {
+    "college_name": "Dayananda Sagar College of Engineering",
+    "short_name": "DSCE",
+    "college_type": "Private Engineering",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "dayanandasagar.edu.in",
+    "email_domain": "dayanandasagar.edu.in"
+  },
+  {
+    "college_name": "Delhi Technological University",
+    "short_name": "DTU",
+    "college_type": "Private Engineering",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "official_domain": "dtu.ac.in",
+    "email_domain": "dtu.ac.in"
+  },
+  {
+    "college_name": "Dhirubhai Ambani Institute of Information and Communication Technology",
+    "short_name": "DA-IICT",
+    "college_type": "Private Engineering",
+    "city": "Gandhinagar",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "daiict.ac.in",
+    "email_domain": "daiict.ac.in"
+  },
+  {
+    "college_name": "G.H. Raisoni College of Engineering",
+    "short_name": "GHRCE",
+    "college_type": "Private Engineering",
+    "city": "Nagpur",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "ghrce.raisoni.net",
+    "email_domain": "ghrce.raisoni.net"
+  },
+  {
+    "college_name": "Guru Gobind Singh Indraprastha University",
+    "short_name": "GGSIPU",
+    "college_type": "Private Engineering",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "official_domain": "ipu.ac.in",
+    "email_domain": "ipu.ac.in"
+  },
+  {
+    "college_name": "Heritage Institute of Technology",
+    "short_name": "HITK",
+    "college_type": "Private Engineering",
+    "city": "Kolkata",
+    "state": "West Bengal",
+    "country": "India",
+    "official_domain": "heritageit.edu",
+    "email_domain": "heritageit.edu"
+  },
+  {
+    "college_name": "IIMT University",
+    "short_name": "IIMT",
+    "college_type": "Private Engineering",
+    "city": "Meerut",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "iimtuniversity.ac.in",
+    "email_domain": "iimtuniversity.ac.in"
+  },
+  {
+    "college_name": "Institute of Engineering and Technology, Lucknow",
+    "short_name": "IET Lucknow",
+    "college_type": "Private Engineering",
+    "city": "Lucknow",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "ietlucknow.ac.in",
+    "email_domain": "ietlucknow.ac.in"
+  },
+  {
+    "college_name": "International Institute of Information Technology, Naya Raipur",
+    "short_name": "IIIT NR",
+    "college_type": "Private Engineering",
+    "city": "Naya Raipur",
+    "state": "Chhattisgarh",
+    "country": "India",
+    "official_domain": "iiitnr.edu.in",
+    "email_domain": "iiitnr.edu.in"
+  },
+  {
+    "college_name": "Jadavpur University",
+    "short_name": "JU",
+    "college_type": "Private Engineering",
+    "city": "Kolkata",
+    "state": "West Bengal",
+    "country": "India",
+    "official_domain": "jadavpuruniversity.in",
+    "email_domain": "jadavpuruniversity.in"
+  },
+  {
+    "college_name": "Jain University",
+    "short_name": "Jain",
+    "college_type": "Private Engineering",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "jainuniversity.ac.in",
+    "email_domain": "jainuniversity.ac.in"
+  },
+  {
+    "college_name": "Jamia Hamdard University",
+    "short_name": "Jamia Hamdard",
+    "college_type": "Private Engineering",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "official_domain": "jamiahamdard.ac.in",
+    "email_domain": "jamiahamdard.ac.in"
+  },
+  {
+    "college_name": "JSS Science and Technology University",
+    "short_name": "JSSTU",
+    "college_type": "Private Engineering",
+    "city": "Mysuru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "jssstuniv.in",
+    "email_domain": "jssstuniv.in"
+  },
+  {
+    "college_name": "K.J. Somaiya College of Engineering",
+    "short_name": "KJSCE",
+    "college_type": "Private Engineering",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "somaiya.edu",
+    "email_domain": "somaiya.edu"
+  },
+  {
+    "college_name": "Kalinga Institute of Industrial Technology",
+    "short_name": "KIIT",
+    "college_type": "Private Engineering",
+    "city": "Bhubaneswar",
+    "state": "Odisha",
+    "country": "India",
+    "official_domain": "kiit.ac.in",
+    "email_domain": "kiit.ac.in"
+  },
+  {
+    "college_name": "KLE Technological University",
+    "short_name": "KLE Tech",
+    "college_type": "Private Engineering",
+    "city": "Hubballi",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "kletech.ac.in",
+    "email_domain": "kletech.ac.in"
+  },
+  {
+    "college_name": "KLS Gogte Institute of Technology",
+    "short_name": "GIT Belgaum",
+    "college_type": "Private Engineering",
+    "city": "Belagavi",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "git.edu",
+    "email_domain": "git.edu"
+  },
+  {
+    "college_name": "LNMIIT Jaipur",
+    "short_name": "LNMIIT",
+    "college_type": "Private Engineering",
+    "city": "Jaipur",
+    "state": "Rajasthan",
+    "country": "India",
+    "official_domain": "lnmiit.ac.in",
+    "email_domain": "lnmiit.ac.in"
+  },
+  {
+    "college_name": "Lovely Professional University",
+    "short_name": "LPU",
+    "college_type": "Private Engineering",
+    "city": "Phagwara",
+    "state": "Punjab",
+    "country": "India",
+    "official_domain": "lpu.in",
+    "email_domain": "lpu.in"
+  },
+  {
+    "college_name": "M.S. Ramaiah Institute of Technology",
+    "short_name": "MSRIT",
+    "college_type": "Private Engineering",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "msrit.edu",
+    "email_domain": "msrit.edu"
+  },
+  {
+    "college_name": "Maharaja Sayajirao University of Baroda",
+    "short_name": "MSU Baroda",
+    "college_type": "Private Engineering",
+    "city": "Vadodara",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "msubaroda.ac.in",
+    "email_domain": "msubaroda.ac.in"
+  },
+  {
+    "college_name": "Mepco Schlenk Engineering College",
+    "short_name": "Mepco",
+    "college_type": "Private Engineering",
+    "city": "Sivakasi",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "mepcoeng.ac.in",
+    "email_domain": "mepcoeng.ac.in"
+  },
+  {
+    "college_name": "MIT Academy of Engineering, Pune",
+    "short_name": "MIT AOE",
+    "college_type": "Private Engineering",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "mitaoe.ac.in",
+    "email_domain": "mitaoe.ac.in"
+  },
+  {
+    "college_name": "MIT World Peace University",
+    "short_name": "MIT WPU",
+    "college_type": "Private Engineering",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "mitwpu.edu.in",
+    "email_domain": "mitwpu.edu.in"
+  },
+  {
+    "college_name": "Manipal Institute of Technology",
+    "short_name": "MIT Manipal",
+    "college_type": "Private Engineering",
+    "city": "Manipal",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "manipal.edu",
+    "email_domain": "learner.manipal.edu"
+  },
+  {
+    "college_name": "Model Engineering College",
+    "short_name": "MEC",
+    "college_type": "Private Engineering",
+    "city": "Kochi",
+    "state": "Kerala",
+    "country": "India",
+    "official_domain": "mec.ac.in",
+    "email_domain": "mec.ac.in"
+  },
+  {
+    "college_name": "Motilal Nehru National Institute of Technology, Prayagraj",
+    "short_name": "MNNIT Prayagraj",
+    "college_type": "Private Engineering",
+    "city": "Prayagraj",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "mnnit.ac.in",
+    "email_domain": "mnnit.ac.in"
+  },
+  {
+    "college_name": "Narsee Monjee Institute of Management Studies",
+    "short_name": "NMIMS",
+    "college_type": "Private Engineering",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "nmims.edu",
+    "email_domain": "nmims.edu"
+  },
+  {
+    "college_name": "National Institute of Engineering, Mysore",
+    "short_name": "NIE Mysore",
+    "college_type": "Private Engineering",
+    "city": "Mysuru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "nie.ac.in",
+    "email_domain": "nie.ac.in"
+  },
+  {
+    "college_name": "Netaji Subhas University of Technology",
+    "short_name": "NSUT",
+    "college_type": "Private Engineering",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "official_domain": "nsut.ac.in",
+    "email_domain": "nsut.ac.in"
+  },
+  {
+    "college_name": "New Horizon College of Engineering",
+    "short_name": "NHCE",
+    "college_type": "Private Engineering",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "newhorizonindia.edu",
+    "email_domain": "newhorizonindia.edu"
+  },
+  {
+    "college_name": "Nirma University",
+    "short_name": "Nirma",
+    "college_type": "Private Engineering",
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "nirmauni.ac.in",
+    "email_domain": "nirmauni.ac.in"
+  },
+  {
+    "college_name": "PES University",
+    "short_name": "PESU",
+    "college_type": "Private Engineering",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "pes.edu",
+    "email_domain": "pes.edu"
+  },
+  {
+    "college_name": "PSG College of Technology",
+    "short_name": "PSG Tech",
+    "college_type": "Private Engineering",
+    "city": "Coimbatore",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "psgtech.edu",
+    "email_domain": "psgtech.edu"
+  },
+  {
+    "college_name": "Panjab University",
+    "short_name": "PU Chandigarh",
+    "college_type": "Private Engineering",
+    "city": "Chandigarh",
+    "state": "Chandigarh",
+    "country": "India",
+    "official_domain": "puchd.ac.in",
+    "email_domain": "puchd.ac.in"
+  },
+  {
+    "college_name": "R.V. College of Engineering",
+    "short_name": "RVCE",
+    "college_type": "Private Engineering",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "rvce.edu.in",
+    "email_domain": "rvce.edu.in"
+  },
+  {
+    "college_name": "Ramaiah University of Applied Sciences",
+    "short_name": "RUAS",
+    "college_type": "Private Engineering",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "msruas.ac.in",
+    "email_domain": "msruas.ac.in"
+  },
+  {
+    "college_name": "REVA University",
+    "short_name": "REVA",
+    "college_type": "Private Engineering",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "rfreva.edu.in",
+    "email_domain": "reva.edu.in"
+  },
+  {
+    "college_name": "S.R.M. University, Andhra Pradesh",
+    "short_name": "SRM AP",
+    "college_type": "Private Engineering",
+    "city": "Amaravati",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "official_domain": "srmap.edu.in",
+    "email_domain": "srmap.edu.in"
+  },
+  {
+    "college_name": "Sagar Institute of Research and Technology",
+    "short_name": "SIRT",
+    "college_type": "Private Engineering",
+    "city": "Bhopal",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "official_domain": "sfrirt.ac.in",
+    "email_domain": "sirt.ac.in"
+  },
+  {
+    "college_name": "Sardar Patel Institute of Technology",
+    "short_name": "SPIT",
+    "college_type": "Private Engineering",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "spit.ac.in",
+    "email_domain": "spit.ac.in"
+  },
+  {
+    "college_name": "SDM College of Engineering and Technology",
+    "short_name": "SDMCET",
+    "college_type": "Private Engineering",
+    "city": "Dharwad",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "sdmcet.ac.in",
+    "email_domain": "sdmcet.ac.in"
+  },
+  {
+    "college_name": "Sharda University",
+    "short_name": "Sharda",
+    "college_type": "Private Engineering",
+    "city": "Greater Noida",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "sharda.ac.in",
+    "email_domain": "sharda.ac.in"
+  },
+  {
+    "college_name": "Shiv Nadar University",
+    "short_name": "SNU",
+    "college_type": "Private Engineering",
+    "city": "Greater Noida",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "snu.edu.in",
+    "email_domain": "snu.edu.in"
+  },
+  {
+    "college_name": "Siksha 'O' Anusandhan University",
+    "short_name": "SOA",
+    "college_type": "Private Engineering",
+    "city": "Bhubaneswar",
+    "state": "Odisha",
+    "country": "India",
+    "official_domain": "soa.ac.in",
+    "email_domain": "soa.ac.in"
+  },
+  {
+    "college_name": "Sir M. Visvesvaraya Institute of Technology",
+    "short_name": "Sir MVIT",
+    "college_type": "Private Engineering",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "sirmvit.edu",
+    "email_domain": "sirmvit.edu"
+  },
+  {
+    "college_name": "SRM Institute of Science and Technology, Kattankulathur",
+    "short_name": "SRM KTR",
+    "college_type": "Private Engineering",
+    "city": "Chengalpattu",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "srmist.edu.in",
+    "email_domain": "srmist.edu.in"
+  },
+  {
+    "college_name": "SRM Institute of Science and Technology, NCR Campus",
+    "short_name": "SRM NCR",
+    "college_type": "Private Engineering",
+    "city": "Ghaziabad",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "srmist.edu.in",
+    "email_domain": "srmist.edu.in"
+  },
+  {
+    "college_name": "SRM Institute of Science and Technology, Ramapuram",
+    "short_name": "SRM Ramapuram",
+    "college_type": "Private Engineering",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "srmist.edu.in",
+    "email_domain": "srmist.edu.in"
+  },
+  {
+    "college_name": "SRM Institute of Science and Technology, Sikkim",
+    "short_name": "SRM Sikkim",
+    "college_type": "Private Engineering",
+    "city": "Gangtok",
+    "state": "Sikkim",
+    "country": "India",
+    "official_domain": "srmsikkim.edu.in",
+    "email_domain": "srmsikkim.edu.in"
+  },
+  {
+    "college_name": "SRM Institute of Science and Technology, Vadapalani",
+    "short_name": "SRM Vadapalani",
+    "college_type": "Private Engineering",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "srmist.edu.in",
+    "email_domain": "srmist.edu.in"
+  },
+  {
+    "college_name": "SRM University, Andhra Pradesh",
+    "short_name": "SRM AP",
+    "college_type": "Private Engineering",
+    "city": "Amaravati",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "official_domain": "srmap.edu.in",
+    "email_domain": "srmap.edu.in"
+  },
+  {
+    "college_name": "SSN College of Engineering",
+    "short_name": "SSNCE",
+    "college_type": "Private Engineering",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "ssn.edu.in",
+    "email_domain": "ssn.edu.in"
+  },
+  {
+    "college_name": "St. Joseph's College of Engineering",
+    "short_name": "SJCE Chennai",
+    "college_type": "Private Engineering",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "stjosephs.ac.in",
+    "email_domain": "stjosephs.ac.in"
+  },
+  {
+    "college_name": "Symbiosis Institute of Technology",
+    "short_name": "SIT Pune",
+    "college_type": "Private Engineering",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "sitpune.edu.in",
+    "email_domain": "sitpune.edu.in"
+  },
+  {
+    "college_name": "TCG CREST",
+    "short_name": "TCG CREST",
+    "college_type": "Private Engineering",
+    "city": "Kolkata",
+    "state": "West Bengal",
+    "country": "India",
+    "official_domain": "tcgcrest.org",
+    "email_domain": "tcgcrest.org"
+  },
+  {
+    "college_name": "Thiagarajar College of Engineering",
+    "short_name": "TCE",
+    "college_type": "Private Engineering",
+    "city": "Madurai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "tce.edu",
+    "email_domain": "tce.edu"
+  },
+  {
+    "college_name": "University of Engineering and Management, Kolkata",
+    "short_name": "UEM Kolkata",
+    "college_type": "Private Engineering",
+    "city": "Kolkata",
+    "state": "West Bengal",
+    "country": "India",
+    "official_domain": "uem.edu.in",
+    "email_domain": "uem.edu.in"
+  },
+  {
+    "college_name": "University of Petroleum and Energy Studies",
+    "short_name": "UPES",
+    "college_type": "Private Engineering",
+    "city": "Dehradun",
+    "state": "Uttarakhand",
+    "country": "India",
+    "official_domain": "upes.ac.in",
+    "email_domain": "upes.ac.in"
+  },
+  {
+    "college_name": "Veermata Jijabai Technological Institute",
+    "short_name": "VJTI",
+    "college_type": "Private Engineering",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "vjti.ac.in",
+    "email_domain": "vjti.ac.in"
+  },
+  {
+    "college_name": "Vidyalankar Institute of Technology",
+    "short_name": "VIT Mumbai",
+    "college_type": "Private Engineering",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "vfrfit.ac.in",
+    "email_domain": "vit.edu.in"
+  },
+  {
+    "college_name": "Vishwakarma Institute of Technology",
+    "short_name": "VIT Pune",
+    "college_type": "Private Engineering",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "vit.edu",
+    "email_domain": "vit.edu"
+  },
+  {
+    "college_name": "Walchand College of Engineering",
+    "short_name": "WCE",
+    "college_type": "Private Engineering",
+    "city": "Sangli",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "walchandsangli.ac.in",
+    "email_domain": "walchandsangli.ac.in"
+  },
+  {
+    "college_name": "Presidency University, Bengaluru",
+    "short_name": "Presidency Bengaluru",
+    "college_type": "Private Engineering",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "presidencyuniversity.in",
+    "email_domain": "presidencyuniversity.in"
+  },
+  {
+    "college_name": "Dharmsinh Desai University",
+    "short_name": "DDU",
+    "college_type": "Private Engineering",
+    "city": "Nadiad",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "ddu.ac.in",
+    "email_domain": "ddu.ac.in"
+  },
+  {
+    "college_name": "GLA University",
+    "short_name": "GLA",
+    "college_type": "Private Engineering",
+    "city": "Mathura",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "gla.ac.in",
+    "email_domain": "gla.ac.in"
+  },
+  {
+    "college_name": "GITAM University",
+    "short_name": "GITAM",
+    "college_type": "Private Engineering",
+    "city": "Visakhapatnam",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "official_domain": "gitam.edu",
+    "email_domain": "gitam.in"
+  },
+  {
+    "college_name": "GMR Institute of Technology",
+    "short_name": "GMRIT",
+    "college_type": "Private Engineering",
+    "city": "Rajam",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "official_domain": "gmrit.edu.in",
+    "email_domain": "gmrit.edu.in"
+  },
+  {
+    "college_name": "Galgotias University",
+    "short_name": "GU",
+    "college_type": "Private Engineering",
+    "city": "Greater Noida",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "galgotiasuniversity.edu.in",
+    "email_domain": "galgotiasuniversity.edu.in"
+  },
+  {
+    "college_name": "Hindustan Institute of Technology and Science",
+    "short_name": "HITS",
+    "college_type": "Private Engineering",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "hindustanuniv.ac.in",
+    "email_domain": "hindustanuniv.ac.in"
+  },
+  {
+    "college_name": "ICFAI University, Hyderabad",
+    "short_name": "ICFAI",
+    "college_type": "Private Engineering",
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "icfaiuniversity.in",
+    "email_domain": "icfaiuniversity.in"
+  },
+  {
+    "college_name": "ITM University, Gwalior",
+    "short_name": "ITM Gwalior",
+    "college_type": "Private Engineering",
+    "city": "Gwalior",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "official_domain": "itmuniversity.ac.in",
+    "email_domain": "itmuniversity.ac.in"
+  },
+  {
+    "college_name": "Jaypee University of Engineering and Technology",
+    "short_name": "JUET",
+    "college_type": "Private Engineering",
+    "city": "Guna",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "official_domain": "juet.ac.in",
+    "email_domain": "juet.ac.in"
+  },
+  {
+    "college_name": "K L E F (KL Deemed to be University)",
+    "short_name": "KLU",
+    "college_type": "Private Engineering",
+    "city": "Vaddeswaram",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "official_domain": "kluniversity.in",
+    "email_domain": "kluniversity.in"
+  },
+  {
+    "college_name": "Karnavati University",
+    "short_name": "KU",
+    "college_type": "Private Engineering",
+    "city": "Gandhinagar",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "karfrnavatiuniversity.edu.in",
+    "email_domain": "karnavatiuniversity.edu.in"
+  },
+  {
+    "college_name": "Karpagam Academy of Higher Education",
+    "short_name": "Karpagam",
+    "college_type": "Private Engineering",
+    "city": "Coimbatore",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "kahedu.edu.in",
+    "email_domain": "kahedu.edu.in"
+  },
+  {
+    "college_name": "LNCT University",
+    "short_name": "LNCT",
+    "college_type": "Private Engineering",
+    "city": "Bhopal",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "official_domain": "lnctu.ac.in",
+    "email_domain": "lnctu.ac.in"
+  },
+  {
+    "college_name": "Mahindra University",
+    "short_name": "MU",
+    "college_type": "Private Engineering",
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "mahindrauniversity.edu.in",
+    "email_domain": "mahindrauniversity.edu.in"
+  },
+  {
+    "college_name": "Medi-Caps University",
+    "short_name": "Medi-Caps",
+    "college_type": "Private Engineering",
+    "city": "Indore",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "official_domain": "medicaps.ac.in",
+    "email_domain": "medicaps.ac.in"
+  },
+  {
+    "college_name": "Nitte Meenakshi Institute of Technology",
+    "short_name": "NMIT",
+    "college_type": "Private Engineering",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "nmit.ac.in",
+    "email_domain": "nmit.ac.in"
+  },
+  {
+    "college_name": "Pandit Deendayal Energy University",
+    "short_name": "PDEU",
+    "college_type": "Private Engineering",
+    "city": "Gandhinagar",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "pdpu.ac.in",
+    "email_domain": "pdpu.ac.in"
+  },
+  {
+    "college_name": "Plaksha University",
+    "short_name": "Plaksha",
+    "college_type": "Private Engineering",
+    "city": "Mohali",
+    "state": "Punjab",
+    "country": "India",
+    "official_domain": "plaksha.edu.in",
+    "email_domain": "plaksha.edu.in"
+  },
+  {
+    "college_name": "Rajagiri School of Engineering and Technology",
+    "short_name": "RSET",
+    "college_type": "Private Engineering",
+    "city": "Kochi",
+    "state": "Kerala",
+    "country": "India",
+    "official_domain": "rajagiritech.ac.in",
+    "email_domain": "rajagiritech.ac.in"
+  },
+  {
+    "college_name": "Rajalakshmi Engineering College",
+    "short_name": "REC Chennai",
+    "college_type": "Private Engineering",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "rajalakshmi.org",
+    "email_domain": "rajalakshmi.org"
+  },
+  {
+    "college_name": "Sagar University",
+    "short_name": "DrHSGU",
+    "college_type": "Private Engineering",
+    "city": "Sagar",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "official_domain": "dfrrharisinghgouruniv.ac.in",
+    "email_domain": "drharisinghgouruniv.ac.in"
+  },
+  {
+    "college_name": "SJB Institute of Technology",
+    "short_name": "SJBIT",
+    "college_type": "Private Engineering",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "sjbit.edu.in",
+    "email_domain": "sjbit.edu.in"
+  },
+  {
+    "college_name": "Sona College of Technology",
+    "short_name": "Sona",
+    "college_type": "Private Engineering",
+    "city": "Salem",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "sonatech.ac.in",
+    "email_domain": "sonatech.ac.in"
+  },
+  {
+    "college_name": "Sri Sivasubramaniya Nadar College of Engineering",
+    "short_name": "SSN",
+    "college_type": "Private Engineering",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "ssn.edu.in",
+    "email_domain": "ssn.edu.in"
+  },
+  {
+    "college_name": "St. Xavier's College, Mumbai",
+    "short_name": "Xavier's Mumbai",
+    "college_type": "Private Engineering",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "xaviers.edu",
+    "email_domain": "xaviers.edu"
+  },
+  {
+    "college_name": "Techno India University",
+    "short_name": "TIU",
+    "college_type": "Private Engineering",
+    "city": "Kolkata",
+    "state": "West Bengal",
+    "country": "India",
+    "official_domain": "technoindiauniversity.ac.in",
+    "email_domain": "technoindiauniversity.ac.in"
+  },
+  {
+    "college_name": "The NorthCap University",
+    "short_name": "NCU",
+    "college_type": "Private Engineering",
+    "city": "Gurgaon",
+    "state": "Haryana",
+    "country": "India",
+    "official_domain": "ncuindia.edu",
+    "email_domain": "ncuindia.edu"
+  },
+  {
+    "college_name": "Toc H Institute of Science and Technology",
+    "short_name": "TIST",
+    "college_type": "Private Engineering",
+    "city": "Kochi",
+    "state": "Kerala",
+    "country": "India",
+    "official_domain": "tfrochgp.ac.in",
+    "email_domain": "tfrochgp.ac.in"
+  },
+  {
+    "college_name": "Vardhaman College of Engineering",
+    "short_name": "VCE",
+    "college_type": "Private Engineering",
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "vardhaman.org",
+    "email_domain": "vardhaman.org"
+  },
+  {
+    "college_name": "Vel Tech High Tech Dr. Rangarajan Dr. Sakunthala Engineering College",
+    "short_name": "Vel Tech HT",
+    "college_type": "Private Engineering",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "velhightech.com",
+    "email_domain": "velhightech.com"
+  },
+  {
+    "college_name": "Vignan Institute of Technology and Science",
+    "short_name": "VITS",
+    "college_type": "Private Engineering",
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "vignanits.ac.in",
+    "email_domain": "vignanits.ac.in"
+  },
+  {
+    "college_name": "Vijayanagara Sri Krishnadevaraya University",
+    "short_name": "VSKU",
+    "college_type": "Private Engineering",
+    "city": "Ballari",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "vskub.ac.in",
+    "email_domain": "vskub.ac.in"
+  },
+  {
+    "college_name": "Anna University",
+    "short_name": "Anna Univ",
+    "college_type": "State University",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "annauniv.edu",
+    "email_domain": "annauniv.edu"
+  },
+  {
+    "college_name": "Andhra University",
+    "short_name": "AU",
+    "college_type": "State University",
+    "city": "Visakhapatnam",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "official_domain": "andhrauniversity.edu.in",
+    "email_domain": "andhrauniversity.edu.in"
+  },
+  {
+    "college_name": "Alagappa University",
+    "short_name": "Alagappa Univ",
+    "college_type": "State University",
+    "city": "Karaikudi",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "alagappauniversity.ac.in",
+    "email_domain": "alagappauniversity.ac.in"
+  },
+  {
+    "college_name": "Bangalore University",
+    "short_name": "BU",
+    "college_type": "State University",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "bangaloreuniversity.ac.in",
+    "email_domain": "bangaloreuniversity.ac.in"
+  },
+  {
+    "college_name": "Barkatullah University",
+    "short_name": "BU Bhopal",
+    "college_type": "State University",
+    "city": "Bhopal",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "official_domain": "bubhopal.ac.in",
+    "email_domain": "bubhopal.ac.in"
+  },
+  {
+    "college_name": "Bharathiar University",
+    "short_name": "Bharathiar",
+    "college_type": "State University",
+    "city": "Coimbatore",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "b-u.ac.in",
+    "email_domain": "b-u.ac.in"
+  },
+  {
+    "college_name": "Bharathidasan University",
+    "short_name": "Bharathidasan",
+    "college_type": "State University",
+    "city": "Tiruchirappalli",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "bdu.ac.in",
+    "email_domain": "bdu.ac.in"
+  },
+  {
+    "college_name": "Calcutta University",
+    "short_name": "CU",
+    "college_type": "State University",
+    "city": "Kolkata",
+    "state": "West Bengal",
+    "country": "India",
+    "official_domain": "caluniv.ac.in",
+    "email_domain": "caluniv.ac.in"
+  },
+  {
+    "college_name": "Chaudhary Charan Singh University",
+    "short_name": "CCSU",
+    "college_type": "State University",
+    "city": "Meerut",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "ccsuniversity.ac.in",
+    "email_domain": "ccsuniversity.ac.in"
+  },
+  {
+    "college_name": "Chhattisgarh Swami Vivekanand Technical University",
+    "short_name": "CSVTU",
+    "college_type": "State University",
+    "city": "Bhilai",
+    "state": "Chhattisgarh",
+    "country": "India",
+    "official_domain": "csvtu.ac.in",
+    "email_domain": "csvtu.ac.in"
+  },
+  {
+    "college_name": "Cochin University of Science and Technology",
+    "short_name": "CUSAT",
+    "college_type": "State University",
+    "city": "Kochi",
+    "state": "Kerala",
+    "country": "India",
+    "official_domain": "cusat.ac.in",
+    "email_domain": "cusat.ac.in"
+  },
+  {
+    "college_name": "Devi Ahilya Vishwavidyalaya",
+    "short_name": "DAVV",
+    "college_type": "State University",
+    "city": "Indore",
+    "state": "Madhya Pradesh",
+    "country": "India",
+    "official_domain": "dfrauniv.ac.in",
+    "email_domain": "dauniv.ac.in"
+  },
+  {
+    "college_name": "Dr. B.R. Ambedkar University, Delhi",
+    "short_name": "AUD",
+    "college_type": "State University",
+    "city": "New Delhi",
+    "state": "Delhi",
+    "country": "India",
+    "official_domain": "aud.ac.in",
+    "email_domain": "aud.ac.in"
+  },
+  {
+    "college_name": "Dr. Babasaheb Ambedkar Marathwada University",
+    "short_name": "BAMU",
+    "college_type": "State University",
+    "city": "Aurangabad",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "bframu.ac.in",
+    "email_domain": "bamu.ac.in"
+  },
+  {
+    "college_name": "Gauhati University",
+    "short_name": "GU",
+    "college_type": "State University",
+    "city": "Guwahati",
+    "state": "Assam",
+    "country": "India",
+    "official_domain": "gauhati.ac.in",
+    "email_domain": "gauhati.ac.in"
+  },
+  {
+    "college_name": "Gujarat Technological University",
+    "short_name": "GTU",
+    "college_type": "State University",
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "gtu.ac.in",
+    "email_domain": "gtu.ac.in"
+  },
+  {
+    "college_name": "Gujarat University",
+    "short_name": "GU",
+    "college_type": "State University",
+    "city": "Ahmedabad",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "gujaratuniversity.ac.in",
+    "email_domain": "gujaratuniversity.ac.in"
+  },
+  {
+    "college_name": "Guru Nanak Dev University",
+    "short_name": "GNDU",
+    "college_type": "State University",
+    "city": "Amritsar",
+    "state": "Punjab",
+    "country": "India",
+    "official_domain": "gndu.ac.in",
+    "email_domain": "gndu.ac.in"
+  },
+  {
+    "college_name": "Guru Jambheshwar University of Science and Technology",
+    "short_name": "GJUST",
+    "college_type": "State University",
+    "city": "Hisar",
+    "state": "Haryana",
+    "country": "India",
+    "official_domain": "gjust.ac.in",
+    "email_domain": "gjust.ac.in"
+  },
+  {
+    "college_name": "I.K. Gujral Punjab Technical University",
+    "short_name": "IKGPTU",
+    "college_type": "State University",
+    "city": "Kapurthala",
+    "state": "Punjab",
+    "country": "India",
+    "official_domain": "ptu.ac.in",
+    "email_domain": "ptu.ac.in"
+  },
+  {
+    "college_name": "Jawaharlal Nehru Technological University, Anantapur",
+    "short_name": "JNTUA",
+    "college_type": "State University",
+    "city": "Anantapur",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "official_domain": "jntua.ac.in",
+    "email_domain": "jntua.ac.in"
+  },
+  {
+    "college_name": "Jawaharlal Nehru Technological University, Hyderabad",
+    "short_name": "JNTUH",
+    "college_type": "State University",
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "jntuh.ac.in",
+    "email_domain": "jntuh.ac.in"
+  },
+  {
+    "college_name": "Jawaharlal Nehru Technological University, Kakinada",
+    "short_name": "JNTUK",
+    "college_type": "State University",
+    "city": "Kakinada",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "official_domain": "jntuk.edu.in",
+    "email_domain": "jntuk.edu.in"
+  },
+  {
+    "college_name": "Kakatiya University",
+    "short_name": "KU Warangal",
+    "college_type": "State University",
+    "city": "Warangal",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "kakatiya.ac.in",
+    "email_domain": "kakatiya.ac.in"
+  },
+  {
+    "college_name": "Kannur University",
+    "short_name": "Kannur Univ",
+    "college_type": "State University",
+    "city": "Kannur",
+    "state": "Kerala",
+    "country": "India",
+    "official_domain": "kannuruniversity.ac.in",
+    "email_domain": "kannuruniversity.ac.in"
+  },
+  {
+    "college_name": "Kerala University",
+    "short_name": "KU",
+    "college_type": "State University",
+    "city": "Thiruvananthapuram",
+    "state": "Kerala",
+    "country": "India",
+    "official_domain": "keralauniversity.ac.in",
+    "email_domain": "keralauniversity.ac.in"
+  },
+  {
+    "college_name": "Kurukshetra University",
+    "short_name": "KUK",
+    "college_type": "State University",
+    "city": "Kurukshetra",
+    "state": "Haryana",
+    "country": "India",
+    "official_domain": "kuk.ac.in",
+    "email_domain": "kuk.ac.in"
+  },
+  {
+    "college_name": "Lucknow University",
+    "short_name": "LU",
+    "college_type": "State University",
+    "city": "Lucknow",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "lkouniv.ac.in",
+    "email_domain": "lkouniv.ac.in"
+  },
+  {
+    "college_name": "M.J.P. Rohilkhand University",
+    "short_name": "MJPRU",
+    "college_type": "State University",
+    "city": "Bareilly",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "mjpru.ac.in",
+    "email_domain": "mjpru.ac.in"
+  },
+  {
+    "college_name": "Madras University",
+    "short_name": "Madras Univ",
+    "college_type": "State University",
+    "city": "Chennai",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "unom.ac.in",
+    "email_domain": "unom.ac.in"
+  },
+  {
+    "college_name": "Maharshi Dayanand University",
+    "short_name": "MDU",
+    "college_type": "State University",
+    "city": "Rohtak",
+    "state": "Haryana",
+    "country": "India",
+    "official_domain": "mdurohtak.ac.in",
+    "email_domain": "mdurohtak.ac.in"
+  },
+  {
+    "college_name": "Mahatma Gandhi University, Kottayam",
+    "short_name": "MGU",
+    "college_type": "State University",
+    "city": "Kottayam",
+    "state": "Kerala",
+    "country": "India",
+    "official_domain": "mgu.ac.in",
+    "email_domain": "mgu.ac.in"
+  },
+  {
+    "college_name": "Makaut (Maulana Abul Kalam Azad University of Technology)",
+    "short_name": "MAKAUT",
+    "college_type": "State University",
+    "city": "Kolkata",
+    "state": "West Bengal",
+    "country": "India",
+    "official_domain": "makautwb.ac.in",
+    "email_domain": "makautwb.ac.in"
+  },
+  {
+    "college_name": "Mangalore University",
+    "short_name": "MU Mangalore",
+    "college_type": "State University",
+    "city": "Mangalore",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "mangaloreuniversity.ac.in",
+    "email_domain": "mangaloreuniversity.ac.in"
+  },
+  {
+    "college_name": "Mumbai University",
+    "short_name": "MU",
+    "college_type": "State University",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "mu.ac.in",
+    "email_domain": "mu.ac.in"
+  },
+  {
+    "college_name": "Mysore University",
+    "short_name": "UoM",
+    "college_type": "State University",
+    "city": "Mysuru",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "uni-mysore.ac.in",
+    "email_domain": "uni-mysore.ac.in"
+  },
+  {
+    "college_name": "North Maharashtra University",
+    "short_name": "NMU",
+    "college_type": "State University",
+    "city": "Jalgaon",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "nmu.ac.in",
+    "email_domain": "nmu.ac.in"
+  },
+  {
+    "college_name": "Osmania University",
+    "short_name": "OU",
+    "college_type": "State University",
+    "city": "Hyderabad",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "osmania.ac.in",
+    "email_domain": "osmania.ac.in"
+  },
+  {
+    "college_name": "Patna University",
+    "short_name": "PU Patna",
+    "college_type": "State University",
+    "city": "Patna",
+    "state": "Bihar",
+    "country": "India",
+    "official_domain": "patnauniversity.ac.in",
+    "email_domain": "patnauniversity.ac.in"
+  },
+  {
+    "college_name": "Periyar University",
+    "short_name": "Periyar Univ",
+    "college_type": "State University",
+    "city": "Salem",
+    "state": "Tamil Nadu",
+    "country": "India",
+    "official_domain": "periyaruniversity.ac.in",
+    "email_domain": "periyaruniversity.ac.in"
+  },
+  {
+    "college_name": "Punjab Engineering College",
+    "short_name": "PEC Chandigarh",
+    "college_type": "State University",
+    "city": "Chandigarh",
+    "state": "Chandigarh",
+    "country": "India",
+    "official_domain": "pec.ac.in",
+    "email_domain": "pec.ac.in"
+  },
+  {
+    "college_name": "Rajasthan Technical University",
+    "short_name": "RTU",
+    "college_type": "State University",
+    "city": "Kota",
+    "state": "Rajasthan",
+    "country": "India",
+    "official_domain": "rtu.ac.in",
+    "email_domain": "rtu.ac.in"
+  },
+  {
+    "college_name": "Rajasthan University",
+    "short_name": "RU",
+    "college_type": "State University",
+    "city": "Jaipur",
+    "state": "Rajasthan",
+    "country": "India",
+    "official_domain": "uniraj.ac.in",
+    "email_domain": "uniraj.ac.in"
+  },
+  {
+    "college_name": "Ravenshaw University",
+    "short_name": "Ravenshaw",
+    "college_type": "State University",
+    "city": "Cuttack",
+    "state": "Odisha",
+    "country": "India",
+    "official_domain": "ravenshawuniversity.ac.in",
+    "email_domain": "ravenshawuniversity.ac.in"
+  },
+  {
+    "college_name": "Saurashtra University",
+    "short_name": "SU Rajkot",
+    "college_type": "State University",
+    "city": "Rajkot",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "sfrauuni.ac.in",
+    "email_domain": "sauuni.ac.in"
+  },
+  {
+    "college_name": "Savitribai Phule Pune University",
+    "short_name": "SPPU",
+    "college_type": "State University",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "unipune.ac.in",
+    "email_domain": "unipune.ac.in"
+  },
+  {
+    "college_name": "Shivaji University",
+    "short_name": "Shivaji Univ",
+    "college_type": "State University",
+    "city": "Kolhapur",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "unishivaji.ac.in",
+    "email_domain": "unishivaji.ac.in"
+  },
+  {
+    "college_name": "Sri Krishnadevaraya University",
+    "short_name": "SKU",
+    "college_type": "State University",
+    "city": "Anantapur",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "official_domain": "skuniversity.ac.in",
+    "email_domain": "skuniversity.ac.in"
+  },
+  {
+    "college_name": "Sri Venkateswara University",
+    "short_name": "SVU",
+    "college_type": "State University",
+    "city": "Tirupati",
+    "state": "Andhra Pradesh",
+    "country": "India",
+    "official_domain": "svuniversity.edu.in",
+    "email_domain": "svuniversity.edu.in"
+  },
+  {
+    "college_name": "Utkal University",
+    "short_name": "Utkal",
+    "college_type": "State University",
+    "city": "Bhubaneswar",
+    "state": "Odisha",
+    "country": "India",
+    "official_domain": "utkaluniversity.nic.in",
+    "email_domain": "utkaluniversity.nic.in"
+  },
+  {
+    "college_name": "Visvesvaraya Technological University",
+    "short_name": "VTU",
+    "college_type": "State University",
+    "city": "Belagavi",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "vtu.ac.in",
+    "email_domain": "vtu.ac.in"
+  },
+  {
+    "college_name": "West Bengal State University",
+    "short_name": "WBSU",
+    "college_type": "State University",
+    "city": "Kolkata",
+    "state": "West Bengal",
+    "country": "India",
+    "official_domain": "wbsu.ac.in",
+    "email_domain": "wbsu.ac.in"
+  },
+  {
+    "college_name": "Abdul Kalam Technical University",
+    "short_name": "AKTU",
+    "college_type": "State University",
+    "city": "Lucknow",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "aktu.ac.in",
+    "email_domain": "aktu.ac.in"
+  },
+  {
+    "college_name": "Amravati University",
+    "short_name": "SGBAU",
+    "college_type": "State University",
+    "city": "Amravati",
+    "state": "Maharashtra",
+    "country": "India",
+    "official_domain": "sgbau.ac.in",
+    "email_domain": "sgbau.ac.in"
+  },
+  {
+    "college_name": "Berhampur University",
+    "short_name": "BU Berhampur",
+    "college_type": "State University",
+    "city": "Berhampur",
+    "state": "Odisha",
+    "country": "India",
+    "official_domain": "buodisha.edu.in",
+    "email_domain": "buodisha.edu.in"
+  },
+  {
+    "college_name": "Dr. A.P.J. Abdul Kalam Technical University",
+    "short_name": "APJAKTU",
+    "college_type": "State University",
+    "city": "Lucknow",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "aktu.ac.in",
+    "email_domain": "aktu.ac.in"
+  },
+  {
+    "college_name": "Dibrugarh University",
+    "short_name": "DU Dibrugarh",
+    "college_type": "State University",
+    "city": "Dibrugarh",
+    "state": "Assam",
+    "country": "India",
+    "official_domain": "dibru.ac.in",
+    "email_domain": "dibru.ac.in"
+  },
+  {
+    "college_name": "Dr. Bhimrao Ambedkar University, Agra",
+    "short_name": "DBRAU",
+    "college_type": "State University",
+    "city": "Agra",
+    "state": "Uttar Pradesh",
+    "country": "India",
+    "official_domain": "dbrau.ac.in",
+    "email_domain": "dbrau.ac.in"
+  },
+  {
+    "college_name": "Gulbarga University",
+    "short_name": "GUG",
+    "college_type": "State University",
+    "city": "Kalaburagi",
+    "state": "Karnataka",
+    "country": "India",
+    "official_domain": "gug.ac.in",
+    "email_domain": "gug.ac.in"
+  },
+  {
+    "college_name": "Himachal Pradesh University",
+    "short_name": "HPU",
+    "college_type": "State University",
+    "city": "Shimla",
+    "state": "Himachal Pradesh",
+    "country": "India",
+    "official_domain": "hpuniv.ac.in",
+    "email_domain": "hpuniv.ac.in"
+  },
+  {
+    "college_name": "Jammu University",
+    "short_name": "JU Jammu",
+    "college_type": "State University",
+    "city": "Jammu",
+    "state": "Jammu and Kashmir",
+    "country": "India",
+    "official_domain": "jammuuniversity.ac.in",
+    "email_domain": "jammuuniversity.ac.in"
+  },
+  {
+    "college_name": "Kashmir University",
+    "short_name": "KU Srinagar",
+    "college_type": "State University",
+    "city": "Srinagar",
+    "state": "Jammu and Kashmir",
+    "country": "India",
+    "official_domain": "kashmiruniversity.net",
+    "email_domain": "kashmiruniversity.net"
+  },
+  {
+    "college_name": "Lalit Narayan Mithila University",
+    "short_name": "LNMU",
+    "college_type": "State University",
+    "city": "Darbhanga",
+    "state": "Bihar",
+    "country": "India",
+    "official_domain": "lnmu.ac.in",
+    "email_domain": "lnmu.ac.in"
+  },
+  {
+    "college_name": "Mahatma Gandhi University, Nalgonda",
+    "short_name": "MGU Nalgonda",
+    "college_type": "State University",
+    "city": "Nalgonda",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "mfrgunalgonda.ac.in",
+    "email_domain": "mgunalgonda.ac.in"
+  },
+  {
+    "college_name": "North Bengal University",
+    "short_name": "NBU",
+    "college_type": "State University",
+    "city": "Siliguri",
+    "state": "West Bengal",
+    "country": "India",
+    "official_domain": "nbu.ac.in",
+    "email_domain": "nbu.ac.in"
+  },
+  {
+    "college_name": "Punjab University, Patiala",
+    "short_name": "Punjabi Univ",
+    "college_type": "State University",
+    "city": "Patiala",
+    "state": "Punjab",
+    "country": "India",
+    "official_domain": "punjabiuniversity.ac.in",
+    "email_domain": "punjabiuniversity.ac.in"
+  },
+  {
+    "college_name": "Sambalpur University",
+    "short_name": "SU Sambalpur",
+    "college_type": "State University",
+    "city": "Sambalpur",
+    "state": "Odisha",
+    "country": "India",
+    "official_domain": "suniv.ac.in",
+    "email_domain": "suniv.ac.in"
+  },
+  {
+    "college_name": "Sardar Patel University",
+    "short_name": "SPU",
+    "college_type": "State University",
+    "city": "Anand",
+    "state": "Gujarat",
+    "country": "India",
+    "official_domain": "spuniv.ac.in",
+    "email_domain": "spuniv.ac.in"
+  },
+  {
+    "college_name": "Telangana University",
+    "short_name": "TU",
+    "college_type": "State University",
+    "city": "Nizamabad",
+    "state": "Telangana",
+    "country": "India",
+    "official_domain": "telanganauniversity.ac.in",
+    "email_domain": "telanganauniversity.ac.in"
+  },
+  {
+    "college_name": "Taylor's University",
+    "short_name": "Taylor's University",
+    "college_type": "Private University",
+    "city": "Subang Jaya",
+    "state": "Selangor",
+    "country": "Malaysia",
+    "official_domain": "taylors.edu.my",
+    "email_domain": "sd.taylors.edu.my"
+  }
+]

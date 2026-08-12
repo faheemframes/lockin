@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Flame, Activity, User as UserIcon, Sparkles } from "lucide-react";
+import { Flame, Activity, User as UserIcon, Rss } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface NavProps {
@@ -11,38 +11,38 @@ interface NavProps {
 
 export default function Nav({ tab, setTab }: NavProps) {
   const items = [
-    { key: "feed", label: "Missions", icon: Flame, color: "text-cherryRed" },
-    { key: "discover", label: "Discover", icon: Sparkles, color: "text-luxuryGold" },
-    { key: "active", label: "Queue", icon: Activity, color: "text-cotton" },
-    { key: "profile", label: "Execution", icon: UserIcon, color: "text-luxuryGold" }
+    { key: "missions", label: "Missions", icon: Flame, color: "text-cherryRed" },
+    { key: "feed", label: "Feed", icon: Rss, color: "text-cherryRed" },
+    { key: "active", label: "Queue", icon: Activity, color: "text-white" },
+    { key: "profile", label: "Profile", icon: UserIcon, color: "text-white/80" }
   ] as const;
 
   return (
-    <nav className="safe-bottom fixed inset-x-0 bottom-6 z-40 mx-auto max-w-[380px] px-4">
-      <div className="relative flex items-center justify-between rounded-full border border-luxuryMaroon/25 bg-[#1B1716]/80 p-1.5 shadow-[0_24px_64px_rgba(0,0,0,0.6)] backdrop-blur-lg">
+    <nav className="safe-bottom fixed inset-x-0 bottom-5 z-40 md:hidden mx-auto max-w-[390px] px-5">
+      <div className="relative flex items-center justify-between rounded-[26px] border border-white/[0.08] bg-black/85 px-2 py-1.5 shadow-[0_20px_60px_rgba(0,0,0,0.7),0_0_0_1px_rgba(255,255,255,0.04)] backdrop-blur-xl">
         {items.map(({ key, label, icon: Icon, color }) => {
           const isActive = tab === key;
           return (
             <button
               key={key}
               onClick={() => setTab(key)}
-              className="relative flex flex-1 flex-col items-center justify-center py-2 text-center outline-none transition"
+              className="relative flex flex-1 flex-col items-center justify-center py-2.5 gap-1 outline-none transition-all"
             >
               {isActive && (
                 <motion.div
-                  layoutId="active-pill"
-                  className="absolute inset-0 -z-10 rounded-full bg-cherryRed/10 border border-cherryRed/20"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  layoutId="nav-active-bg"
+                  className="absolute inset-x-1 inset-y-0.5 -z-10 rounded-[20px] bg-white/[0.07] border border-white/[0.07]"
+                  transition={{ type: "spring", stiffness: 400, damping: 32 }}
                 />
               )}
               <Icon
-                className={`h-5 w-5 transition-colors duration-200 ${
-                  isActive ? color : "text-zinc-600 hover:text-zinc-400"
+                className={`h-[19px] w-[19px] transition-all duration-200 ${
+                  isActive ? `${color} drop-shadow-[0_0_6px_currentColor]` : "text-zinc-600"
                 }`}
               />
               <span
-                className={`mt-1 text-[9px] font-black uppercase tracking-wider transition-colors duration-200 ${
-                  isActive ? "text-cotton" : "text-zinc-600"
+                className={`text-[9px] font-black uppercase tracking-[.14em] transition-all duration-200 leading-none ${
+                  isActive ? "text-white" : "text-zinc-600"
                 }`}
               >
                 {label}

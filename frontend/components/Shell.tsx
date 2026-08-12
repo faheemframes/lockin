@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { Flame, Activity, User as UserIcon, Sparkles } from "lucide-react";
+import { Flame, Activity, User as UserIcon, Rss } from "lucide-react";
 import { User } from "../app/types";
 
 interface ShellProps {
@@ -15,75 +15,68 @@ export default function Shell({ children, tab, setTab, user }: ShellProps) {
   const isDesktopDashboard = !!user && !!tab && !!setTab;
 
   return (
-    <div className="min-h-screen w-full bg-[#120F0D] flex items-center justify-center p-0 overflow-hidden">
-      {/* Main Content Box */}
-      <main 
-        className={`relative flex text-white antialiased bg-noirBlack overflow-hidden
-          ${isDesktopDashboard 
-            ? "h-screen w-full md:flex-row" 
-            : "h-screen w-full md:h-[850px] md:max-w-[420px] md:flex-col md:rounded-[40px] md:border md:border-luxuryMaroon/20 md:shadow-[0_24px_80px_rgba(0,0,0,0.95)] md:ring-1 md:ring-white/5"
+    <div className="min-h-screen w-full bg-[#000000] flex items-center justify-center p-0 overflow-hidden">
+      <main
+        className={`relative flex text-white antialiased overflow-hidden
+          ${isDesktopDashboard
+            ? "h-screen w-full md:flex-row"
+            : "h-screen w-full md:h-[min(860px,90vh)] md:max-w-[430px] md:flex-col md:rounded-[44px] md:border md:border-white/[0.07] md:shadow-[0_40px_120px_rgba(0,0,0,0.98)] md:ring-1 md:ring-white/[0.04]"
           }
         `}
+        style={{ background: "linear-gradient(160deg, #09090b 0%, #000000 100%)" }}
       >
-        {/* Background Grid Noise */}
-        <div className="grid-noise pointer-events-none absolute inset-0 opacity-[0.85] mix-blend-overlay" />
+        {/* Grid noise */}
+        <div className="grid-noise pointer-events-none absolute inset-0 opacity-100 mix-blend-overlay z-0" />
 
-        {/* Cyber/Race Stripe */}
-        <div className="race-stripe pointer-events-none absolute left-0 right-0 top-0 h-[3px] opacity-100 shadow-[0_1px_10px_rgba(129,1,0,0.4)] z-50" />
+        {/* Top accent stripe */}
+        <div className="race-stripe pointer-events-none absolute left-0 right-0 top-0 h-[2px] opacity-90 shadow-[0_2px_12px_rgba(129,1,0,0.5)] z-50" />
 
-        {/* Glow Orbs */}
+        {/* Ambient glow orbs */}
         <motion.div
-          className="pointer-events-none absolute -right-36 top-12 h-96 w-96 rounded-full bg-cherryRed/12 blur-[120px]"
-          animate={{
-            y: [0, 30, 0],
-            opacity: [0.4, 0.7, 0.4],
-            scale: [1, 1.1, 1]
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="pointer-events-none absolute -right-32 top-10 h-[420px] w-[420px] rounded-full bg-cherryRed/10 blur-[130px]"
+          style={{ willChange: "transform, opacity" }}
+          animate={{ y: [0, 28, 0], opacity: [0.35, 0.65, 0.35], scale: [1, 1.08, 1] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="pointer-events-none absolute -left-24 bottom-32 h-[450px] w-[450px] rounded-full bg-luxuryMaroon/10 blur-[140px]"
-          animate={{
-            y: [0, -40, 0],
-            opacity: [0.3, 0.5, 0.3],
-            scale: [1, 1.05, 1]
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          className="pointer-events-none absolute -left-20 bottom-28 h-[480px] w-[480px] rounded-full bg-cherryRed/5 blur-[150px]"
+          style={{ willChange: "transform, opacity" }}
+          animate={{ y: [0, -35, 0], opacity: [0.25, 0.45, 0.25], scale: [1, 1.04, 1] }}
+          transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="pointer-events-none absolute right-1/4 bottom-10 h-80 w-80 rounded-full bg-luxuryGold/6 blur-[100px]"
-          animate={{
-            opacity: [0.2, 0.3, 0.2]
-          }}
+          className="pointer-events-none absolute right-1/3 bottom-12 h-72 w-72 rounded-full bg-white/5 blur-[90px]"
+          style={{ willChange: "opacity" }}
+          animate={{ opacity: [0.15, 0.28, 0.15] }}
           transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
         />
 
         {/* Desktop Sidebar */}
         {isDesktopDashboard && (
-          <aside className="hidden md:flex w-80 shrink-0 flex-col justify-between border-r border-luxuryMaroon/20 bg-noirBlack/50 p-8 backdrop-blur-xl z-20">
-            <div className="space-y-10 text-left">
-              {/* Logo / Brand */}
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-black/50 p-1 shadow-[0_0_20px_rgba(255,255,255,0.05)]">
-                  <img src="/logo.png" alt="LOCKIN Logo" className="h-full w-full object-contain" />
+          <aside className="hidden md:flex w-72 shrink-0 flex-col justify-between border-r border-white/[0.06] bg-black/30 p-7 backdrop-blur-2xl z-20">
+            <div className="space-y-9">
+              {/* Brand */}
+              <div className="flex items-center gap-3.5">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] border border-white/[0.08] bg-black/60 p-1 shadow-[0_0_24px_rgba(129,1,0,0.15)]">
+                  <img src="/logo.png" alt="LOCKIN" className="h-full w-full object-contain" />
                 </div>
                 <div>
-                  <span className="text-[9px] font-medium tracking-[0.2em] text-zinc-500 uppercase block">
-                    Campus Execution Hub
+                  <span className="text-[9px] font-semibold tracking-[0.22em] text-zinc-600 uppercase block leading-none mb-1">
+                    Campus Execution
                   </span>
-                  <h1 className="text-2xl font-display font-semibold tracking-tight text-white leading-none mt-0.5">
+                  <h1 className="text-[22px] font-display font-bold tracking-[0.06em] text-white leading-none">
                     LOCKIN
                   </h1>
                 </div>
               </div>
 
-              {/* Navigation Menu */}
-              <nav className="space-y-2">
+              {/* Nav */}
+              <nav className="space-y-1">
                 {[
-                  { key: "feed", label: "Missions Feed", icon: Flame, color: "text-cherryRed" },
-                  { key: "discover", label: "Discover Feed", icon: Sparkles, color: "text-luxuryGold" },
-                  { key: "active", label: "Active Queue", icon: Activity, color: "text-[#C5A880]" },
-                  { key: "profile", label: "Execution Center", icon: UserIcon, color: "text-cotton" }
+                  { key: "missions", label: "Missions", icon: Flame, color: "text-cherryRed" },
+                  { key: "feed", label: "Social Feed", icon: Rss, color: "text-cherryRed" },
+                  { key: "active", label: "Active Queue", icon: Activity, color: "text-white" },
+                  { key: "profile", label: "Profile", icon: UserIcon, color: "text-white/80" }
                 ].map((item) => {
                   const isActive = tab === item.key;
                   const Icon = item.icon;
@@ -91,31 +84,38 @@ export default function Shell({ children, tab, setTab, user }: ShellProps) {
                     <button
                       key={item.key}
                       onClick={() => setTab(item.key)}
-                      className={`flex w-full items-center gap-4 rounded-xl border px-5 py-3.5 text-xs md:text-sm font-sans font-medium transition outline-none select-none
-                        ${isActive 
-                          ? "border-white/10 bg-white/5 text-white" 
-                          : "border-transparent text-zinc-500 hover:text-zinc-300 hover:bg-white/2"
+                      className={`group flex w-full items-center gap-3.5 rounded-[12px] border px-4 py-3 text-sm font-medium transition-all duration-150 outline-none select-none shimmer-hover relative
+                        ${isActive
+                          ? "border-white/[0.08] bg-white/[0.055] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+                          : "border-transparent text-zinc-500 hover:text-zinc-300 hover:bg-white/[0.03]"
                         }
                       `}
                     >
-                      <Icon className={`h-4.5 w-4.5 md:h-5 md:w-5 transition-colors ${isActive ? item.color : "text-zinc-500"}`} />
-                      {item.label}
+                      <Icon className={`h-[18px] w-[18px] shrink-0 transition-colors ${isActive ? item.color : "text-zinc-600 group-hover:text-zinc-400"}`} />
+                      <span className="text-[13px]">{item.label}</span>
+                      {isActive && (
+                        <motion.div
+                          layoutId="sidebar-active"
+                          className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-cherryRed"
+                          transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                        />
+                      )}
                     </button>
                   );
                 })}
               </nav>
             </div>
 
-            {/* User Details Widget */}
-            <div className="rounded-2xl border border-luxuryMaroon/15 bg-luxuryMaroon/5 p-5 text-left">
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm font-black text-cotton">
-                  {user.name ? user.name.split(" ").map(p => p[0]).join("").slice(0,2).toUpperCase() : "??"}
+            {/* User widget */}
+            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4">
+              <div className="flex items-center gap-3.5">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] border border-white/[0.07] bg-black/50 text-[13px] font-black text-white">
+                  {user.name ? user.name.split(" ").map(p => p[0]).join("").slice(0, 2).toUpperCase() : "??"}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs md:text-sm font-sans font-semibold text-cotton truncate">{user.name}</p>
-                  <p className="text-[9px] md:text-xs font-sans font-medium text-luxuryGold mt-1 flex items-center gap-1 leading-none">
-                    <img src="/aura-bolt.png" alt="Aura" className="h-3.5 w-3.5 object-contain shrink-0" />
+                  <p className="text-[13px] font-semibold text-white truncate leading-tight">{user.name}</p>
+                  <p className="text-[11px] font-medium text-white/70 mt-1 flex items-center gap-1 leading-none">
+                    <img src="/aura-bolt.png" alt="Aura" className="h-3 w-3 object-contain shrink-0" />
                     <span>{user.reputation_score ?? 0} Aura</span>
                   </p>
                 </div>
@@ -124,8 +124,8 @@ export default function Shell({ children, tab, setTab, user }: ShellProps) {
           </aside>
         )}
 
-        {/* Main Content (Inner Scrollable container) */}
-        <div className="relative z-10 flex flex-1 flex-col overflow-y-auto pb-24 md:pb-6 scrollbar-none">
+        {/* Main content */}
+        <div className="relative z-10 flex flex-1 flex-col overflow-y-auto h-full scrollbar-none">
           {children}
         </div>
       </main>

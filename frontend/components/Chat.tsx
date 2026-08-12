@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { io, Socket } from "socket.io-client";
+import { supabase } from "../lib/supabase";
 import { ChevronLeft, Send, ShieldAlert } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "./ui/input";
@@ -38,26 +38,31 @@ export default function Chat({ mission, user, onClose, api, socketUrl }: ChatPro
     load();
   }, [mission.id, user.id]);
 
-  // Socket connection
+  // Supabase Realtime Chat subscription
   useEffect(() => {
-    const socket: Socket = io(socketUrl);
+    if (!supabase) return;
 
-    socket.emit("join_mission", mission.id);
+    const channel = supabase.channel(`mission_chat:${mission.id}`);
 
-    socket.on("new_message", (message: Message) => {
-      if (message.mission_id === mission.id) {
-        setMessages((current) => {
-          if (current.some((msg) => msg.id === message.id)) return current;
-          return [...current, message];
-        });
+    channel.on(
+      "broadcast",
+      { event: "new_message" },
+      ({ payload }: { payload: Message }) => {
+        if (payload.mission_id === mission.id) {
+          setMessages((current) => {
+            if (current.some((msg) => msg.id === payload.id)) return current;
+            return [...current, payload];
+          });
+        }
       }
-    });
+    );
+
+    channel.subscribe();
 
     return () => {
-      socket.emit("leave_mission", mission.id);
-      socket.disconnect();
+      channel.unsubscribe();
     };
-  }, [mission.id, socketUrl]);
+  }, [mission.id]);
 
   // Scroll to bottom on new messages
   useEffect(() => {

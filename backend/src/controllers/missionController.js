@@ -1,6 +1,10 @@
 const prisma = require("../config/db");
 const memoryStore = require("../data/memoryStore");
 const { isDbUnavailable } = require("../utils/dbFallback");
+const {
+  getActiveSideQuests,
+  interleaveSideQuests
+} = require("./missionTemplateController");
 
 function assertUserId(userId, res) {
   if (!userId) {
@@ -11,7 +15,7 @@ function assertUserId(userId, res) {
 }
 
 async function createMission(req, res) {
-  const { creator_id, title, description, location, datetime, categoryId, focusDuration, missionType } = req.body;
+  const { creator_id, title, description, location, datetime, categoryId, focusDuration, missionType, coverColor, coverImage } = req.body;
   const isSolo = missionType === "solo";
 
   if (!creator_id || !title || !description || (!isSolo && (!location || !datetime))) {
@@ -32,8 +36,12 @@ async function createMission(req, res) {
   try {
     const creatorUser = await prisma.user.findUnique({
       where: { id: payload.creator_id },
-      select: { campusId: true }
+      select: { collegeId: true }
     });
+
+    if (!creatorUser) {
+      return res.status(400).json({ error: "User session is invalid. Please log out and sign in again." });
+    }
 
     const verificationCode = String(Math.floor(1000 + Math.random() * 9000));
     const mission = await prisma.mission.create({
@@ -44,10 +52,12 @@ async function createMission(req, res) {
         location: payload.location,
         categoryId: payload.categoryId,
         createdBy: payload.creator_id,
-        campusId: creatorUser ? creatorUser.campusId : null,
+        collegeId: creatorUser ? creatorUser.collegeId : null,
         focusDuration: payload.focusDuration,
         verificationCode: verificationCode,
-        missionType: payload.missionType
+        missionType: payload.missionType,
+        coverColor: coverColor || null,
+        coverImage: coverImage || null
       },
       include: {
         creator: {
@@ -78,7 +88,9 @@ async function createMission(req, res) {
       creator_department: mission.creator?.department || "Creator",
       verification_code: mission.verificationCode,
       focus_duration: mission.focusDuration,
-      mission_type: mission.missionType
+      mission_type: mission.missionType,
+      cover_color: mission.coverColor,
+      cover_image: mission.coverImage
     });
   } catch (error) {
     if (!isDbUnavailable(error)) throw error;
@@ -98,13 +110,13 @@ async function getMissionFeed(req, res) {
 
     const activeUser = await prisma.user.findUnique({
       where: { id: numericUserId },
-      select: { campusId: true }
+      select: { collegeId: true }
     });
 
     const whereClause = {
       createdBy: { not: numericUserId },
       datetime: { gte: twelveHoursAgo },
-      campusId: activeUser ? activeUser.campusId : null,
+      collegeId: activeUser ? activeUser.collegeId : null,
       missionType: { not: "solo" }, // Exclude solo missions from feed
       participations: {
         none: {
@@ -122,26 +134,85 @@ async function getMissionFeed(req, res) {
       orderBy: { datetime: "asc" },
       include: {
         category: true,
-        creator: true
+        creator: true,
+        participations: {
+          where: {
+            status: { in: ["Accepted", "Executing", "Completed"] }
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                department: true,
+                reputationScore: true
+              }
+            }
+          }
+        }
       }
     });
 
-    const rows = missions.map((m) => ({
-      id: m.id,
-      creator_id: m.createdBy,
-      title: m.title,
-      description: m.description || `Category: ${m.category?.categoryName || "Coding"}. Meet at ${m.location} and execute the mission.`,
-      location: m.location,
-      datetime: m.datetime ? m.datetime.toISOString() : null,
-      creator_name: m.creator?.name || "Unknown",
-      creator_department: m.creator?.department || "Creator",
-      category_name: m.category?.categoryName || "Coding",
-      category_id: m.categoryId,
-      focus_duration: m.focusDuration,
-      mission_type: m.missionType
-    }));
+    const rows = missions.map((m) => {
+      const attendees = [];
+      if (m.creator) {
+        attendees.push({
+          id: m.createdBy,
+          name: m.creator.name,
+          department: m.creator.department || "Host",
+          reputation_score: m.creator.reputationScore || 0,
+          is_host: true
+        });
+      }
 
-    res.json(rows);
+      const acceptedParticipants = (m.participations || [])
+        .map((p) => {
+          if (!p.user || p.user.id === m.createdBy) return null;
+          return {
+            id: p.user.id,
+            name: p.user.name,
+            department: p.user.department || "Student",
+            reputation_score: p.user.reputationScore || 0,
+            is_host: false
+          };
+        })
+        .filter(Boolean);
+
+      attendees.push(...acceptedParticipants);
+
+      return {
+        id: m.id,
+        creator_id: m.createdBy,
+        title: m.title,
+        description: m.description || `Category: ${m.category?.categoryName || "Coding"}. Meet at ${m.location} and execute the mission.`,
+        location: m.location,
+        datetime: m.datetime ? m.datetime.toISOString() : null,
+        creator_name: m.creator?.name || "Unknown",
+        creator_department: m.creator?.department || "Creator",
+        category_name: m.category?.categoryName || "Coding",
+        category_id: m.categoryId,
+        category_emoji: m.category?.emoji || "💻",
+        category_color: m.category?.colorHex || "#3b82f6",
+        focus_duration: m.focusDuration,
+        mission_type: m.missionType,
+        cover_color: m.coverColor,
+        cover_image: m.coverImage,
+        locked_in_count: attendees.length,
+        attendees: attendees,
+        is_side_quest: false,
+        item_type: "mission"
+      };
+    });
+
+    // Mix LOCKIN Side Quests into the feed (templates only — no Mission rows created)
+    let sideQuests = [];
+    try {
+      sideQuests = await getActiveSideQuests(categoryId, undefined, numericUserId);
+    } catch (sideQuestError) {
+      console.warn("Side Quest feed mix skipped:", sideQuestError.message);
+    }
+
+    res.json(interleaveSideQuests(rows, sideQuests));
   } catch (error) {
     if (!isDbUnavailable(error)) throw error;
     res.json(memoryStore.getMissionFeed(userId, categoryId));
@@ -155,6 +226,15 @@ async function acceptMission(req, res) {
 
   try {
     const result = await prisma.$transaction(async (tx) => {
+      const userExists = await tx.user.findUnique({
+        where: { id: Number(userId) },
+        select: { id: true }
+      });
+
+      if (!userExists) {
+        throw new Error("USER_NOT_FOUND");
+      }
+
       const activeCount = await tx.participation.count({
         where: {
           userId: Number(userId),
@@ -175,6 +255,23 @@ async function acceptMission(req, res) {
         throw new Error("NOT_FOUND");
       }
 
+      const existing = await tx.participation.findUnique({
+        where: {
+          unique_user_mission: {
+            userId: Number(userId),
+            missionId: Number(id)
+          }
+        }
+      });
+
+      // Already locked in / requested — do not create duplicates or re-notify
+      if (
+        existing &&
+        ["Requested", "Accepted", "Executing", "Completed"].includes(existing.status)
+      ) {
+        return { participation: existing, isNew: false };
+      }
+
       const participation = await tx.participation.upsert({
         where: {
           unique_user_mission: {
@@ -190,15 +287,55 @@ async function acceptMission(req, res) {
         }
       });
 
-      return participation;
+      return { participation, isNew: true };
     });
 
-    res.status(201).json({
-      mission_id: result.missionId,
-      user_id: result.userId,
-      status: result.status
+    // Real-time Push Notification to Host (only on first request)
+    if (result.isNew) {
+      try {
+        const mission = await prisma.mission.findUnique({
+          where: { id: Number(id) },
+          select: { createdBy: true, title: true }
+        });
+        const applicant = await prisma.user.findUnique({
+          where: { id: Number(userId) },
+          select: { name: true }
+        });
+        if (mission && mission.createdBy) {
+          const supabaseClient = require("../config/supabase");
+          if (supabaseClient) {
+            const channel = supabaseClient.channel(`notifications:${mission.createdBy}`);
+            channel.subscribe((status) => {
+              if (status === "SUBSCRIBED") {
+                channel.send({
+                  type: "broadcast",
+                  event: "push_notification",
+                  payload: {
+                    title: "New Join Request!",
+                    message: `${applicant?.name || "Someone"} requested to join your runway: "${mission.title}"`,
+                    type: "join_request",
+                    missionId: Number(id)
+                  }
+                }).catch(err => console.error("Realtime notification broadcast failed:", err));
+              }
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Error sending join request notification:", err);
+      }
+    }
+
+    res.status(result.isNew ? 201 : 200).json({
+      mission_id: result.participation.missionId,
+      user_id: result.participation.userId,
+      status: result.participation.status,
+      already_locked: !result.isNew
     });
   } catch (error) {
+    if (error.message === "USER_NOT_FOUND") {
+      return res.status(400).json({ error: "User session is invalid. Please log out and sign in again." });
+    }
     if (error.message === "LOCKED_OUT") {
       return res.status(423).json({ error: "Runway full. Mark attendance on your active missions before accepting more." });
     }
@@ -235,7 +372,22 @@ async function getActiveMissions(req, res) {
         mission: {
           include: {
             category: true,
-            creator: true
+            creator: true,
+            participations: {
+              where: {
+                status: { in: ["Accepted", "Executing", "Completed"] }
+              },
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    department: true,
+                    reputationScore: true
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -260,16 +412,88 @@ async function getActiveMissions(req, res) {
         mission: {
           include: {
             category: true,
-            creator: true
+            creator: true,
+            participations: {
+              where: {
+                status: { in: ["Accepted", "Executing", "Completed"] }
+              },
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    name: true,
+                    department: true,
+                    reputationScore: true
+                  }
+                }
+              }
+            }
           }
         }
       }
     });
 
+    // 3. Fetch all group missions created by this user to catch those with 0 active/pending participations
+    const createdMissions = await prisma.mission.findMany({
+      where: {
+        createdBy: numericUserId,
+        missionType: "group"
+      },
+      include: {
+        category: true,
+        creator: true,
+        participations: {
+          where: {
+            status: { in: ["Accepted", "Executing", "Completed", "Requested"] }
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                department: true,
+                reputationScore: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    const buildAttendees = (m) => {
+      if (!m) return [];
+      const attendees = [];
+      if (m.creator) {
+        attendees.push({
+          id: m.createdBy,
+          name: m.creator.name,
+          department: m.creator.department || "Host",
+          reputation_score: m.creator.reputationScore || 0,
+          is_host: true
+        });
+      }
+      const acceptedParticipants = (m.participations || [])
+        .filter(p => ["Accepted", "Executing", "Completed"].includes(p.status))
+        .map((p) => {
+          if (!p.user || p.user.id === m.createdBy) return null;
+          return {
+            id: p.user.id,
+            name: p.user.name,
+            department: p.user.department || "Student",
+            reputation_score: p.user.reputationScore || 0,
+            is_host: false
+          };
+        })
+        .filter(Boolean);
+      attendees.push(...acceptedParticipants);
+      return attendees;
+    };
+
     const acceptedRows = accepted
       .filter((p) => p.status !== "Rejected")
       .map((p) => {
         if (!p.mission) return null;
+        const attendees = buildAttendees(p.mission);
         return {
           id: p.mission.id,
           creator_id: p.mission.createdBy,
@@ -287,7 +511,11 @@ async function getActiveMissions(req, res) {
           work_duration: p.workDuration,
           creator_vibe_rating: p.creatorVibeRating,
           participant_vibe_rating: p.participantVibeRating,
-          mission_type: p.mission.missionType
+          mission_type: p.mission.missionType,
+          cover_color: p.mission.coverColor,
+          cover_image: p.mission.coverImage,
+          locked_in_count: attendees.length,
+          attendees: attendees
         };
       })
       .filter(Boolean);
@@ -297,6 +525,7 @@ async function getActiveMissions(req, res) {
       .map((p) => {
         if (!p.mission) return null;
         const isSolo = p.mission.missionType === "solo";
+        const attendees = buildAttendees(p.mission);
         return {
           id: p.mission.id,
           creator_id: p.mission.createdBy,
@@ -318,12 +547,55 @@ async function getActiveMissions(req, res) {
           work_duration: p.workDuration,
           creator_vibe_rating: p.creatorVibeRating,
           participant_vibe_rating: p.participantVibeRating,
-          mission_type: p.mission.missionType
+          mission_type: p.mission.missionType,
+          cover_color: p.mission.coverColor,
+          cover_image: p.mission.coverImage,
+          locked_in_count: attendees.length,
+          attendees: attendees
         };
       })
       .filter(Boolean);
 
-    const rows = [...acceptedRows, ...hostedRows];
+    const pendingRows = createdMissions
+      .filter((m) => {
+        // Only include if there is NO participation with status: Accepted, Executing, Completed, Missed, Requested
+        const hasActiveOrPending = m.participations.some((p) =>
+          ["Accepted", "Executing", "Completed", "Missed", "Requested"].includes(p.status)
+        );
+        return !hasActiveOrPending;
+      })
+      .map((m) => {
+        const attendees = buildAttendees(m);
+        return {
+          id: m.id,
+          creator_id: m.createdBy,
+          title: m.title,
+          description: m.description || `Category: ${m.category?.categoryName || "Coding"}. Meet at ${m.location} and execute the mission.`,
+          location: m.location,
+          datetime: m.datetime ? m.datetime.toISOString() : null,
+          status: "Pending",
+          showed_up: null,
+          creator_name: m.creator?.name || "Me",
+          role: "creator",
+          participant_name: "Waiting for requests...",
+          participant_id: null,
+          participant_department: "",
+          participant_reputation: 0,
+          verification_code: m.verificationCode,
+          focus_duration: m.focusDuration,
+          work_started_at: null,
+          work_duration: null,
+          creator_vibe_rating: null,
+          participant_vibe_rating: null,
+          mission_type: m.missionType,
+          cover_color: m.coverColor,
+          cover_image: m.coverImage,
+          locked_in_count: attendees.length,
+          attendees: attendees
+        };
+      });
+
+    const rows = [...acceptedRows, ...hostedRows, ...pendingRows];
 
     // Sort: showed_up = null first, then datetime
     rows.sort((a, b) => {
@@ -495,6 +767,40 @@ async function approveParticipant(req, res) {
       return approved;
     });
 
+    // Real-time Push Notification to Participant
+    try {
+      const mission = await prisma.mission.findUnique({
+        where: { id: Number(id) },
+        select: { title: true }
+      });
+      const host = await prisma.user.findUnique({
+        where: { id: Number(creatorId) },
+        select: { name: true }
+      });
+      if (mission) {
+        const supabaseClient = require("../config/supabase");
+        if (supabaseClient) {
+          const channel = supabaseClient.channel(`notifications:${participantId}`);
+          channel.subscribe((status) => {
+            if (status === "SUBSCRIBED") {
+              channel.send({
+                type: "broadcast",
+                event: "push_notification",
+                payload: {
+                  title: "Request Approved!",
+                  message: `${host?.name || "Host"} approved your request to join: "${mission.title}"`,
+                  type: "request_approved",
+                  missionId: Number(id)
+                }
+              }).catch(err => console.error("Realtime notification broadcast failed:", err));
+            }
+          });
+        }
+      }
+    } catch (err) {
+      console.error("Error sending approval notification:", err);
+    }
+
     res.json({
       mission_id: Number(id),
       participant_id: Number(participantId),
@@ -519,26 +825,58 @@ async function getCategories(req, res) {
     const categories = await prisma.category.findMany({
       orderBy: { id: "asc" }
     });
-    res.json(categories);
+    res.json(
+      categories.map((c) => ({
+        id: c.id,
+        categoryName: c.categoryName,
+        emoji: c.emoji || null,
+        colorHex: c.colorHex || "#a1a1aa"
+      }))
+    );
   } catch (error) {
     if (!isDbUnavailable(error)) throw error;
     res.json([
-      { id: 1, categoryName: "Coding" },
-      { id: 2, categoryName: "Sports" }
+      { id: 1, categoryName: "Coding", emoji: null, colorHex: "#3b82f6" },
+      { id: 2, categoryName: "AI", emoji: null, colorHex: "#8b5cf6" },
+      { id: 3, categoryName: "Startups", emoji: null, colorHex: "#f59e0b" },
+      { id: 4, categoryName: "Hackathons", emoji: null, colorHex: "#ef4444" },
+      { id: 5, categoryName: "Open Source", emoji: null, colorHex: "#10b981" },
+      { id: 6, categoryName: "Design", emoji: null, colorHex: "#ec4899" },
+      { id: 7, categoryName: "Content Creation", emoji: null, colorHex: "#f97316" },
+      { id: 8, categoryName: "Fitness", emoji: null, colorHex: "#14b8a6" },
+      { id: 9, categoryName: "Study Sessions", emoji: null, colorHex: "#6366f1" },
+      { id: 10, categoryName: "Research", emoji: null, colorHex: "#0ea5e9" },
+      { id: 11, categoryName: "Placements", emoji: null, colorHex: "#e11d48" },
+      { id: 12, categoryName: "Competitive Programming", emoji: null, colorHex: "#eab308" },
+      { id: 13, categoryName: "Reading", emoji: null, colorHex: "#a855f7" },
+      { id: 14, categoryName: "Languages", emoji: null, colorHex: "#06b6d4" },
+      { id: 15, categoryName: "Career", emoji: null, colorHex: "#64748b" },
+      { id: 16, categoryName: "Projects", emoji: null, colorHex: "#f43f5e" },
+      { id: 17, categoryName: "Networking", emoji: null, colorHex: "#22c55e" },
+      { id: 18, categoryName: "Events", emoji: null, colorHex: "#d946ef" },
+      { id: 19, categoryName: "Other", emoji: null, colorHex: "#a1a1aa" }
     ]);
   }
 }
 
 async function getCampuses(req, res) {
   try {
-    const campuses = await prisma.campus.findMany({
-      orderBy: { name: "asc" }
+    const colleges = await prisma.college.findMany({
+      orderBy: { shortName: "asc" }
     });
-    res.json(campuses);
+    // Return in a format compatible with the existing frontend
+    res.json(
+      colleges.map((c) => ({
+        id: c.id,
+        name: c.shortName,
+        location: `${c.city}, ${c.state}`
+      }))
+    );
   } catch (error) {
     if (!isDbUnavailable(error)) throw error;
     res.json([
-      { id: 1, name: "SRM IST, Kattankulathur (KTR)", location: "Chennai, TN" }
+      { id: 1, name: "SRM IST, Kattankulathur (KTR)", location: "Chennai, Tamil Nadu" },
+      { id: 2, name: "Taylor's University", location: "Subang Jaya, Selangor" }
     ]);
   }
 }
@@ -663,5 +1001,7 @@ module.exports = {
   approveParticipant,
   getCategories,
   getCampuses,
-  submitVibeCheck
+  submitVibeCheck,
+  getTemplateById: require("./missionTemplateController").getTemplateById,
+  lockInFromTemplate: require("./missionTemplateController").lockInFromTemplate
 };

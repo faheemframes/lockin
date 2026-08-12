@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { User, Mission } from "../app/types";
 import HeatMap from "./HeatMap";
+import FollowListModal from "./FollowListModal";
 import { 
   Flame, 
   MapPin, 
@@ -34,6 +35,10 @@ export default function PublicProfile({ userId, viewerId, isOpen, onClose, api }
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
+  const [isFollowListOpen, setIsFollowListOpen] = useState(false);
+  const [followListInitialTab, setFollowListInitialTab] = useState<"followers" | "following">("followers");
+  const [selectedProfileUserId, setSelectedProfileUserId] = useState<number | null>(null);
+  const [isNestedProfileOpen, setIsNestedProfileOpen] = useState(false);
 
   useEffect(() => {
     if (!isOpen || !userId) return;
@@ -94,16 +99,16 @@ export default function PublicProfile({ userId, viewerId, isOpen, onClose, api }
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-md md:max-w-2xl bg-noirBlack border border-luxuryMaroon/20 p-4 md:p-6 overflow-y-auto max-h-[90vh] scrollbar-none text-cotton">
+      <DialogContent className="max-w-md md:max-w-2xl bg-noirBlack border border-cherryRed/20 p-4 md:p-6 overflow-y-auto max-h-[90vh] scrollbar-none text-cotton">
         <DialogHeader className="border-b border-white/5 pb-3">
-          <DialogTitle className="text-sm font-black uppercase tracking-wider text-luxuryGold flex items-center gap-1.5">
+          <DialogTitle className="text-sm font-black uppercase tracking-wider text-cherryRed flex items-center gap-1.5">
             <Sparkles className="h-4 w-4" /> Profile Details
           </DialogTitle>
         </DialogHeader>
 
         {loading ? (
           <div className="py-20 flex flex-col items-center justify-center gap-3">
-            <Activity className="h-8 w-8 text-luxuryGold animate-spin" />
+            <Activity className="h-8 w-8 text-cherryRed animate-spin" />
             <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest animate-pulse">
               Locking into profile data...
             </p>
@@ -117,9 +122,17 @@ export default function PublicProfile({ userId, viewerId, isOpen, onClose, api }
             {/* Hero Header */}
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between border-b border-white/5 pb-4">
               <div className="flex items-center gap-3.5">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-cherryRed/35 bg-cherryRed/5 text-lg font-black text-cotton shadow-[0_0_24px_rgba(129,1,0,0.15)]">
-                  {profileData.user.name ? profileData.user.name.split(" ").map((p: string) => p[0]).join("").slice(0, 2).toUpperCase() : "??"}
-                </div>
+                {profileData.user.avatar_url ? (
+                  <img
+                    src={profileData.user.avatar_url}
+                    alt={profileData.user.name || "User"}
+                    className="h-14 w-14 shrink-0 rounded-2xl object-cover border border-cherryRed/35 bg-cherryRed/5 shadow-[0_0_24px_rgba(129,1,0,0.15)]"
+                  />
+                ) : (
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-cherryRed/35 bg-cherryRed/5 text-lg font-black text-cotton shadow-[0_0_24px_rgba(129,1,0,0.15)]">
+                    {profileData.user.name ? profileData.user.name.split(" ").map((p: string) => p[0]).join("").slice(0, 2).toUpperCase() : "??"}
+                  </div>
+                )}
                 <div className="text-left">
                   <h2 className="text-base md:text-xl font-black text-cotton leading-tight">
                     {profileData.user.name}
@@ -138,11 +151,23 @@ export default function PublicProfile({ userId, viewerId, isOpen, onClose, api }
               {/* Follow count & action */}
               <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
                 <div className="flex gap-2.5 text-[10px] font-bold text-zinc-500 bg-noirBlack/40 px-3 py-1.5 rounded-lg border border-white/5">
-                  <div>
+                  <div
+                    onClick={() => {
+                      setFollowListInitialTab("followers");
+                      setIsFollowListOpen(true);
+                    }}
+                    className="cursor-pointer hover:text-white transition-colors"
+                  >
                     <span className="text-cotton font-black mr-0.5">{profileData.followersCount}</span> Followers
                   </div>
                   <div className="w-px bg-white/10" />
-                  <div>
+                  <div
+                    onClick={() => {
+                      setFollowListInitialTab("following");
+                      setIsFollowListOpen(true);
+                    }}
+                    className="cursor-pointer hover:text-white transition-colors"
+                  >
                     <span className="text-cotton font-black mr-0.5">{profileData.followingCount}</span> Following
                   </div>
                 </div>
@@ -173,7 +198,7 @@ export default function PublicProfile({ userId, viewerId, isOpen, onClose, api }
 
             {/* Badges / Links */}
             <div className="flex flex-wrap gap-2">
-              <span className="flex items-center gap-1.5 rounded-lg border border-luxuryGold/25 bg-luxuryGold/5 px-2.5 py-1 text-[10px] font-sans font-semibold text-luxuryGold uppercase tracking-wider">
+              <span className="flex items-center gap-1.5 rounded-lg border border-cherryRed/25 bg-cherryRed/5 px-2.5 py-1 text-[10px] font-sans font-semibold text-cherryRed uppercase tracking-wider">
                 <img src="/aura-bolt.png" alt="Aura" className="h-3.5 w-3.5 object-contain shrink-0" />
                 {profileData.user.reputation_score ?? 0} Aura
               </span>
@@ -224,15 +249,15 @@ export default function PublicProfile({ userId, viewerId, isOpen, onClose, api }
                 <div className="grid grid-cols-2 md:grid-cols-1 gap-2.5">
                   {[
                     { label: "Missions Completed", value: profileData.stats.totalMissions, icon: Flame, color: "text-cherryRed" },
-                    { label: "Focus Hours", value: `${profileData.stats.focusHours}h`, icon: Clock, color: "text-luxuryGold" },
-                    { label: "Completion Rate", value: `${profileData.stats.completionRate}%`, icon: CheckCircle2, color: "text-emerald-500" },
-                    { label: "Current Streak", value: `${profileData.stats.currentStreak}d`, icon: Zap, color: "text-amber-500" },
+                    { label: "Focus Hours", value: `${profileData.stats.focusHours}h`, icon: Clock, color: "text-cotton" },
+                    { label: "Completion Rate", value: `${profileData.stats.completionRate}%`, icon: CheckCircle2, color: "text-cotton" },
+                    { label: "Current Streak", value: `${profileData.stats.currentStreak}d`, icon: Zap, color: "text-cherryRed" },
                     { label: "Tasks Finished", value: profileData.stats.tasksCompleted, icon: ListTodo, color: "text-cotton" },
-                    { label: "Active Days", value: profileData.stats.activeDays, icon: Calendar, color: "text-sky-500" },
+                    { label: "Active Days", value: profileData.stats.activeDays, icon: Calendar, color: "text-cotton" },
                   ].map((stat) => {
                     const Icon = stat.icon;
                     return (
-                      <div key={stat.label} className="rounded-xl border border-luxuryMaroon/10 bg-noirBlack/40 p-3 flex flex-col justify-between space-y-1.5 text-left">
+                      <div key={stat.label} className="rounded-xl border border-cherryRed/10 bg-noirBlack/40 p-3 flex flex-col justify-between space-y-1.5 text-left">
                         <div className="flex justify-between items-start">
                           <span className="text-[8px] font-black uppercase tracking-wider text-zinc-600 leading-none">{stat.label}</span>
                           <Icon className={`h-3 w-3 ${stat.color} shrink-0`} />
@@ -246,7 +271,7 @@ export default function PublicProfile({ userId, viewerId, isOpen, onClose, api }
 
               {/* Heatmap column */}
               <div className="md:col-span-2 space-y-4">
-                <HeatMap userId={userId} api={api} />
+                <HeatMap userId={userId} userJoinedAt={profileData?.user?.verified_at} api={api} />
 
                 {/* Recent Activities */}
                 <div className="space-y-3">
@@ -254,11 +279,11 @@ export default function PublicProfile({ userId, viewerId, isOpen, onClose, api }
                     Recent Runway Runways
                   </h3>
                   {profileData.feedItems && profileData.feedItems.length > 0 ? (
-                    <div className="space-y-2.5 max-h-[200px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-luxuryMaroon/20 text-left">
+                    <div className="space-y-2.5 max-h-[200px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-cherryRed/20 text-left">
                       {profileData.feedItems.map((item: any) => (
                         <div
                           key={item.id}
-                          className="rounded-xl border border-luxuryMaroon/10 bg-noirBlack/20 p-3 space-y-1.5"
+                          className="rounded-xl border border-cherryRed/10 bg-noirBlack/20 p-3 space-y-1.5"
                         >
                           <div className="flex justify-between items-start">
                             <span className="text-xs font-black text-cotton">{item.title}</span>
@@ -273,11 +298,11 @@ export default function PublicProfile({ userId, viewerId, isOpen, onClose, api }
                           )}
                           {item.metadata && (
                             <div className="flex gap-2 text-[8px] font-bold uppercase tracking-wider text-zinc-500">
-                              <span>⏱ {item.metadata.sessionDuration} mins</span>
+                              <span>{item.metadata.sessionDuration}m</span>
                               <span>•</span>
-                              <span>✓ {item.metadata.tasksCompleted || 0} tasks</span>
+                              <span>{item.metadata.tasksCompleted || 0} Tasks</span>
                               <span>•</span>
-                              <span className="text-luxuryGold">{item.metadata.category}</span>
+                              <span className="text-cherryRed">{item.metadata.category}</span>
                             </div>
                           )}
                         </div>
@@ -291,6 +316,33 @@ export default function PublicProfile({ userId, viewerId, isOpen, onClose, api }
                 </div>
               </div>
             </div>
+
+            {/* Followers & Following listing modal */}
+            <FollowListModal
+              isOpen={isFollowListOpen}
+              onClose={() => setIsFollowListOpen(false)}
+              userId={userId}
+              initialTab={followListInitialTab}
+              onViewProfile={(profileId) => {
+                setSelectedProfileUserId(profileId);
+                setIsNestedProfileOpen(true);
+              }}
+              api={api}
+            />
+
+            {/* Nested Public Profile overlay */}
+            {selectedProfileUserId && (
+              <PublicProfile
+                userId={selectedProfileUserId}
+                viewerId={viewerId}
+                isOpen={isNestedProfileOpen}
+                onClose={() => {
+                  setIsNestedProfileOpen(false);
+                  setSelectedProfileUserId(null);
+                }}
+                api={api}
+              />
+            )}
           </div>
         )}
       </DialogContent>

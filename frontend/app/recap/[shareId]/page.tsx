@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Clock, CheckCircle, Trophy, Sparkles, Flame, Users, ExternalLink, Download } from "lucide-react";
 import Shell from "../../../components/Shell";
 import Header from "../../../components/Header";
+import LoadingScreen from "../../../components/LoadingScreen";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
@@ -41,22 +42,7 @@ export default function PublicShareRecap() {
   }, [shareId]);
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-black text-white px-4">
-        <div className="flex flex-col items-center gap-3">
-          <motion.div
-            animate={{ scale: [1, 1.15, 1] }}
-            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-luxuryGold bg-luxuryGold/10"
-          >
-            <img src="/logo.png" alt="LOCKIN" className="h-6 w-6 object-contain" />
-          </motion.div>
-          <span className="text-xs font-black uppercase tracking-widest text-zinc-500 mt-2">
-            Loading achievement coordinates...
-          </span>
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   if (error || !recap) {
