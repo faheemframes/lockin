@@ -17,9 +17,13 @@ export type TimerAnchor = {
   running: boolean;
 };
 
-export function createCountdownAnchor(missionId: number, durationSec: number, running = true): TimerAnchor {
+export function createCountdownAnchor(
+  missionId: number | string,
+  durationSec: number,
+  running = true
+): TimerAnchor {
   return {
-    missionId,
+    missionId: Number(missionId),
     durationSec,
     endAt: running ? Date.now() + durationSec * 1000 : null,
     startedAt: null,
@@ -29,9 +33,9 @@ export function createCountdownAnchor(missionId: number, durationSec: number, ru
   };
 }
 
-export function createStopwatchAnchor(missionId: number, running = true): TimerAnchor {
+export function createStopwatchAnchor(missionId: number | string, running = true): TimerAnchor {
   return {
-    missionId,
+    missionId: Number(missionId),
     durationSec: 0,
     endAt: null,
     startedAt: running ? Date.now() : null,
