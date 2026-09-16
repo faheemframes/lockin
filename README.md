@@ -1,81 +1,42 @@
 # LOCKIN
 
-Mobile-first mission app for students who want fewer group chats and more real-world execution.
+> **Stop scrolling. Start showing up.**
 
-## Stack
+LOCKIN is a college-focused mission platform built around accountability, execution, and real-world activity.
 
-- Frontend: Next.js, React, Tailwind CSS, Framer Motion
-- Backend: Node.js, Express
-- Database: MySQL
+Instead of endlessly planning or chatting, users **lock in to missions**, execute them solo or with others, complete tasks, and build a record of their consistency.
 
-## Project Structure
+### Core Loop
 
-```text
-frontend/   Next.js PWA-style mobile web app
-backend/    Express API, MySQL config, routes, controllers
-```
+**Discover → Lock In → Execute → Complete → Recap → Build Aura → Repeat**
 
-## Database Setup
+### What you can do
 
-1. Create a MySQL database:
+- Create and join **Solo & Group Missions**
+- Set tasks, duration, time, and location
+- Execute missions with a focused timer
+- Verify attendance for group missions
+- Track **Aura, streaks, and activity**
+- Generate mission **recaps**
+- Share activity through the social feed
+- Follow users and explore public profiles
+- Browse curated **LOCKIN Quests / Mission Templates**
+- Add missions to Google Calendar, Outlook, or Apple Calendar
 
-```sql
-CREATE DATABASE lock_in_db;
-```
+### Tech Stack
 
-2. Run the schema and seed files:
+**Frontend:** Next.js 15 · React 19 · TypeScript · Tailwind CSS · Framer Motion · Lucide React
 
-```bash
-mysql -u root -p < backend/db/schema.sql
-mysql -u root -p lock_in_db < backend/db/seed.sql
-```
+**Backend:** Express / Vercel-compatible API architecture · Prisma
 
-## Backend Setup
+**Infrastructure:** Supabase PostgreSQL · Supabase Auth · Supabase Realtime · Supabase Storage · Resend
 
-```bash
-cd backend
-cp .env.example .env
-npm install
-npm run dev
-```
+**Deployment:** Vercel · `lockin.top`
 
-Default API URL: `http://localhost:4000/api`
+### Development
 
-## Frontend Setup
+LOCKIN is designed as a **Vercel-first architecture**. Supabase handles the core backend infrastructure, while Resend handles email delivery.
 
-```bash
-cd frontend
-cp .env.example .env.local
-npm install
-npm run dev
-```
+Before making changes, read **`LOCKIN_HANDOFF.md`** for the complete product and engineering context.
 
-Default app URL: `http://localhost:3000`
-
-## Environment Variables
-
-Backend:
-
-```env
-PORT=4000
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_password
-DB_NAME=lock_in_db
-DB_PORT=3306
-FRONTEND_URL=http://localhost:3000
-```
-
-Frontend:
-
-```env
-NEXT_PUBLIC_API_URL=http://localhost:4000/api
-```
-
-## Deployment Notes
-
-- Deploy `frontend` to Vercel.
-- Deploy `backend` to Railway.
-- Use Railway MySQL or any managed MySQL provider.
-- Set `NEXT_PUBLIC_API_URL` in Vercel to your Railway API URL plus `/api`.
-- Set Railway backend env vars to your production MySQL credentials and Vercel frontend URL.
+> **Build things that make people lock in and actually show up.**
