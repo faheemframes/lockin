@@ -4,6 +4,7 @@ import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { MotionRoot } from "../components/ui/motion";
 import TopLoader from "../components/TopLoader";
+import { Analytics } from "@vercel/analytics/next";
 
 // Brand system: Space Grotesk. 300 for large headlines, 500 for UI.
 const grotesk = Space_Grotesk({
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="font-sans">
         <TopLoader />
         <MotionRoot>{children}</MotionRoot>
+        <Analytics />
       </body>
     </html>
   );
