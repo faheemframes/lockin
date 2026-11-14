@@ -20,7 +20,7 @@ import {
 import { LockinMark, LockinWordmark } from "./ui/LockinLogo";
 import { CountUp, Portal } from "./ui/motion";
 import { POINTS_NAME } from "../lib/brand";
-import { toPng, toBlob } from "html-to-image";
+import { toBlob } from "html-to-image";
 import { uploadImage } from "../lib/supabase";
 
 interface RecapProps {
@@ -96,7 +96,9 @@ export default function LockinRecapCard({
   // 2 Master Presentation Modes:
   // 1. "sticker" = Transparent PNG Sticker (for Instagram Story) or Photo Overlay
   // 2. "metallic" = Obsidian 3D collectible trading card
-  const [cardMode, setCardMode] = useState<"sticker" | "metallic">("sticker");
+  // Default is always the metallic tier card. The sticker opened first used
+  // to render as a black card on phones (transparent over the dark overlay).
+  const [cardMode, setCardMode] = useState<"sticker" | "metallic">("metallic");
   const [stickerBg, setStickerBg] = useState<"transparent" | "photo">(
     initialPhoto ? "photo" : "transparent"
   );
@@ -159,9 +161,8 @@ export default function LockinRecapCard({
     if (isOpen) {
       setIsTrashing(false);
       setCurrentPhoto(recapData.metadata?.screenshot || null);
-      if (recapData.metadata?.screenshot) {
-        setCardMode("sticker");
-      }
+      setCardMode("metallic");
+      setIsFlipped(false);
       setActiveMetric(recapData.metadata?.customMetric || recapData.customMetric || "");
     }
   }, [isOpen, recapData]);
@@ -374,104 +375,104 @@ export default function LockinRecapCard({
         : "border border-white/10 shadow-2xl"
       : borderStyle;
 
-  // Handle 1-tap clipboard copy of transparent PNG sticker (for Instagram Story paste)
-  const handleCopySticker = useCallback(async () => {
-    if (!cardRef.current || saving) return;
+  type ExportKind = "metallic" | "sticker" | "photo";
+  const [exporting, setExporting] = useState<ExportKind | null>(null);
 
+  // The on-screen transparency grid and other preview-only helpers are never exported.
+  const exportFilter = (node: HTMLElement) => !(node instanceof HTMLElement && node.dataset && node.dataset.exportIgnore);
+  const nextFrames = (ms: number) => new Promise((r) => setTimeout(() => requestAnimationFrame(() => requestAnimationFrame(r)), ms));
+
+  /**
+   * Render one of the three versions as a PNG, whatever is on screen right
+   * now: switch to it, capture the front face, then put the view back.
+   */
+  const renderVersion = useCallback(async (kind: ExportKind): Promise<Blob> => {
+    const prev = { cardMode, stickerBg, isFlipped };
+    setIsFlipped(false);
+    setCardMode(kind === "metallic" ? "metallic" : "sticker");
+    if (kind !== "metallic") setStickerBg(kind === "photo" ? "photo" : "transparent");
+    await nextFrames(prev.isFlipped ? 650 : 80);
     try {
-      setSaving(true);
-      const wasFlipped = isFlipped;
-      if (wasFlipped) {
-        setIsFlipped(false);
-        await new Promise((resolve) => setTimeout(resolve, 600));
-      }
-
+      if (!cardRef.current) throw new Error("Card isn't ready yet.");
       const blob = await toBlob(cardRef.current, {
         pixelRatio: 2.5,
         cacheBust: true,
-        backgroundColor: "transparent",
+        backgroundColor: kind === "sticker" ? "transparent" : undefined,
+        filter: exportFilter as any
       });
-
-      if (!blob) throw new Error("Failed to render sticker");
-
-      if (typeof ClipboardItem !== "undefined" && navigator.clipboard && navigator.clipboard.write) {
-        try {
-          const item = new ClipboardItem({ "image/png": blob });
-          await navigator.clipboard.write([item]);
-          setCopiedSticker(true);
-          setTimeout(() => setCopiedSticker(false), 2500);
-          if (wasFlipped) setIsFlipped(true);
-          setSaving(false);
-          return;
-        } catch (clipErr) {
-          console.warn("Direct clipboard write failed, falling back to download", clipErr);
-        }
-      }
-
-      // Fallback: direct download
-      const dataUrl = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.download = `lockin-sticker-transparent-${Date.now()}.png`;
-      link.href = dataUrl;
-      link.click();
-      URL.revokeObjectURL(dataUrl);
-
-      setCopiedSticker(true);
-      setTimeout(() => setCopiedSticker(false), 2500);
-      if (wasFlipped) setIsFlipped(true);
-    } catch (err: any) {
-      console.error("Failed to copy sticker:", err);
-      alert(err.message || "Failed to copy sticker image.");
+      if (!blob) throw new Error("Couldn't render the image.");
+      return blob;
     } finally {
-      setSaving(false);
+      setCardMode(prev.cardMode);
+      setStickerBg(prev.stickerBg);
+      setIsFlipped(prev.isFlipped);
     }
-  }, [saving, isFlipped]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cardMode, stickerBg, isFlipped]);
 
-  // Handle export: ALWAYS performs direct high-DPI file download without share-sheet interception
-  const handleSave = useCallback(async () => {
-    if (!cardRef.current || saving) return;
+  const fileName = (kind: ExportKind) =>
+    kind === "sticker" ? `lockin-sticker-transparent-${Date.now()}.png` : kind === "photo" ? `lockin-photo-${Date.now()}.png` : `lockin-card-${Date.now()}.png`;
 
+  function download(blob: Blob, name: string) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.download = name;
+    link.href = url;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+
+  const handleExport = useCallback(async (kind: ExportKind) => {
+    if (saving) return;
+    if (kind === "photo" && !currentPhoto) {
+      alert("Add a photo first.");
+      return;
+    }
+    setSaving(true);
+    setExporting(kind);
     try {
-      setSaving(true);
-      const wasFlipped = isFlipped;
-      if (wasFlipped) {
-        setIsFlipped(false);
-        await new Promise((resolve) => setTimeout(resolve, 600));
-      }
-
-      const isTransparent = cardMode === "sticker" && stickerBg === "transparent";
-
-      const dataUrl = await toPng(cardRef.current, {
-        pixelRatio: 2.5,
-        cacheBust: true,
-        backgroundColor: isTransparent ? "transparent" : undefined,
-      });
-
-      // Always trigger direct file download via Blob for 100% reliable saving across all devices
-      const res = await fetch(dataUrl);
-      const blob = await res.blob();
-      const objectUrl = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      const filename = isTransparent
-        ? `lockin-sticker-transparent-${Date.now()}.png`
-        : `lockin-${cardMode === "sticker" ? "story" : "card"}-${Date.now()}.png`;
-      link.download = filename;
-      link.href = objectUrl;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
-
-      if (wasFlipped) {
-        setIsFlipped(true);
-      }
+      download(await renderVersion(kind), fileName(kind));
     } catch (err: any) {
       console.error("Failed to export image:", err);
-      alert(err.message || "Failed to export PNG image. Please try again.");
+      alert(err?.message || "Failed to export PNG image. Please try again.");
     } finally {
       setSaving(false);
+      setExporting(null);
     }
-  }, [saving, isFlipped, cardMode, stickerBg]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [saving, currentPhoto, renderVersion]);
+
+  // 1-tap clipboard copy of the transparent sticker (for pasting into a story).
+  const handleCopySticker = useCallback(async () => {
+    if (saving) return;
+    setSaving(true);
+    setExporting("sticker");
+    try {
+      const blob = await renderVersion("sticker");
+      if (typeof ClipboardItem !== "undefined" && navigator.clipboard?.write) {
+        try {
+          await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+          setCopiedSticker(true);
+          setTimeout(() => setCopiedSticker(false), 2500);
+          return;
+        } catch (clipErr) {
+          console.warn("Clipboard write failed, downloading instead", clipErr);
+        }
+      }
+      download(blob, fileName("sticker"));
+      setCopiedSticker(true);
+      setTimeout(() => setCopiedSticker(false), 2500);
+    } catch (err: any) {
+      console.error("Failed to copy sticker:", err);
+      alert(err?.message || "Failed to copy sticker image.");
+    } finally {
+      setSaving(false);
+      setExporting(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [saving, renderVersion]);
 
   const handleShare = useCallback(async () => {
     if (!recapData.shareId) {
@@ -484,19 +485,9 @@ export default function LockinRecapCard({
     if (navigator.share) {
       try {
         if (cardRef.current && navigator.canShare) {
-          const isTransparent = cardMode === "sticker" && stickerBg === "transparent";
-          const dataUrl = await toPng(cardRef.current, {
-            pixelRatio: 2.5,
-            cacheBust: true,
-            backgroundColor: isTransparent ? "transparent" : undefined,
-          });
-          const res = await fetch(dataUrl);
-          const blob = await res.blob();
-          const file = new File(
-            [blob],
-            `lockin-${cardMode === "sticker" ? "story" : "card"}-${Date.now()}.png`,
-            { type: "image/png" }
-          );
+          const kind: ExportKind = cardMode === "metallic" ? "metallic" : stickerBg === "photo" && currentPhoto ? "photo" : "sticker";
+          const blob = await renderVersion(kind);
+          const file = new File([blob], fileName(kind), { type: "image/png" });
 
           if (navigator.canShare({ files: [file] })) {
             await navigator.share({
@@ -527,7 +518,7 @@ export default function LockinRecapCard({
     } catch (err) {
       alert(`Here is your share link: ${shareUrl}`);
     }
-  }, [recapData.shareId, cardMode, stickerBg, hours, mins, activeMetric]);
+  }, [recapData.shareId, cardMode, stickerBg, currentPhoto, renderVersion, hours, mins, activeMetric]);
 
   if (!isOpen) return null;
 
@@ -614,59 +605,37 @@ export default function LockinRecapCard({
             {/* ─── Mode Switcher Bar (Story Sticker vs Metallic Obsidian) ─── */}
             <div className="relative z-30 mb-2.5 flex w-full flex-col gap-1.5 rounded-xl border border-line bg-surface/90 p-1.5 backdrop-blur-md shadow-lg">
               <div className="flex items-center justify-between gap-1 w-full">
-                {/* 2 Primary Modes */}
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => setCardMode("sticker")}
-                    className={`rounded-lg px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all ${
-                      cardMode === "sticker"
-                        ? "bg-ink text-bg shadow-sm"
-                        : "text-ink-3 hover:text-ink hover:bg-raised"
-                    }`}
-                  >
-                    Story Sticker
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setCardMode("metallic")}
-                    className={`rounded-lg px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all ${
-                      cardMode === "metallic"
-                        ? "bg-ink text-bg shadow-sm"
-                        : "text-ink-3 hover:text-ink hover:bg-raised"
-                    }`}
-                  >
-                    Metallic Card
-                  </button>
+                {/* Three versions: metallic tier card, transparent sticker, photo. */}
+                <div className="flex items-center gap-1" role="tablist" aria-label="Card version">
+                  {([
+                    { key: "metallic", label: "Metallic" },
+                    { key: "sticker", label: "Sticker" },
+                    { key: "photo", label: "Photo" }
+                  ] as const).map((v) => {
+                    const on = v.key === "metallic" ? cardMode === "metallic" : cardMode === "sticker" && stickerBg === (v.key === "photo" ? "photo" : "transparent");
+                    return (
+                      <button
+                        key={v.key}
+                        type="button"
+                        role="tab"
+                        aria-selected={on}
+                        onClick={() => {
+                          setIsFlipped(false);
+                          if (v.key === "metallic") setCardMode("metallic");
+                          else {
+                            setCardMode("sticker");
+                            setStickerBg(v.key === "photo" ? "photo" : "transparent");
+                          }
+                        }}
+                        className={`rounded-lg px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all ${
+                          on ? "bg-ink text-bg shadow-sm" : "text-ink-3 hover:text-ink hover:bg-raised"
+                        }`}
+                      >
+                        {v.label}
+                      </button>
+                    );
+                  })}
                 </div>
-
-                {/* In Sticker Mode: Toggle between Transparent PNG vs Photo */}
-                {cardMode === "sticker" && (
-                  <div className="flex items-center gap-1 rounded-lg border border-line bg-raised/80 p-0.5">
-                    <button
-                      type="button"
-                      onClick={() => setStickerBg("transparent")}
-                      className={`rounded-md px-2 py-1 text-[10px] font-bold uppercase tracking-wider transition-colors ${
-                        stickerBg === "transparent"
-                          ? "bg-surface text-ink shadow-xs"
-                          : "text-ink-3 hover:text-ink"
-                      }`}
-                    >
-                      No BG (PNG)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setStickerBg("photo")}
-                      className={`rounded-md px-2 py-1 text-[10px] font-bold uppercase tracking-wider transition-colors ${
-                        stickerBg === "photo"
-                          ? "bg-surface text-ink shadow-xs"
-                          : "text-ink-3 hover:text-ink"
-                      }`}
-                    >
-                      Photo
-                    </button>
-                  </div>
-                )}
 
                 {/* Flip button for metallic card */}
                 {cardMode === "metallic" && (
@@ -789,6 +758,10 @@ export default function LockinRecapCard({
                           : "#050505"
                         : cardBg,
                       borderColor: cardMode === "metallic" ? tierColor : undefined,
+                      // Photo version: every line of text keeps a shadow so it reads on any image.
+                      textShadow: cardMode === "sticker" && stickerBg === "photo"
+                        ? "0 1px 2px rgba(0,0,0,0.9), 0 2px 14px rgba(0,0,0,0.75)"
+                        : undefined,
                       position: "absolute",
                       inset: 0,
                       ...faceStyle(!isFlipped)
@@ -797,6 +770,7 @@ export default function LockinRecapCard({
                     {/* Visual transparency preview grid when in Transparent PNG mode */}
                     {isTransparentSticker && (
                       <div
+                        data-export-ignore="1"
                         className="pointer-events-none absolute inset-0 -z-10 opacity-30"
                         style={{
                           backgroundImage: "radial-gradient(#52525b 1px, transparent 1px)",
@@ -940,7 +914,7 @@ export default function LockinRecapCard({
                                 </div>
                                 <div>
                                   <span className="text-[10px] font-bold uppercase tracking-wider text-white/70 block">Motion</span>
-                                  <span className="font-mono text-xl font-bold text-emerald-400">+{pointsDelta}</span>
+                                  <span className="font-mono text-xl font-bold text-emerald-400">{pointsDelta >= 0 ? "+" : ""}{pointsDelta}</span>
                                 </div>
                               </div>
                             </div>
@@ -972,7 +946,7 @@ export default function LockinRecapCard({
                                 <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: tierColor }}>
                                   {tierName}
                                 </span>
-                                <span className="font-mono text-xs font-bold text-emerald-400">+{pointsDelta} Motion</span>
+                                <span className="font-mono text-xs font-bold text-emerald-400">{pointsDelta >= 0 ? "+" : ""}{pointsDelta} Motion</span>
                               </div>
                               <div className="text-3xl font-extrabold text-white">
                                 {hours > 0 ? `${hours}h ` : ""}{mins}m
@@ -1320,39 +1294,26 @@ export default function LockinRecapCard({
                   <Trash2 className="h-[18px] w-[18px]" /> Trash card
                 </motion.button>
               ) : cardMode === "sticker" && isTransparentSticker ? (
-                <div className="flex flex-1 gap-2">
-                  <motion.button
-                    type="button"
-                    whileTap={{ scale: 0.96 }}
-                    onClick={handleCopySticker}
-                    disabled={saving}
-                    className="btn-primary h-12 flex-1 gap-2"
-                  >
-                    {copiedSticker ? <Check className="h-[18px] w-[18px] text-success" /> : <Copy className="h-[18px] w-[18px]" />}
-                    {copiedSticker ? "Copied Sticker" : saving ? "Rendering..." : "Copy Sticker"}
-                  </motion.button>
-                  <motion.button
-                    type="button"
-                    whileTap={{ scale: 0.96 }}
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="flex h-12 items-center justify-center gap-1.5 rounded-xl border border-line bg-surface px-4 text-xs font-semibold text-ink transition-colors hover:bg-raised"
-                    title="Download transparent PNG sticker"
-                  >
-                    <Download className="h-4 w-4" />
-                    <span>PNG</span>
-                  </motion.button>
-                </div>
+                <motion.button
+                  type="button"
+                  whileTap={{ scale: 0.96 }}
+                  onClick={handleCopySticker}
+                  disabled={saving}
+                  className="btn-primary h-12 flex-1 gap-2"
+                >
+                  {copiedSticker ? <Check className="h-[18px] w-[18px] text-success" /> : <Copy className="h-[18px] w-[18px]" />}
+                  {copiedSticker ? "Copied sticker" : exporting === "sticker" ? "Rendering..." : "Copy sticker"}
+                </motion.button>
               ) : (
                 <motion.button
                   type="button"
                   whileTap={{ scale: 0.96 }}
-                  onClick={handleSave}
-                  disabled={saving}
-                  className="btn-primary h-12 flex-1 gap-2"
+                  onClick={() => handleExport(cardMode === "metallic" ? "metallic" : "photo")}
+                  disabled={saving || (cardMode === "sticker" && !currentPhoto)}
+                  className="btn-primary h-12 flex-1 gap-2 disabled:opacity-50"
                 >
                   <Download className="h-[18px] w-[18px]" />
-                  {saving ? "Rendering..." : cardMode === "sticker" ? "Download Story Image" : "Download Card"}
+                  {saving ? "Rendering..." : cardMode === "metallic" ? "Save card" : currentPhoto ? "Save photo version" : "Add a photo first"}
                 </motion.button>
               )}
 
@@ -1383,6 +1344,35 @@ export default function LockinRecapCard({
                 </AnimatePresence>
               </motion.button>
             </motion.div>
+
+            {/* Save any version, whichever one is on screen. */}
+            {!isFailed && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={isTrashing ? { opacity: 0 } : { opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="relative z-10 mt-2 flex w-full items-center gap-1.5"
+              >
+                <span className="mr-1 text-[10px] font-bold uppercase tracking-wider text-ink-3">Save PNG</span>
+                {([
+                  { kind: "metallic", label: "Card" },
+                  { kind: "sticker", label: "Sticker" },
+                  { kind: "photo", label: "Photo" }
+                ] as const).map((o) => (
+                  <button
+                    key={o.kind}
+                    type="button"
+                    onClick={() => handleExport(o.kind)}
+                    disabled={saving || (o.kind === "photo" && !currentPhoto)}
+                    title={o.kind === "photo" && !currentPhoto ? "Add a photo in the Photo tab first" : undefined}
+                    className="flex h-9 flex-1 items-center justify-center gap-1 rounded-lg border border-line bg-surface text-[11px] font-semibold text-ink-2 transition-colors hover:text-ink disabled:opacity-40"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    {exporting === o.kind ? "..." : o.label}
+                  </button>
+                ))}
+              </motion.div>
+            )}
           </motion.div>
         </motion.div>
       </AnimatePresence>

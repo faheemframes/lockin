@@ -21,8 +21,10 @@ import {
   Calendar as CalendarIcon,
   LogOut,
   RefreshCw,
-  Camera
+  Camera,
+  KeyRound
 } from "lucide-react";
+import ChangePasswordDialog from "./ChangePasswordDialog";
 import { User, Mission } from "../app/types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input, fieldClass } from "./ui/input";
@@ -60,6 +62,7 @@ export default function Profile({ user, refreshUser, api }: ProfileProps) {
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(false);
   const [loadingMissions, setLoadingMissions] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [form, setForm] = useState({
     name: user.name || "",
@@ -420,6 +423,16 @@ export default function Profile({ user, refreshUser, api }: ProfileProps) {
                 <motion.span animate={syncing ? { rotate: 360 } : { rotate: 0 }} transition={syncing ? { duration: 0.8, repeat: Infinity, ease: "linear" } : { duration: 0 }} className="flex">
                   <RefreshCw className="h-[18px] w-[18px]" />
                 </motion.span>
+              </motion.button>
+              <motion.button
+                type="button"
+                whileTap={{ scale: 0.92 }}
+                onClick={() => setShowPassword(true)}
+                aria-label="Change password"
+                title="Change password"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-line text-ink-2 transition-colors hover:text-ink"
+              >
+                <KeyRound className="h-[18px] w-[18px]" />
               </motion.button>
               <motion.button
                 type="button"
@@ -856,6 +869,8 @@ export default function Profile({ user, refreshUser, api }: ProfileProps) {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ChangePasswordDialog open={showPassword} onOpenChange={setShowPassword} />
 
       {recapData && <RecapCard isOpen={showRecapCard} onClose={() => setShowRecapCard(false)} recapData={recapData} />}
 

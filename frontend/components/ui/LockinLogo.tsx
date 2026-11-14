@@ -149,7 +149,7 @@ export function LockinLogo({ size = "md", className = "", layout = "horizontal",
         >
           <LockinWordmark size={size} glow />
         </motion.div>
-        {showSubtitle && <span className="t-label">Stop chatting. Start showing up.</span>}
+        {showSubtitle && <span className="t-label">Stop scrolling. Start executing.</span>}
       </div>
     );
   }

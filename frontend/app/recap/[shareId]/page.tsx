@@ -193,7 +193,7 @@ export default function PublicShareRecap() {
 
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="mt-8 w-full text-center">
           <p className="t-display text-title-1 text-ink">
-            Stop chatting. <span className="text-crimson">Start showing up.</span>
+            Stop scrolling. <span className="text-crimson">Start executing.</span>
           </p>
           <motion.button
             type="button"

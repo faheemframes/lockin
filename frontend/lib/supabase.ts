@@ -1,5 +1,20 @@
 import { createClient } from "@supabase/supabase-js";
 
+/*
+ * A password-reset email link lands wherever Supabase sends it. If
+ * /reset-password is missing from the dashboard's Redirect URLs, Supabase
+ * falls back to the Site URL (/), the app sees a valid session and simply
+ * signs the user in: they never get asked for a new password. Route any
+ * recovery link to the reset page before the client consumes the tokens.
+ */
+if (
+  typeof window !== "undefined" &&
+  window.location.pathname !== "/reset-password" &&
+  /(^|[#&])type=recovery(&|$)/.test(window.location.hash)
+) {
+  window.location.replace(`/reset-password${window.location.hash}`);
+}
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 

@@ -347,11 +347,13 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
           }
         }
       } else if (mode === "forgot") {
-        // Same screen whether or not the account exists, so emails can't be probed.
+        // Supabase answers the same for unknown emails, so showing its errors
+        // leaks nothing. Swallowing them did: users were told a code was sent
+        // when the email had actually failed (no reset email ever went out).
         const { error: resetErr } = await supabase.auth.resetPasswordForEmail(form.email, {
           redirectTo: `${window.location.origin}/reset-password`
         });
-        if (resetErr && (resetErr as any).status === 429) throw resetErr;
+        if (resetErr) throw new Error(recoveryErrorMessage(resetErr));
         setDirection(1);
         setStep(2);
       }
@@ -442,7 +444,7 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
         mode === "forgot"
           ? await supabase.auth.resetPasswordForEmail(form.email, { redirectTo: `${window.location.origin}/reset-password` })
           : await supabase.auth.resend({ type: "signup", email: form.email });
-      if (resendErr) throw resendErr;
+      if (resendErr) throw new Error(mode === "forgot" ? recoveryErrorMessage(resendErr) : resendErr.message);
     } catch (err: any) {
       setError(err.message || "Failed to resend code.");
     } finally {
@@ -738,7 +740,20 @@ export default function ProfileGate({ onReady, api }: ProfileGateProps) {
                 form={form}
                 busy={busy}
                 onResetPassword={handleResetPassword}
+                onSkip={async () => {
+                  setBusy(true);
+                  setError("");
+                  try {
+                    await afterSignIn(detectedCampusId, detectedCampusName);
+                  } catch (err: any) {
+                    setError(err?.message || "Couldn't sign you in.");
+                  } finally {
+                    setBusy(false);
+                  }
+                }}
                 onBack={() => {
+                  // Drop the recovery session, or a reload would sign them straight in.
+                  supabase?.auth.signOut({ scope: "local" }).catch(() => {});
                   setMode("login");
                   setStep(1);
                 }}
@@ -1286,8 +1301,21 @@ function OtpStep({ form, onNext, mode, setMode, onVerifyOtp, onResendOtp, busy }
   );
 }
 
+/** Readable message for a failed reset-email request. */
+function recoveryErrorMessage(err: any): string {
+  const status = err?.status;
+  const msg = String(err?.message || "");
+  if (status === 429 || /rate limit|security purposes/i.test(msg)) {
+    return "Too many reset emails were requested. Wait a minute and try again.";
+  }
+  if (status >= 500 || /sending|smtp|email/i.test(msg)) {
+    return "We couldn't send the reset email right now. Try again in a few minutes, or if you're still signed in on another device, change your password from Profile there.";
+  }
+  return msg || "Couldn't start the reset. Try again.";
+}
+
 /* ─── RESET PASSWORD STEP ────────────────────────────────────────── */
-function ResetPasswordStep({ form, busy, onResetPassword, onBack }: any) {
+function ResetPasswordStep({ form, busy, onResetPassword, onBack, onSkip }: any) {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPw, setShowPw] = useState(false);
@@ -1362,6 +1390,17 @@ function ResetPasswordStep({ form, busy, onResetPassword, onBack }: any) {
         {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : null}
         {busy ? "Updating..." : "Update Password"}
       </PrimaryButton>
+
+      {/* The code already signed you in; skipping keeps the old password.
+          It can be changed later from Profile (key icon). */}
+      <button
+        type="button"
+        onClick={onSkip}
+        disabled={busy}
+        className="h-11 w-full text-subhead text-ink-2 transition-colors hover:text-ink disabled:opacity-50"
+      >
+        Skip for now
+      </button>
 
       <div className="text-center">
         <button

@@ -320,3 +320,10 @@ When the founder introduces a new product principle, architectural constraint, u
   - **Pay per deliverable, not per view:** Fixed fees avoid clickbait and low-intent audiences.
   - **The Campus Loop Moat:** Creator video ➔ student joins mission ➔ physical meetup happens ➔ experience fuels the next video.
 * **Operational Assets:** All briefs, scripts, agreements, and day-by-day calendar housed in `growth/creators/` and monitored via `lockin.top/?ref=creator_tag`.
+
+### [2026-11-14] App audit: reliability decisions
+* **Focus timer = timestamps, never a countdown.** `lib/focusTimer.ts` stores `startedAt / pausedAt / pausedMs`; the display is computed from the clock. Phones freeze background tabs, so anything that counts ticks drifts. If local storage is lost, re-attach to the server's `work_started_at`. A web app cannot fire an exact-time notification while frozen; we show a "focus running · ends at HH:MM" notification instead (Android/desktop; iPhone only when added to the Home Screen).
+* **Solo/starter missions are created not-started** (`startNow: false`). The server clock starts when the user taps Start, so "Continue focus" only appears once a session exists and no pre-tap time is counted.
+* **Hosts never check guests in.** Check-in is the guest entering the host's 4-digit code; the server forbids host check-in, so the UI no longer offers it. Hosts see a live read-only clock of the partner's session.
+* **Recap card opens on the metallic tier card.** Sticker (transparent PNG) and Photo are opt-in versions; each can be saved as its own PNG.
+* **Reset-email errors are shown, not swallowed.** Supabase answers identically for unknown emails, so surfacing errors leaks nothing; hiding them made a broken email setup look like success.

@@ -215,6 +215,17 @@ export default function ResetPasswordPage() {
                 {busy && <Loader2 className="h-5 w-5 animate-spin" />}
                 {busy ? "Saving" : "Save password"}
               </motion.button>
+
+              {/* The recovery link already signed you in. Skipping keeps the old
+                  password; you can change it any time from Profile → key icon. */}
+              <button
+                type="button"
+                onClick={() => router.push("/")}
+                disabled={busy}
+                className="h-11 w-full text-subhead text-ink-3 transition-colors hover:text-ink disabled:opacity-50"
+              >
+                Skip for now
+              </button>
             </motion.form>
           )}
         </AnimatePresence>

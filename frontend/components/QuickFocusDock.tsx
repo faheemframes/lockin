@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Play, Clock, Sparkles, Activity } from "lucide-react";
 import { User } from "../app/types";
+import { displaySec, formatClock, loadTimer } from "../lib/focusTimer";
 
 interface QuickFocusDockProps {
   user: User;
@@ -11,33 +12,18 @@ interface QuickFocusDockProps {
 }
 
 export default function QuickFocusDock({ user, onOpenModal, setTab }: QuickFocusDockProps) {
-  const [activeSession, setActiveSession] = useState<{
-    missionId: number;
-    timeLeft: number;
-    duration: number;
-    running: boolean;
-  } | null>(null);
+  const [activeSession, setActiveSession] = useState<{ missionId: number; timeLeft: number } | null>(null);
 
   useEffect(() => {
     if (!user || typeof window === "undefined") return;
 
     const checkTimer = () => {
-      const key = `lockin_timer_${user.id}`;
-      const saved = localStorage.getItem(key);
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (parsed && parsed.missionId) {
-            setActiveSession(parsed);
-            return;
-          }
-        } catch (_) {}
-      }
-      setActiveSession(null);
+      const t = loadTimer(user.id);
+      setActiveSession(t ? { missionId: t.missionId, timeLeft: displaySec(t) } : null);
     };
 
     checkTimer();
-    const interval = setInterval(checkTimer, 3000);
+    const interval = setInterval(checkTimer, 1000);
     return () => clearInterval(interval);
   }, [user]);
 
@@ -50,9 +36,7 @@ export default function QuickFocusDock({ user, onOpenModal, setTab }: QuickFocus
   };
 
   if (activeSession) {
-    const mins = Math.floor(activeSession.timeLeft / 60);
-    const secs = activeSession.timeLeft % 60;
-    const timeFormatted = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    const timeFormatted = formatClock(activeSession.timeLeft);
 
     return (
       <div className="mb-4 flex items-center justify-between rounded-xl border border-emerald-500/40 bg-emerald-950/25 p-3.5 backdrop-blur-md">

@@ -322,6 +322,9 @@ export default function Feed({ user, refreshUser, locked, setLocked, api, setTab
             categoryId: mission.category_id || 1,
             focusDuration: mission.focus_duration || 25,
             missionType: "solo",
+            // Not started yet: the queue shows "Start session" and the clock
+            // begins when the user actually starts (server default is start now).
+            startNow: false,
             coverColor: mission.cover_color || null,
             coverImage: mission.cover_image || null
           })
@@ -421,7 +424,9 @@ export default function Feed({ user, refreshUser, locked, setLocked, api, setTab
               : null)
           : null,
         secretInfo: (!isSolo && isEvent && secretInfo.trim()) ? secretInfo.trim() : null,
-        maxCapacity: (!isSolo && isEvent && maxCapacity.trim()) ? Number(maxCapacity) : null
+        maxCapacity: (!isSolo && isEvent && maxCapacity.trim()) ? Number(maxCapacity) : null,
+        // Solo missions wait in the queue until the user taps Start.
+        ...(isSolo ? { startNow: false } : {})
       };
       const newMission = await api("/missions", { method: "POST", body: JSON.stringify(payload) });
       if (tasks.length > 0 && newMission?.id) {

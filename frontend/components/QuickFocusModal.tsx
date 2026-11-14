@@ -6,6 +6,8 @@ import { LockinMark } from "./ui/LockinLogo";
 import { Play, Clock, Sparkles } from "lucide-react";
 import { User } from "../app/types";
 import { POINTS_NAME } from "../lib/brand";
+import { saveTimer, startTimer } from "../lib/focusTimer";
+import { prepareFocusNotifications } from "../lib/focusNotify";
 
 interface QuickFocusModalProps {
   open: boolean;
@@ -93,17 +95,9 @@ export default function QuickFocusModal({
 
       // 2. Persist timer state in localStorage and dispatch exact duration event
       if (typeof window !== "undefined") {
-        const key = `lockin_timer_${user.id}`;
-        localStorage.setItem(
-          key,
-          JSON.stringify({
-            missionId,
-            duration: targetSecs,
-            timeLeft: targetSecs,
-            running: true,
-            lastSaved: Date.now()
-          })
-        );
+        // Anchored to wall-clock time, so it survives locked screens and reloads.
+        saveTimer(user.id, startTimer(missionId, title, targetSecs));
+        prepareFocusNotifications();
         localStorage.setItem("lockin_open_focus_overlay", "true");
         window.dispatchEvent(
           new CustomEvent("lockin:open-focus", {

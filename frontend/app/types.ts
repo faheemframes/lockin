@@ -47,6 +47,7 @@ export interface Mission {
   mission_type?: string;
   focus_duration?: number;
   work_duration?: number;
+  work_started_at?: string | null;
   cover_color?: string | null;
   cover_image?: string | null;
   is_event?: boolean;

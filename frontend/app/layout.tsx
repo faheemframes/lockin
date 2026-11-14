@@ -20,7 +20,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: "LOCKIN",
-  description: "Stop chatting. Start showing up.",
+  description: "Stop scrolling. Start executing.",
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.png",

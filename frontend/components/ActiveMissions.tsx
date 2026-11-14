@@ -15,6 +15,11 @@ import { LockinMark } from "./ui/LockinLogo";
 import { spring } from "../lib/motion";
 import { Textarea } from "./ui/textarea";
 import { POINTS_NAME } from "../lib/brand";
+import {
+  FocusTimer, startTimer, displaySec, isRunning, isFinished, endsAt, pause, resume, freezeAtEnd,
+  saveTimer, loadTimer, elapsedSec, formatClock
+} from "../lib/focusTimer";
+import { prepareFocusNotifications, showFocusRunning, showFocusDone, clearFocusNotification } from "../lib/focusNotify";
 
 interface ActiveMissionsProps {
   user: User;
@@ -56,9 +61,12 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
 
   // Timer V2 states
   const [activeFocusMission, setActiveFocusMission] = useState<Mission | null>(null);
-  const [activeTimerDuration, setActiveTimerDuration] = useState<number>(0);
-  const [timeLeftSeconds, setTimeLeftSeconds] = useState<number>(0);
-  const [timerRunning, setTimerRunning] = useState<boolean>(false);
+  // The timer is stored as timestamps (lib/focusTimer); what it shows is derived.
+  const [timer, setTimer] = useState<FocusTimer | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+  const activeTimerDuration = timer?.durationSec ?? 0;
+  const timeLeftSeconds = timer ? displaySec(timer, now) : 0;
+  const timerRunning = timer ? isRunning(timer, now) : false;
   const [focusOverlayOpen, setFocusOverlayOpen] = useState<boolean>(false);
   const [showTimerSelector, setShowTimerSelector] = useState<number | null>(null);
 
@@ -68,178 +76,151 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
   const [broadcastText, setBroadcastText] = useState("");
   const [sendingBroadcast, setSendingBroadcast] = useState(false);
   const [broadcastSuccess, setBroadcastSuccess] = useState(false);
-  const [checkingInId, setCheckingInId] = useState<number | null>(null);
   const [copiedSecret, setCopiedSecret] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
-  // Exact target timestamp refs to survive background tab throttling
-  const endTimeRef = useRef<number | null>(null);
-  const startTimeRef = useRef<number | null>(null);
+  const timerRef = useRef<FocusTimer | null>(null);
+  timerRef.current = timer;
 
-  // Timer Tick Effect (survives tab switching and background throttling)
-  useEffect(() => {
-    let interval: any = null;
+  /** Change the timer anchors and persist them (not every tick: anchors only). */
+  function commitTimer(next: FocusTimer | null, mission?: Mission | null) {
+    timerRef.current = next;
+    setTimer(next);
+    if (mission !== undefined) setActiveFocusMission(mission);
+    saveTimer(user.id, next);
+    setNow(Date.now());
+  }
 
-    if (timerRunning && activeFocusMission) {
-      if (activeTimerDuration > 0) {
-        if (!endTimeRef.current) {
-          endTimeRef.current = Date.now() + timeLeftSeconds * 1000;
-        }
-      } else {
-        if (!startTimeRef.current) {
-          startTimeRef.current = Date.now() - timeLeftSeconds * 1000;
-        }
-      }
+  /** Start (or re-attach to) a focus session. `startedAt` anchors to the server's check-in time. */
+  function beginFocus(mission: Mission, durationSec: number, startedAt?: number) {
+    prepareFocusNotifications();
+    commitTimer(startTimer(mission.id, mission.title, durationSec, startedAt), mission);
+  }
 
-      const syncTick = () => {
-        if (activeTimerDuration > 0 && endTimeRef.current) {
-          const remaining = Math.max(0, Math.ceil((endTimeRef.current - Date.now()) / 1000));
-          setTimeLeftSeconds(remaining);
-          if (remaining <= 0) {
-            setTimerRunning(false);
-            endTimeRef.current = null;
-            if (typeof window !== "undefined") {
-              try {
-                const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                osc.type = "sine";
-                osc.frequency.setValueAtTime(800, ctx.currentTime);
-                osc.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.2);
-              } catch (e) {
-                console.warn("AudioContext block", e);
-              }
+  function stopFocus() {
+    commitTimer(null, null);
+    clearFocusNotification();
+  }
 
-              if ("Notification" in window && Notification.permission === "granted") {
-                try {
-                  new Notification("Focus Session Complete", {
-                    body: `Target focus time reached for "${activeFocusMission.title}".`
-                  });
-                } catch (e) {
-                  console.warn("Notification error:", e);
-                }
-              }
-            }
-          }
-        } else if (activeTimerDuration === 0 && startTimeRef.current) {
-          const elapsed = Math.max(0, Math.floor((Date.now() - startTimeRef.current) / 1000));
-          setTimeLeftSeconds(elapsed);
-        }
-      };
-
-      // Immediate tick to sync
-      syncTick();
-      interval = setInterval(syncTick, 1000);
-
-      // Visibility change handler to instantly snap back to real time when user reopens tab
-      const handleVisibility = () => {
-        if (document.visibilityState === "visible") {
-          syncTick();
-        }
-      };
-      document.addEventListener("visibilitychange", handleVisibility);
-
-      return () => {
-        clearInterval(interval);
-        document.removeEventListener("visibilitychange", handleVisibility);
-      };
-    } else {
-      endTimeRef.current = null;
-      startTimeRef.current = null;
+  function toggleFocus() {
+    const t = timerRef.current;
+    if (!t || isFinished(t)) return;
+    if (t.pausedAt === null) commitTimer(pause(t));
+    else {
+      prepareFocusNotifications();
+      commitTimer(resume(t));
     }
+  }
 
-    return () => clearInterval(interval);
-  }, [timerRunning, activeFocusMission, activeTimerDuration]);
-
-  // Sync to/from localStorage
+  // Clock: recomputed from the anchors every second and the instant the page wakes
+  // (unlock, tab switch back, restored from bfcache). Missed ticks cost nothing.
   useEffect(() => {
-    if (!user) return;
-    const key = `lockin_timer_${user.id}`;
-    if (activeFocusMission) {
-      localStorage.setItem(key, JSON.stringify({
-        missionId: activeFocusMission.id,
-        duration: activeTimerDuration,
-        timeLeft: timeLeftSeconds,
-        running: timerRunning,
-        lastSaved: Date.now()
-      }));
-    } else {
-      localStorage.removeItem(key);
-    }
-  }, [activeFocusMission, activeTimerDuration, timeLeftSeconds, timerRunning, user]);
+    if (!timer) return;
+    const sync = () => setNow(Date.now());
+    const onVisible = () => document.visibilityState === "visible" && sync();
+    sync();
+    const id = setInterval(sync, 1000);
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("pageshow", sync);
+    window.addEventListener("focus", sync);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("pageshow", sync);
+      window.removeEventListener("focus", sync);
+    };
+  }, [timer]);
 
-  // Restore timer state on load
+  // Countdown reached its target: freeze it exactly there, chime and notify once.
   useEffect(() => {
-    if (!user || loading) return;
-    const key = `lockin_timer_${user.id}`;
-    const saved = localStorage.getItem(key);
-    if (saved) {
+    if (!timer || timer.pausedAt !== null || !isFinished(timer, now)) return;
+    commitTimer(freezeAtEnd(timer));
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(800, ctx.currentTime);
+      osc.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.2);
+    } catch {}
+    showFocusDone(timer.title);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timer, now]);
+
+  // "Focus running" notification, refreshed whenever the anchors change.
+  useEffect(() => {
+    if (!timer) return;
+    if (isFinished(timer)) return; // the "complete" notification replaces it
+    showFocusRunning(timer.title, { endsAt: endsAt(timer), startedAt: timer.startedAt, paused: timer.pausedAt !== null });
+  }, [timer]);
+
+  // Time in the tab title, so it is visible from other tabs on desktop.
+  useEffect(() => {
+    if (!timer) return;
+    document.title = `${formatClock(timeLeftSeconds)} · LOCKIN`;
+  }, [timer, timeLeftSeconds]);
+  useEffect(() => () => { document.title = "LOCKIN"; }, []);
+  useEffect(() => { if (!timer) document.title = "LOCKIN"; }, [timer]);
+
+  // Restore once, when the queue first loads. Missions refresh every 15s; the
+  // timer must not be re-derived from them each time.
+  const restoredRef = useRef(false);
+  useEffect(() => {
+    if (!user || loading || restoredRef.current) return;
+    restoredRef.current = true;
+    const wantsOverlay = (() => {
       try {
-        const state = JSON.parse(saved);
-        const mission = missions.find(m => m.id === state.missionId);
-        if (mission && mission.status === "Executing") {
-          setActiveFocusMission(mission);
-          const dur = typeof state.duration === "number" && state.duration > 0
-            ? state.duration
-            : ((mission.work_duration || mission.focus_duration || 25) * 60);
-          setActiveTimerDuration(dur);
-          
-          let nextTime = typeof state.timeLeft === "number" ? state.timeLeft : dur;
-          if (state.running) {
-            const elapsed = Math.floor((Date.now() - state.lastSaved) / 1000);
-            if (dur > 0) {
-              nextTime = Math.max(0, nextTime - elapsed);
-            } else {
-              nextTime = nextTime + elapsed;
-            }
-          }
-          setTimeLeftSeconds(nextTime);
-          setTimerRunning(nextTime > 0 || dur === 0 ? state.running : false);
-
-          if (typeof window !== "undefined" && localStorage.getItem("lockin_open_focus_overlay")) {
-            setFocusOverlayOpen(true);
-            localStorage.removeItem("lockin_open_focus_overlay");
-          }
-        } else if (!loading && missions.length > 0 && !missions.some(m => m.id === state.missionId)) {
-          // Only delete key if missions have fully loaded and this mission definitely does not exist
-          localStorage.removeItem(key);
-        }
-      } catch (err) {
-        console.error("Failed to restore timer state", err);
+        const v = localStorage.getItem("lockin_open_focus_overlay");
+        localStorage.removeItem("lockin_open_focus_overlay");
+        return Boolean(v);
+      } catch {
+        return false;
       }
+    })();
+    const saved = timerRef.current || loadTimer(user.id);
+    const mission = saved ? missions.find((m) => m.id === saved.missionId && m.status === "Executing") : undefined;
+    if (saved && mission) {
+      timerRef.current = saved;
+      setTimer(saved);
+      setActiveFocusMission(mission);
+      if (wantsOverlay) setFocusOverlayOpen(true);
+    } else if (saved) {
+      // Finished or cancelled elsewhere.
+      saveTimer(user.id, null);
+      clearFocusNotification();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [missions, user, loading]);
 
-  // Listen for direct focus overlay trigger from QuickLaunch
+  // Quick focus (dock / modal) opens the overlay through this event.
   useEffect(() => {
     const handleOpenFocus = (e: Event) => {
       const detail = (e as CustomEvent)?.detail;
       if (detail?.mission) {
+        const saved = loadTimer(user.id);
+        const t = saved && saved.missionId === detail.mission.id
+          ? saved
+          : startTimer(detail.mission.id, detail.mission.title, typeof detail.duration === "number" ? detail.duration : (detail.mission.work_duration || detail.mission.focus_duration || 25) * 60);
+        timerRef.current = t;
+        setTimer(t);
+        saveTimer(user.id, t);
         setActiveFocusMission(detail.mission);
-        const dur = typeof detail.duration === "number"
-          ? detail.duration
-          : ((detail.mission.work_duration || detail.mission.focus_duration || 25) * 60);
-        setActiveTimerDuration(dur);
-        setTimeLeftSeconds(dur);
-        setTimerRunning(true);
+      } else if (!timerRef.current) {
+        const saved = loadTimer(user.id);
+        if (saved) {
+          timerRef.current = saved;
+          setTimer(saved);
+        }
       }
       setFocusOverlayOpen(true);
     };
     window.addEventListener("lockin:open-focus", handleOpenFocus);
     return () => window.removeEventListener("lockin:open-focus", handleOpenFocus);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user.id]);
 
-  const formatTime = (totalSecs: number) => {
-    const hrs = Math.floor(totalSecs / 3600);
-    const mins = Math.floor((totalSecs % 3600) / 60);
-    const secs = totalSecs % 60;
-    const pad = (n: number) => String(n).padStart(2, "0");
-    if (hrs > 0) {
-      return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
-    }
-    return `${pad(mins)}:${pad(secs)}`;
-  };
+  const formatTime = formatClock;
 
   async function load() {
     try {
@@ -301,8 +282,11 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
 
   function initiateFinishSession(mission: Mission) {
     let elapsed = 0;
-    if (activeFocusMission && activeFocusMission.id === mission.id) {
-      elapsed = activeTimerDuration > 0 ? activeTimerDuration - timeLeftSeconds : timeLeftSeconds;
+    if (timer && timer.missionId === mission.id) {
+      elapsed = elapsedSec(timer);
+    } else if (mission.work_started_at) {
+      // No local timer (other device, cleared storage): the server's check-in time is the truth.
+      elapsed = Math.max(0, Math.floor((Date.now() - new Date(mission.work_started_at).getTime()) / 1000));
     } else {
       elapsed = (mission.focus_duration || 25) * 60;
     }
@@ -334,9 +318,8 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
     setReflectionDuration(actualMins);
     setIsFailedRun(failed);
     setActiveReflectionMission(mission);
-    setActiveFocusMission(null);
+    stopFocus();
     setFocusOverlayOpen(false);
-    setTimerRunning(false);
     setReflectionText("");
     setLessonsLearned("");
     setCustomMetric("");
@@ -375,8 +358,7 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
       setRecapData(result);
       setShowRecapCard(true);
       setActiveReflectionMission(null);
-      setActiveFocusMission(null);
-      setTimerRunning(false);
+      stopFocus();
       await Promise.all([load(), refreshUser()]);
     } catch (err: any) {
       alert(err.message || "Failed to finish focus session.");
@@ -490,35 +472,12 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
     try {
       await api(`/missions/${mission.id}/cancel`, { method: "POST" });
       setMissions((prev) => prev.filter((m) => m.id !== mission.id));
-      if (activeFocusMission?.id === mission.id) {
-        setActiveFocusMission(null);
-        setTimerRunning(false);
-      }
+      if (activeFocusMission?.id === mission.id) stopFocus();
       await refreshUser();
     } catch (err: any) {
       alert(err.message || "Failed to remove mission.");
     } finally {
       setDeletingId(null);
-    }
-  }
-
-  async function handleHostCheckIn(missionId: number, participantId: number) {
-    setCheckingInId(participantId);
-    try {
-      await api(`/missions/${missionId}/check-in`, {
-        method: "POST",
-        body: JSON.stringify({ participantId })
-      });
-      const updatedList = await api(`/missions/active/${user.id}`);
-      setMissions(updatedList);
-      if (rosterMission && rosterMission.id === missionId) {
-        const found = updatedList.find((m: any) => m.id === missionId);
-        if (found) setRosterMission(found);
-      }
-    } catch (err: any) {
-      alert(err.message || "Failed to check in attendee.");
-    } finally {
-      setCheckingInId(null);
     }
   }
 
@@ -560,17 +519,10 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
       if (showedUp) {
         const currentM = updatedList.find((m: any) => m.id === missionId);
         if (currentM && currentM.status === "Executing") {
-          setActiveFocusMission(currentM);
+          const secs = typeof chosenDuration === "number" ? chosenDuration : (currentM.work_duration || currentM.focus_duration || 25) * 60;
+          const serverStart = currentM.work_started_at ? new Date(currentM.work_started_at).getTime() : undefined;
+          beginFocus(currentM, secs, serverStart && serverStart <= Date.now() ? serverStart : undefined);
           setFocusOverlayOpen(true);
-          if (typeof chosenDuration === "number") {
-            setActiveTimerDuration(chosenDuration);
-            setTimeLeftSeconds(chosenDuration);
-          } else {
-            const mSecs = (currentM.work_duration || currentM.focus_duration || 25) * 60;
-            setActiveTimerDuration(mSecs);
-            setTimeLeftSeconds(mSecs);
-          }
-          setTimerRunning(true);
         }
       }
     } catch (err: any) {
@@ -887,33 +839,6 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
                           )}
                         </div>
 
-                        {/* Quick Attendee Check-In list for Host */}
-                        {isCreator && canCheckIn && !isSolo && (
-                          <div className="flex flex-wrap gap-1.5 pt-1">
-                            {mission.attendees.filter((a) => a.id !== user.id).map((a) => (
-                              <div
-                                key={a.id}
-                                className="flex items-center gap-1.5 rounded-md border border-line bg-raised/70 px-2 py-1 text-footnote"
-                              >
-                                <span className="text-ink truncate max-w-[100px]">{a.name}</span>
-                                {a.showed_up ? (
-                                  <span className="rounded-sm bg-success/20 px-2 py-1 text-[11px] font-medium uppercase tracking-[0.12em] text-success">
-                                    Checked in
-                                  </span>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    onClick={() => handleHostCheckIn(mission.id, a.id)}
-                                    disabled={checkingInId === a.id}
-                                    className="h-11 rounded-sm border border-ink/40 px-3 text-[12px] font-medium uppercase tracking-[0.12em] text-ink transition-colors hover:bg-ink hover:text-bg disabled:opacity-50"
-                                  >
-                                    {checkingInId === a.id ? "Checking…" : "Check in"}
-                                  </button>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        )}
                       </div>
                     )}
 
@@ -1100,7 +1025,7 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
                                   <div className="grid grid-cols-2 gap-2">
                                     {[
                                       { label: "25 min", value: 25 },
-                                      { label: "50 min", value: 50 },
+                                      { label: "45 min", value: 45 },
                                       { label: "90 min", value: 90 },
                                       { label: "Open", value: 0 }
                                     ].map((opt, i) => (
@@ -1113,8 +1038,6 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
                                         whileTap={{ scale: 0.94 }}
                                         onClick={async () => {
                                           const chosenSecs = opt.value * 60;
-                                          setActiveTimerDuration(chosenSecs);
-                                          setTimeLeftSeconds(chosenSecs);
                                           setShowTimerSelector(null);
                                           await handleAttendance(mission.id, true, undefined, chosenSecs);
                                         }}
@@ -1220,23 +1143,25 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
                           type="button"
                           whileTap={{ scale: 0.98 }}
                           onClick={() => {
-                            if (activeFocusMission?.id === mission.id) {
-                              setFocusOverlayOpen(true);
-                            } else {
+                            if (activeFocusMission?.id !== mission.id) {
+                              // No local timer for this session (other device, cleared storage):
+                              // re-attach to the server's check-in time instead of restarting.
+                              // Missions created before the "not started" fix may carry a stale
+                              // server start; only re-attach while it is within the target.
                               const mSecs = (mission.work_duration || mission.focus_duration || 25) * 60;
-                              setActiveFocusMission(mission);
-                              setActiveTimerDuration(mSecs);
-                              setTimeLeftSeconds(mSecs);
-                              setTimerRunning(true);
-                              setFocusOverlayOpen(true);
+                              const serverStart = mission.work_started_at ? new Date(mission.work_started_at).getTime() : undefined;
+                              const age = serverStart ? Date.now() - serverStart : Infinity;
+                              beginFocus(mission, mSecs, age >= 0 && age < mSecs * 1000 ? serverStart : undefined);
                             }
+                            setFocusOverlayOpen(true);
                           }}
                           className="group relative flex w-full items-center justify-between overflow-hidden rounded-sm bg-signal p-5 text-left text-ink transition-colors hover:bg-cherry"
                         >
                           <span className="relative">
-                            <span className="t-label text-ink/80">{timerRunning || activeFocusMission?.id === mission.id ? "Session active" : "Focus mode"}</span>
+                            <span className="t-label text-ink/80">{activeFocusMission?.id === mission.id ? "Session active" : "Focus mode"}</span>
                             <span className="t-display tabular mt-1 block text-title-1 text-ink">
-                              {timerRunning || activeFocusMission?.id === mission.id ? `Continue focus (${formatTime(timeLeftSeconds)})` : "Continue focus"}
+                              {/* "Continue" only once a timer for this mission actually exists. */}
+                              {activeFocusMission?.id === mission.id ? `Continue focus (${formatTime(timeLeftSeconds)})` : "Start focus"}
                             </span>
                           </span>
                           <Flame className="relative h-8 w-8 text-ink transition-transform group-hover:scale-110" />
@@ -1290,6 +1215,12 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
                               <span className="text-ink">{mission.participant_name}</span> checked in and is locked in.
                             </p>
                           </div>
+                          {mission.work_started_at && (
+                            <LiveSessionClock
+                              startedAt={mission.work_started_at}
+                              targetMinutes={mission.work_duration || mission.focus_duration || 0}
+                            />
+                          )}
                         </Panel>
                         <TaskList
                           tasks={tasks}
@@ -1774,14 +1705,8 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
                           <Check className="h-3 w-3" /> Checked In
                         </span>
                       ) : (
-                        <button
-                          type="button"
-                          onClick={() => handleHostCheckIn(rosterMission.id, guest.participant_id)}
-                          disabled={checkingInId === guest.participant_id}
-                          className="btn-primary h-8 px-3 text-[11px] font-semibold"
-                        >
-                          {checkingInId === guest.participant_id ? "..." : "Check In"}
-                        </button>
+                        // Guests check themselves in with your 4-digit code.
+                        <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-ink-3">Not checked in</span>
                       )}
                     </div>
                   </div>
@@ -1859,7 +1784,7 @@ export default function ActiveMissions({ user, refreshUser, api, socketUrl }: Ac
             progress={activeTimerDuration > 0 ? 1 - timeLeftSeconds / activeTimerDuration : (timeLeftSeconds % 3600) / 3600}
             countdown={activeTimerDuration > 0}
             running={timerRunning}
-            onToggle={() => setTimerRunning(!timerRunning)}
+            onToggle={toggleFocus}
             onMinimize={() => setFocusOverlayOpen(false)}
             onFinish={() => initiateFinishSession(activeFocusMission)}
           >
@@ -2169,6 +2094,40 @@ function TaskList({
           <Plus className="h-5 w-5" />
         </motion.button>
       </div>
+    </div>
+  );
+}
+
+/** Host's view of the partner's session: elapsed time since check-in, from the server's timestamp. */
+function LiveSessionClock({ startedAt, targetMinutes }: { startedAt: string; targetMinutes: number }) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const sync = () => setNow(Date.now());
+    const id = setInterval(sync, 1000);
+    document.addEventListener("visibilitychange", sync);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", sync);
+    };
+  }, []);
+  const start = new Date(startedAt).getTime();
+  const elapsed = Number.isFinite(start) ? Math.max(0, Math.floor((now - start) / 1000)) : 0;
+  const target = targetMinutes * 60;
+  const pct = target > 0 ? Math.min(1, elapsed / target) : 0;
+  return (
+    <div className="mt-4">
+      <div className="flex items-baseline justify-between">
+        <span className="t-label">Their session</span>
+        <span className="t-display tabular text-title-2 text-ink">
+          {formatClock(elapsed)}
+          {target > 0 && <span className="text-subhead text-ink-3"> / {formatClock(target)}</span>}
+        </span>
+      </div>
+      {target > 0 && (
+        <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-line" aria-hidden="true">
+          <div className="h-full bg-signal transition-[width] duration-1000" style={{ width: `${pct * 100}%` }} />
+        </div>
+      )}
     </div>
   );
 }

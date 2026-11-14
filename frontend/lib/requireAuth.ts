@@ -65,6 +65,17 @@ async function verifyToken(token: string): Promise<VerifiedUser | null> {
   return user;
 }
 
+/** true/false if known; null if it can't be checked (then we fail closed). */
+async function authAccountExists(supabaseId: string): Promise<boolean | null> {
+  if (!/^[0-9a-f-]{36}$/i.test(supabaseId)) return null;
+  try {
+    const rows = await prisma.$queryRaw`select 1 from auth.users where id = ${supabaseId}::uuid limit 1`;
+    return Array.isArray(rows) && rows.length > 0;
+  } catch {
+    return null;
+  }
+}
+
 export interface AuthedUser {
   /** Supabase auth user id (uuid), or "demo". */
   authId: string;
@@ -134,9 +145,20 @@ export async function getAuthUser(
   if (!dbUser) {
     const byEmail = await prisma.user.findUnique({ where: { email }, include: { collegeRef: true } });
     if (byEmail && byEmail.supabaseId && byEmail.supabaseId !== authUser.id) {
-      // That email's profile belongs to a different auth account. Never merge.
-      res.status(403).json({ error: "This email is linked to another account." });
-      return null;
+      // That email's profile is linked to a different auth account. If that
+      // account still exists, never merge. If it was deleted (and this verified
+      // email signed up again), the profile would otherwise be lost for good:
+      // re-link it to the new auth account.
+      const previousExists = await authAccountExists(byEmail.supabaseId);
+      if (previousExists !== false) {
+        res.status(403).json({ error: "This email is linked to another account." });
+        return null;
+      }
+      dbUser = await prisma.user.update({
+        where: { id: byEmail.id },
+        data: { supabaseId: authUser.id, emailVerified: true },
+        include: { collegeRef: true }
+      });
     }
     if (byEmail && !byEmail.supabaseId) {
       dbUser = await prisma.user.update({

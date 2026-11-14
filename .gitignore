@@ -16,3 +16,6 @@ hyperframes/
 lockin-group-chat/
 lockin-teaser/
 video-lockin-teaser/
+
+# Exports with real user data: never commit
+*.csv

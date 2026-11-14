@@ -391,7 +391,36 @@ async function getActiveMissions(req, res) {
       })
       .filter(Boolean);
 
-    const hostedRows = hosted
+    // Full roster per hosted mission. The queue shows one card per mission, so
+    // without this a host with several join requests only ever saw the first.
+    const rosterByMission = new Map();
+    for (const p of hosted) {
+      if (!p.mission || p.mission.missionType === "solo" || p.userId === p.mission.createdBy) continue;
+      if (!rosterByMission.has(p.missionId)) rosterByMission.set(p.missionId, { pending: [], going: [] });
+      const entry = {
+        id: p.id,
+        participant_id: p.userId,
+        user_id: p.userId,
+        name: p.user?.name || "Student",
+        department: p.user?.department || "Student",
+        reputation_score: p.user?.reputationScore || 0,
+        reputation_points: p.user?.reputationScore || 0,
+        status: p.status,
+        showed_up: p.showedUp,
+        application_note: p.applicationNote || null
+      };
+      const r = rosterByMission.get(p.missionId);
+      if (p.status === "Requested") r.pending.push(entry);
+      else if (["Accepted", "Executing", "Completed"].includes(p.status)) r.going.push(entry);
+    }
+
+    // When a hosted mission has several participations, its card follows the
+    // one that needs the host most: a live session, then a confirmed partner,
+    // then an open request, then history.
+    const hostPriority = { Executing: 0, Accepted: 1, Requested: 2, Completed: 3, Missed: 4 };
+    const hostedSorted = [...hosted].sort((a, b) => (hostPriority[a.status] ?? 9) - (hostPriority[b.status] ?? 9));
+
+    const hostedRows = hostedSorted
       .filter((p) => p.status !== "Rejected")
       .map((p) => {
         if (!p.mission) return null;
@@ -427,7 +456,8 @@ async function getActiveMissions(req, res) {
           secret_info: p.mission.secretInfo || null,
           max_capacity: p.mission.maxCapacity || null,
           locked_in_count: attendees.length,
-          attendees: attendees
+          attendees: attendees,
+          roster: isSolo ? undefined : rosterByMission.get(p.missionId) || { pending: [], going: [] }
         };
       })
       .filter(Boolean);
@@ -766,7 +796,7 @@ async function submitVibeCheck(req, res) {
       await notify(result.targetUserId, {
         type: "rated",
         title: `${rater?.name || "Someone"} rated your session ${rating}`,
-        body: `${m?.title || "Mission"} · ${result.auraDelta >= 0 ? "+" : ""}${result.auraDelta} Grit`,
+        body: `${m?.title || "Mission"} · ${result.auraDelta >= 0 ? "+" : ""}${result.auraDelta} Motion`,
         actorId: raterId,
         missionId
       });
@@ -879,11 +909,14 @@ async function cancelMission(req, res) {
       if (mission.missionType !== "solo") {
         for (const p of mission.participations) {
           if (p.userId !== userId && ["Accepted", "Requested"].includes(p.status)) {
-            notifyUser(p.userId, {
-              title: "Mission Cancelled",
-              message: `The host cancelled "${mission.title}".`,
+            await notify(p.userId, {
               type: "mission_cancelled",
-              missionId
+              title: "Mission cancelled",
+              body: `The host cancelled "${mission.title}".`,
+              actorId: userId,
+              // No missionId: notifications cascade-delete with their mission,
+              // which is deleted right below, so the notice would vanish.
+              missionId: null
             });
           }
         }
@@ -906,10 +939,11 @@ async function cancelMission(req, res) {
           where: { id: userId },
           select: { name: true }
         });
-        notifyUser(mission.createdBy, {
-          title: userParticipation.status === "Requested" ? "Request Withdrawn" : "Participant Left",
-          message: `${leaver?.name || "A participant"} left or withdrew from "${mission.title}".`,
+        await notify(mission.createdBy, {
           type: "participant_left",
+          title: userParticipation.status === "Requested" ? "Request withdrawn" : "Participant left",
+          body: `${leaver?.name || "A participant"} left or withdrew from "${mission.title}".`,
+          actorId: userId,
           missionId
         });
       }
